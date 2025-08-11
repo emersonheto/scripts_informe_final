@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de notas de los participantes
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoNotasParticipantesFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -59,49 +59,122 @@ BEGIN
 
         -- Consulta dinámica simplificada
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        WITH T_NOTAS AS (
-            SELECT PIDM, DNI, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, NOMBRE, 
-                   NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
-                   NVL(STYP_DESC,'' '') AS TIPO_ALUMNO, VERSION_PLAN, PROGRAM_CODE, 
-                   DEPT_CODE, ASIGNATURA, ESTADO_ASIGNATURA,
-                   PORCENT_INASISTENCIA, TO_NUMBER(NVL(GRDE_CODE,''0'')) AS NOTA
-            FROM BANINST1.SZVALDI
-            WHERE DNI IN (' + @StudentList + ')
-                AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(AREA_CODE,4,1)<>''C''                
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
-        ),
-        T_RESUMEN AS (
-            SELECT PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, 
-                   PROGRAM_CODE, DEPT_CODE,
-                   SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
-                   SUM(NOTA) AS SumaNotas
-            FROM T_NOTAS
-            GROUP BY PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
-        )
-        SELECT C.DNI AS CODIGO, C.NOMBRE AS APELLIDOS_NOMBRES, C.NOMBRE_CURSO AS CURSO, 
-               C.NOTA, D.PROMEDIO, TIPO_ALUMNO, D.ESTADO_ACADEMICO,
-               (CASE WHEN (SELECT MAX(NVL(SMBPOGN_REQUEST_NO,0))
-                      FROM SATURN.SMBPOGN PO
-                      WHERE PO.SMBPOGN_TERM_CODE_EFF=C.VERSION_PLAN 
-                        AND PO.SMBPOGN_PROGRAM=C.PROGRAM_CODE 
-                        AND PO.SMBPOGN_PIDM=C.PIDM)=0 THEN ''NO CAPP'' 
-                                                   ELSE ''OK'' END) ESTADO_CAPP
-        FROM T_NOTAS C
-        INNER JOIN (
-            SELECT A.PIDM, ROUND(A.SUMANOTAS/B.CANTCURSOS,0) AS PROMEDIO, 
-                  (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
-                        ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''Activo'' THEN A.STUDYPATH_STATUS_DESC 
-                              ELSE ''DESAPROBADO'' END) END) AS ESTADO_ACADEMICO
-            FROM T_RESUMEN A
-            INNER JOIN (
-                SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
-                FROM BANINST1.SZVMALLA
-                GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
-            ) B ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-                AND B.PROGRAM=A.PROGRAM_CODE 
-                AND B.MODALIDAD=A.DEPT_CODE
-        ) D ON D.PIDM=C.PIDM'
+					WITH cursos_con_intentos AS (
+							SELECT 
+									A.PIDM,
+									A.DNI,
+									A.NOMBRE,
+									A.STUDYPATH_STATUS_DESC,
+									NVL(A.STYP_DESC, '' '') AS TIPO_ALUMNO,
+									A.VERSION_PLAN,
+									A.PROGRAM_CODE,
+									A.DEPT_CODE,
+									A.SUBJ_CODE,
+									A.CRSE_NUMB,
+									A.ASIGNATURA,
+									A.PORCENT_INASISTENCIA,
+									A.FECHA_INICIO_NRC,
+									A.ESTADO_ASIGNATURA,
+									TO_NUMBER(NVL(GRDE_CODE, ''0'')) AS NOTA,
+									A.NRC || '' - '' || A.NOMBRE_CURSO AS CURSO,
+
+									COUNT(*) OVER (
+											PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB
+									) AS total_intentos,
+
+									ROW_NUMBER() OVER (
+											PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
+											ORDER BY A.FECHA_INICIO_NRC
+									) AS numero_intento
+							FROM BANINST1.SZVALDI A
+							WHERE A.DNI IN (' + @StudentList + ')
+									AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+									AND SUBSTR(A.AREA_CODE, 4, 1) <> ''C''
+					),
+					T_NOTAS AS (
+							SELECT 
+									PIDM,
+									DNI,
+									NOMBRE,
+									STUDYPATH_STATUS_DESC,
+									CURSO,
+									SUBJ_CODE,
+									CRSE_NUMB,
+									TIPO_ALUMNO,
+									PROGRAM_CODE,
+									PORCENT_INASISTENCIA,
+									NOTA,
+									VERSION_PLAN,
+									DEPT_CODE,
+									FECHA_INICIO_NRC,
+									ESTADO_ASIGNATURA,
+									total_intentos AS veces_cursado,
+									CASE 
+											WHEN total_intentos > 1 THEN ''PRIMER INTENTO (SERÁ RECUPERADO)'' 
+											ELSE ''NO RECUPERADO'' 
+									END AS tipo_curso
+							FROM cursos_con_intentos
+							WHERE numero_intento = 1
+					),
+					T_RESUMEN AS (
+							SELECT 
+									PIDM,
+									STUDYPATH_STATUS_DESC,
+									VERSION_PLAN,
+									PROGRAM_CODE,
+									DEPT_CODE,
+									SUM(CASE 
+													WHEN ESTADO_ASIGNATURA = ''Aprobado'' AND PORCENT_INASISTENCIA <= 20 
+													THEN 1 ELSE 0 
+									END) AS CursosAprobados,
+									SUM(NOTA) AS SumaNotas
+							FROM T_NOTAS
+							GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
+					),
+					T_ESTADO_FINAL AS (
+							SELECT 
+									A.PIDM,
+									ROUND(A.SumaNotas / B.CANTCURSOS, 0) AS PROMEDIO,
+									CASE 
+											WHEN A.CursosAprobados = B.CANTCURSOS THEN ''APROBADO''
+											WHEN A.STUDYPATH_STATUS_DESC <> ''Activo'' THEN A.STUDYPATH_STATUS_DESC
+											ELSE ''DESAPROBADO''
+									END AS ESTADO_ACADEMICO
+							FROM T_RESUMEN A
+							INNER JOIN (
+									SELECT 
+											TERM_CODE_EFF, 
+											PROGRAM, 
+											MODALIDAD, 
+											COUNT(KEY_RULE) AS CANTCURSOS
+									FROM BANINST1.SZVMALLA
+									GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
+							) B ON B.TERM_CODE_EFF = A.VERSION_PLAN 
+									AND B.PROGRAM = A.PROGRAM_CODE 
+									AND B.MODALIDAD = A.DEPT_CODE
+					)
+					SELECT 
+							C.DNI AS CODIGO,
+							C.NOMBRE AS APELLIDOS_NOMBRES,
+							C.CURSO,
+							C.NOTA,
+							D.PROMEDIO,
+							C.TIPO_ALUMNO,
+							D.ESTADO_ACADEMICO,
+							CASE 
+									WHEN (
+											SELECT MAX(NVL(SMBPOGN_REQUEST_NO, 0))
+											FROM SATURN.SMBPOGN PO
+											WHERE PO.SMBPOGN_TERM_CODE_EFF = C.VERSION_PLAN
+												AND PO.SMBPOGN_PROGRAM = C.PROGRAM_CODE
+												AND PO.SMBPOGN_PIDM = C.PIDM
+									) = 0 THEN ''NO CAPP''
+									ELSE ''OK''
+							END AS ESTADO_CAPP
+					FROM T_NOTAS C
+					INNER JOIN T_ESTADO_FINAL D ON D.PIDM = C.PIDM
+					ORDER BY C.DNI, C.SUBJ_CODE, C.CRSE_NUMB, C.FECHA_INICIO_NRC
+					'
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Curso, Nota, Promedio, Tipo_Alumno, Estado_Academico, Estado_CAPP)

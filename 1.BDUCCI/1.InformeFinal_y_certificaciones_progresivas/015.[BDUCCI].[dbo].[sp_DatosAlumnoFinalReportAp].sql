@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los datos de los alumnos par el Informe
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_DatosAlumnoFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_DatosAlumnoFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -77,8 +77,7 @@ BEGIN
             AND E.SPRTELE_SEQNO=2
         WHERE A.DNI IN (' + @StudentList + ')
             AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-            AND SUBSTR(A.AREA_CODE,4,1)<>''C''           
-            AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA'
+            AND SUBSTR(A.AREA_CODE,4,1)<>''C''  '         
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Telefono, Correo_Continental, Correo_Personal)

@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de orden de mérito de los participantes
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[SP_AddInfFinalResultadoOrdenMeritoParticipantesFinalReportAp]
+ALTER PROCEDURE [BANNER].[SP_AddInfFinalResultadoOrdenMeritoParticipantesFinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -98,7 +98,7 @@ BEGIN
                     FROM BANINST1.SZVALDI
                     WHERE DNI IN (' + @StudentList + ')
                         AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                        AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                        
                         AND SUBSTR(AREA_CODE,4,1)<>''C'')
             ,T_RESUMEN AS (
                 SELECT PIDM, STUDYPATH_BLOQUE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
@@ -151,7 +151,7 @@ BEGIN
                     FROM BANINST1.SZVALDI A
                     WHERE DNI IN (' + @StudentList + ')
                         AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                        AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                        
                         AND AREA_CODE=''' + @p_Area + ''')
             ,T_RESUMEN AS (
                 SELECT PIDM, STUDYPATH_BLOQUE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,

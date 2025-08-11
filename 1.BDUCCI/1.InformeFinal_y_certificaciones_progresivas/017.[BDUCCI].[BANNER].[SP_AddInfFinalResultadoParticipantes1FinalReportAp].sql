@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda el resumen por tipo de alumno
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[SP_AddInfFinalResultadoParticipantes1FinalReportAp]
+ALTER PROCEDURE [BANNER].[SP_AddInfFinalResultadoParticipantes1FinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -90,7 +90,6 @@ BEGIN
             FROM BANINST1.SZVALDI
             WHERE DNI IN (' + @StudentList + ')
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
 			GROUP BY STYP_DESC, PIDM, PROGRAM_DESC'
             
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
@@ -107,7 +106,7 @@ BEGIN
                 AND B.AREA_CODE=''' + @p_Area + '''
             WHERE DNI IN (' + @StudentList + ')
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                
 			GROUP BY STYP_DESC, PIDM, A.PROGRAM_DESC'
 
             -- Consultas dinámicas completas con INSERT (como en el primer SP)

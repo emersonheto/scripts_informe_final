@@ -65,7 +65,7 @@ BEGIN
             AND PROGRAM_CODE = ''' + @ProgramCode + '''
             AND BLOQUE_MATRICULA IS NOT NULL
             AND NVL(STUDYPATH_BLOQUE, '' '') <> BLOQUE_MATRICULA
-            AND SUBSTR(AREA_CODE,4,1)<>''C'''
+            AND SUBSTR(AREA_CODE,4,1)<>''C'' '
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion_Antigua, Curso, Nota, Estado_Recuperacion)

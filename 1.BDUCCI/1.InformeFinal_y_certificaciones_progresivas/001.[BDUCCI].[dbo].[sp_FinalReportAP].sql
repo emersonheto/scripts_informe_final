@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: muestra la lista de alumnos que pertenecen a un programa
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_FinalReportAP]
+ALTER PROCEDURE [dbo].[sp_FinalReportAp]
     @studentCode VARCHAR(9),
     @program VARCHAR(12)
 AS
@@ -21,15 +21,13 @@ BEGIN
    DECLARE @WHERE_CLAUSE NVARCHAR(1000) = ''
 
     -- Construye dinámicamente la cláusula WHERE
-    SET @WHERE_CLAUSE = 'WHERE SUBSTR(AREA_CODE,4,1)<>''''C'''''
+    SET @WHERE_CLAUSE = 'WHERE SUBSTR(AREA_CODE,4,1)<>''''C'''' AND SUBSTR(BLOQUE_MATRICULA, 6, 2) = ''''DM'''''
 
     IF @program IS NOT NULL
         SET @WHERE_CLAUSE += ' AND PROGRAM_CODE=''''' + @program +''''''
 
     IF @studentCode IS NOT NULL
         SET @WHERE_CLAUSE += ' AND DNI=''''' + @studentCode +''''''
-
-    SET @WHERE_CLAUSE += 'AND NVL(STUDYPATH_BLOQUE,'''' '''') = BLOQUE_MATRICULA'
 
    SET @QUERY2= '
    SELECT DISTINCT BLOQUE_MATRICULA AS "Seccion",
@@ -101,8 +99,8 @@ BEGIN
        FECHA_TERMINO_NRC,
        EstadoAsignatura
    INTO #FilteredResults
-   FROM #TempResults
-   WHERE SUBSTRING(Seccion, 6, 2) = 'DM';
+   FROM #TempResults ; 
+   
    WITH EstadoConsolidado AS (
             SELECT 
                 codigo,

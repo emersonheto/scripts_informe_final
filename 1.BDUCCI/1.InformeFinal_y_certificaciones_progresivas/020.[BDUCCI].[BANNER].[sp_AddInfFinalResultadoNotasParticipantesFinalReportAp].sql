@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de notas de los participantes
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -103,7 +103,7 @@ BEGIN
                     AND B.MODALIDAD=A.DEPT_CODE
                 WHERE A.DNI IN (' + @StudentList + ')
                     AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                    
                     AND SUBSTR(A.AREA_CODE,4,1)<>''C''),
             T_RESUMEN AS (
                 SELECT PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
@@ -156,7 +156,7 @@ BEGIN
                     AND B.AREA_CODE=''' + @p_Area + '''
                 WHERE A.DNI IN (' + @StudentList + ')
                     AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA),
+            ),
             T_RESUMEN AS (
                 SELECT PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
                        SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,

@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Almacenar datos de alumnos matriculados para la aplicación Informe Final
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp]
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp]
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
@@ -112,7 +112,7 @@ BEGIN
                     AND SPRTELE_SEQNO=2
                 WHERE A.DNI IN (' + @StudentList + ')
                     AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                    
 				GROUP BY 
 			    	A.DNI, A.NOMBRE, NVL(B.SPRTELE_PHONE_NUMBER, '' ''), A.DNI || ''@continental.edu.pe'',
 			    	B.GOREMAL_EMAIL_ADDRESS, A.PROGRAM_DESC
@@ -151,7 +151,7 @@ BEGIN
                     AND F.SPRTELE_SEQNO=2
                 WHERE A.DNI IN (' + @StudentList + ')
                     AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                    
 				GROUP BY 
 			    	A.DNI, A.NOMBRE, NVL(SPRTELE_PHONE_NUMBER, '' ''), A.DNI || ''@continental.edu.pe'',
 			    	E.GOREMAL_EMAIL_ADDRESS, A.PROGRAM_DESC, H.SMRALIB_DESCRIPTION'

@@ -8,7 +8,7 @@ AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra los resultados por tipo de alumno
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoTipoAlumnoFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ResultadoTipoAlumnoFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -59,8 +59,7 @@ BEGIN
         FROM BANINST1.SZVALDI
         WHERE DNI IN (' + @StudentList + ') 
             AND PROGRAM_CODE = ''' + @ProgramCode + '''
-            AND SUBSTR(AREA_CODE,4,1) <> ''C''            
-            AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA'
+            AND SUBSTR(AREA_CODE,4,1) <> ''C'' '
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Tipo, IDAlumno)

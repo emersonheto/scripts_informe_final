@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados por estado de alumno
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -60,8 +60,7 @@ BEGIN
             FROM BANINST1.SZVALDI
             WHERE DNI IN (' + @StudentList + ')
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(AREA_CODE,4,1)<>''C''
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                AND SUBSTR(AREA_CODE,4,1)<>''C'' 
             GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
         )
         SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 

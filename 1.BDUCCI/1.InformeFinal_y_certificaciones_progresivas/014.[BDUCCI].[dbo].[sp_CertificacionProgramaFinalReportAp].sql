@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los datos de Certificación
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_CertificacionProgramaFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_CertificacionProgramaFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -61,7 +61,6 @@ BEGIN
             WHERE DNI IN (' + @StudentList + ')
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
                 AND SUBSTR(AREA_CODE,4,1)<>''C''                
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
             GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE)
 
         SELECT DNI, NOMBRE

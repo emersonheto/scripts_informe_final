@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de notas de los participantes
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCursosFinalReportAp]
+ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCursosFinalReportAp]
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -50,18 +50,29 @@ BEGIN
             Curso VARCHAR(200)
         )
 
-        -- Consulta dinámica simplificada
+        -- Consulta dinámica nueva
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        SELECT DISTINCT NRC||'' - ''||NOMBRE_CURSO AS CURSO
-        FROM BANINST1.SZVALDI A
-        INNER JOIN BANINST1.SZVMALLA B 
-            ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-            AND B.PROGRAM=A.PROGRAM_CODE 
-            AND B.MODALIDAD=A.DEPT_CODE
-        WHERE A.DNI IN (' + @StudentList + ')
-            AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-            AND SUBSTR(A.AREA_CODE,4,1)<>''C''            
-            AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA'
+        WITH cursos_con_intentos AS (
+            SELECT 
+                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
+                A.SUBJ_CODE, 
+                A.CRSE_NUMB, 
+                A.GRDE_CODE, 
+                A.FECHA_INICIO_NRC, 
+                A.ESTADO_ASIGNATURA,
+                COUNT(1) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+                ROW_NUMBER() OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC) AS numero_intento
+            FROM BANINST1.SZVALDI A
+            WHERE A.DNI IN (' + @StudentList + ')
+              AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+              AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+        )
+        SELECT 
+            CURSO 
+        FROM cursos_con_intentos
+        WHERE numero_intento = 1
+        ORDER BY SUBJ_CODE, CRSE_NUMB, FECHA_INICIO_NRC
+        '                
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Curso)

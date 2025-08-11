@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Trae la lista de docentes
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ProgramacionEquipoDocenteFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ProgramacionEquipoDocenteFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -72,8 +72,7 @@ BEGIN
                 AND C.SSRMEET_CRN = A.NRC
             WHERE A.DNI IN (' + @StudentList + ') 
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''                
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''     
         )
         GROUP BY CICLO, NOMBRE_CURSO, NOMBRE_DOCENTE, HT'
 

@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de las certificaciones
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalCertificacionProgramaFinalReportAp] 
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalCertificacionProgramaFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
@@ -95,7 +95,7 @@ BEGIN
                 FROM BANINST1.SZVALDI
                 WHERE DNI IN (' + @StudentList + ')
                     AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                    
                     AND SUBSTR(AREA_CODE,4,1)<>''C''
                 GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, BLOQUE_MATRICULA, PROGRAM_DESC)
 
@@ -127,7 +127,7 @@ BEGIN
                     AND B.AREA_CODE=''' + @p_Area + '''
                 WHERE DNI IN (' + @StudentList + ')
                     AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                    AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                    
                 GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, BLOQUE_MATRICULA, A.PROGRAM_DESC)
 
             SELECT DNI, NOMBRE, SECCION, PROGRAMA

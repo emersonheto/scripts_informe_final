@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de orden de mérito de los alumnos
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoOrdenMeritoFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ResultadoOrdenMeritoFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
@@ -58,18 +58,22 @@ BEGIN
         -- Consulta dinámica manteniendo la estructura original pero con nuevos filtros
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         WITH T_NOTAS AS (
-            SELECT PIDM,DNI,STUDYPATH_BLOQUE,STUDYPATH_STATUS_DESC,NOMBRE,NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,VERSION_PLAN,PROGRAM_CODE,DEPT_CODE,ASIGNATURA,ESTADO_ASIGNATURA,PORCENT_INASISTENCIA,to_number(NVL(GRDE_CODE,''0'')) AS NOTA
+            SELECT PIDM,DNI,
+            -- STUDYPATH_BLOQUE,
+            STUDYPATH_STATUS_DESC,NOMBRE,NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,VERSION_PLAN,PROGRAM_CODE,DEPT_CODE,ASIGNATURA,ESTADO_ASIGNATURA,PORCENT_INASISTENCIA,to_number(NVL(GRDE_CODE,''0'')) AS NOTA
             FROM BANINST1.SZVALDI
             WHERE DNI IN (' + @StudentList + ')
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(AREA_CODE,4,1)<>''C''                
-                AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA)
+                AND SUBSTR(AREA_CODE,4,1)<>''C''   
+        )             
         ,T_RESUMEN AS (
             SELECT PIDM,STUDYPATH_BLOQUE,VERSION_PLAN,PROGRAM_CODE,DEPT_CODE,
                    SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
                    SUM(NOTA) AS SumaNotas
             FROM T_NOTAS
-            GROUP BY PIDM,STUDYPATH_BLOQUE,VERSION_PLAN,PROGRAM_CODE,DEPT_CODE)
+            GROUP BY PIDM,
+            -- STUDYPATH_BLOQUE,
+            VERSION_PLAN,PROGRAM_CODE,DEPT_CODE)
         ,T_APROBADOS AS (
             SELECT PIDM,SUMANOTAS,CANTCURSOS
             FROM T_RESUMEN A

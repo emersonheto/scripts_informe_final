@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda la lista de cursos de los participantes
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesCursosFinalReportAp]
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesCursosFinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -92,7 +92,7 @@ BEGIN
                 AND B.MODALIDAD=A.DEPT_CODE
             WHERE A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                
                 AND SUBSTR(A.AREA_CODE,4,1)<>''C'''
 
             -- Consulta Oracle para Tipo_Reporte = 5
@@ -109,7 +109,7 @@ BEGIN
                 AND B.AREA_CODE=''' + @p_Area + '''
             WHERE A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA'
+            ';
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'

@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Registro de la información de la sección a certificar
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarAP] 
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarAP] 
 (
 	 @Seccion VARCHAR(20),
      @Estudiante VARCHAR(20),
@@ -41,7 +41,7 @@ BEGIN
 	        	  ,MIN(FECHA_INICIO_NRC) AS FECHA_INICIO_NRC
 	        	  ,MAX(FECHA_TERMINO_NRC) AS FECHA_TERMINO_NRC
 			FROM BANINST1.SZVALDI
-			WHERE PROGRAM_CODE = ''' + @ProgramCode + ''' AND DNI = ''' + @Estudiante + ''' AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+			WHERE PROGRAM_CODE = ''' + @ProgramCode + ''' AND DNI = ''' + @Estudiante + ''' 
 			GROUP BY PROGRAM_DESC, CAMP_DESC'
 	        
 			DECLARE @QUERY NVARCHAR(MAX) = N'

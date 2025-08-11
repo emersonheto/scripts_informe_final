@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda la programacion de horarios de los docentes
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]
+ALTER PROCEDURE [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -109,7 +109,6 @@ BEGIN
             WHERE 
                 A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
             GROUP BY 
                 SUBSTR(A.AREA_DESC,9,3),
                 A.NOMBRE_CURSO,
@@ -144,7 +143,6 @@ BEGIN
             WHERE 
                 A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
                 AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
             GROUP BY 
                 SUBSTR(A.AREA_DESC,9,3),

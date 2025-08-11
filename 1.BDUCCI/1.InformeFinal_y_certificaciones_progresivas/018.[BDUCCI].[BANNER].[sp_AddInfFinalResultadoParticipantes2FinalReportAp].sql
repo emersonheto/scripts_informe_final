@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda el resumen por tipo de alumno
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalResultadoParticipantes2FinalReportAp]
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoParticipantes2FinalReportAp]
     @XmlStudents XML,
     @ProgramCode VARCHAR(3),
     @p_Area VARCHAR(20),
@@ -89,7 +89,7 @@ BEGIN
                     FROM BANINST1.SZVALDI
                     WHERE DNI IN (' + @StudentList + ')
                         AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                        AND NVL(STUDYPATH_BLOQUE, '' '') = BLOQUE_MATRICULA
+                        
                     GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, DEPT_CODE, PROGRAM_DESC)
 
             SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
@@ -122,7 +122,7 @@ BEGIN
                         AND B.AREA_CODE=''' + @p_Area + '''
                     WHERE A.DNI IN (' + @StudentList + ')
                         AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                        AND NVL(A.STUDYPATH_BLOQUE, '' '') = A.BLOQUE_MATRICULA
+                        
                     GROUP BY A.PIDM, A.STUDYPATH_STATUS_DESC, A.VERSION_PLAN, A.DEPT_CODE, A.PROGRAM_DESC)
 
             SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 

@@ -56,15 +56,31 @@ BEGIN
         )
 
         -- Consulta dinámica manteniendo la estructura original
+        -- Consulta dinámica con CTE adaptado
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        SELECT DNI, NOMBRE, NVL(STUDYPATH_BLOQUE,'' '') AS STUDYPATH_BLOQUE, 
-               NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
-               NVL(GRDE_CODE,''0'') AS GRDE_CODE, ''RECUPERADO'' AS ESTADO_RECUPERACION
-        FROM BANINST1.SZVALDI
-        WHERE DNI IN (' + @StudentList + ')
-            AND PROGRAM_CODE = ''' + @ProgramCode + '''            
-            AND NVL(STUDYPATH_BLOQUE, '' '') <> BLOQUE_MATRICULA
-            AND SUBSTR(AREA_CODE,4,1)<>''C'''
+        WITH cursos_recuperados AS (
+            SELECT 
+                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
+                A.SUBJ_CODE,
+                A.CRSE_NUMB,
+                A.GRDE_CODE,
+                A.FECHA_INICIO_NRC,
+                A.ESTADO_ASIGNATURA,
+                COUNT(*) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+                ROW_NUMBER() OVER (
+                    PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
+                    ORDER BY A.FECHA_INICIO_NRC DESC
+                ) AS intento_desde_ultimo
+            FROM BANINST1.SZVALDI A
+            WHERE A.DNI IN (' + @StudentList + ')
+                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+        )
+        SELECT DISTINCT CURSO
+        FROM cursos_recuperados
+        WHERE total_intentos > 1
+          AND intento_desde_ultimo = 1
+        ORDER BY CURSO' 
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion_Antigua, Curso, Nota, Estado_Recuperacion)
