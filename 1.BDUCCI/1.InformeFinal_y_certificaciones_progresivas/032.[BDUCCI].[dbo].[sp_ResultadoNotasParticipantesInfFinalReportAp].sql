@@ -1,0 +1,50 @@
+USE [BDUCCI]
+GO
+
+/*====================================================================================================
+NOMBRE	: [dbo].[sp_ResultadoNotasParticipantesInfFinalReportAp]
+FECHA	: 03/06/2025
+AUTOR	: Alvaro Laveriano (Waytech)
+OBJETIVO: Muestra los resultados de notas de los participantes en el archivo
+====================================================================================================*/
+
+CREATE PROCEDURE [dbo].[sp_ResultadoNotasParticipantesInfFinalReportAp] 
+(
+	--@XmlStudents XML,
+	@ProgramCode VARCHAR(3),
+	@TipoReporte INT,
+	@Area VARCHAR(20),
+	@IdDocumentoFinalReportAp VARCHAR(15)
+)
+AS
+SET NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		SELECT 
+			CONVERT(VARCHAR(20),ROW_NUMBER() OVER (PARTITION BY Codigo,Apellidos_Nombres ORDER BY Codigo,Apellidos_Nombres,No))  AS 'No',  
+			Codigo ,
+			Apellidos_Nombres ,
+			Curso ,
+			Nota ,
+			Promedio ,
+			TipoAlumno AS Tipo_Alumno,
+			Estado_Academico ,
+			Estado_CAPP 
+		FROM [dbo].[tblInfFinalResultadoNotasParticipantes] 
+		WHERE Programa_Codigo = @ProgramCode			
+			AND Tipo_Reporte= @TipoReporte 
+			AND UPPER(ISNULL(Area,'')) = (CASE WHEN @TipoReporte=5 THEN UPPER(@Area) ELSE UPPER(isnull(Area,'')) END)
+			AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
+		ORDER BY Apellidos_Nombres,Codigo
+	END TRY
+	BEGIN CATCH
+		DECLARE	@ErrorMessage VARCHAR(4000),
+				@ErrorSeverity INT,
+				@ErrorState INT;
+		SELECT	@ErrorMessage =ERROR_MESSAGE(),
+				@ErrorSeverity=ERROR_SEVERITY(),
+				@ErrorState=ERROR_STATE();
+				RAISERROR(@ErrorMessage,@ErrorSeverity,@ErrorState);
+				SELECT @ErrorMessage AS status
+	END CATCH
+END
