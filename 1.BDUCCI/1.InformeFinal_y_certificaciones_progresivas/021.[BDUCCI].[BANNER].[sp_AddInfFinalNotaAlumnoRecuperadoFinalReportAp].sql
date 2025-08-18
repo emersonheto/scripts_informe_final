@@ -87,20 +87,35 @@ BEGIN
 
             -- Consulta Oracle mejor estructurada
             DECLARE @OracleQuery NVARCHAR(MAX) = N'
+            WITH cursos_recuperados AS (
             SELECT 
-                A.DNI,
-                A.NOMBRE,
-                NVL(A.STUDYPATH_BLOQUE, '' '') AS STUDYPATH_BLOQUE,
-                A.NRC||'' - ''||A.NOMBRE_CURSO AS NOMBRE_CURSO,
-                NVL(A.GRDE_CODE,''0'') AS GRDE_CODE,
-                ''RECUPERADO'' AS ESTADO_RECUPERACION,
-                A.BLOQUE_MATRICULA AS SECCION_ACTUAL,
-                A.PROGRAM_DESC AS PROGRAMA
+                    DNI, NOMBRE, NVL(A.STUDYPATH_BLOQUE,'' '') AS STUDYPATH_BLOQUE, 
+                    A.BLOQUE_MATRICULA AS SECCION_ACTUAL,
+                    NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
+                    NVL(GRDE_CODE,''0'') AS GRDE_CODE, ''RECUPERADO'' AS ESTADO_RECUPERACION,
+                    A.FECHA_INICIO_NRC,
+                    A.ESTADO_ASIGNATURA,
+                    A.PROGRAM_DESC AS PROGRAMA,
+                    COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+                    ROW_NUMBER() OVER (
+                            PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
+                            ORDER BY A.FECHA_INICIO_NRC ASC
+                    ) AS numero_de_intento 
             FROM BANINST1.SZVALDI A
-            WHERE A.DNI IN (' + @StudentList + ')
-                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND NVL(A.STUDYPATH_BLOQUE, '' '') <> A.BLOQUE_MATRICULA
-                AND SUBSTR(A.AREA_CODE,4,1)<>''C'''
+            WHERE   
+            A.DNI IN  (' + @StudentList + ')
+                    AND A.PROGRAM_CODE= ''' + @ProgramCode + '''
+                    AND SUBSTR(A.AREA_CODE,4,1) <> ''C'' 
+            )	
+
+            SELECT 
+                DNI,NOMBRE,STUDYPATH_BLOQUE,SECCION_ACTUAL,NOMBRE_CURSO, GRDE_CODE,PROGRAMA,ESTADO_RECUPERACION -- , numero_de_intento, FECHA_INICIO_NRC
+            FROM cursos_recuperados
+            WHERE 
+                    total_intentos > 1  AND 
+                    numero_de_intento <= 2
+            ORDER BY  FECHA_INICIO_NRC asc  				
+            '
 
             -- Consulta dinámica completa con INSERT
             DECLARE @QUERY NVARCHAR(MAX) = N'

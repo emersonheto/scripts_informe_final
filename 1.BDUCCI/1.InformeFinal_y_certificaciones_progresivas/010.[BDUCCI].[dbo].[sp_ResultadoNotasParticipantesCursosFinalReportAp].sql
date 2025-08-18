@@ -51,28 +51,45 @@ BEGIN
         )
 
         -- Consulta dinámica nueva
+        -- DECLARE @OracleQuery NVARCHAR(MAX) = N'
+        -- WITH cursos_con_intentos AS (
+        --     SELECT 
+        --         A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
+        --         A.SUBJ_CODE, 
+        --         A.CRSE_NUMB, 
+        --         A.GRDE_CODE, 
+        --         A.FECHA_INICIO_NRC, 
+        --         A.ESTADO_ASIGNATURA,
+        --         COUNT(1) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+        --         ROW_NUMBER() OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC) AS numero_intento
+        --     FROM BANINST1.SZVALDI A
+        --     WHERE A.DNI IN (' + @StudentList + ')
+        --       AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+        --       AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+        -- )
+        -- SELECT 
+        --     CURSO 
+        -- FROM cursos_con_intentos
+        -- WHERE numero_intento = 1
+        -- ORDER BY SUBJ_CODE, CRSE_NUMB, FECHA_INICIO_NRC
+        -- '    
+
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        WITH cursos_con_intentos AS (
-            SELECT 
-                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
-                A.SUBJ_CODE, 
-                A.CRSE_NUMB, 
-                A.GRDE_CODE, 
-                A.FECHA_INICIO_NRC, 
-                A.ESTADO_ASIGNATURA,
-                COUNT(1) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
-                ROW_NUMBER() OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC) AS numero_intento
-            FROM BANINST1.SZVALDI A
-            WHERE A.DNI IN (' + @StudentList + ')
-              AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-              AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
-        )
-        SELECT 
-            CURSO 
-        FROM cursos_con_intentos
-        WHERE numero_intento = 1
-        ORDER BY SUBJ_CODE, CRSE_NUMB, FECHA_INICIO_NRC
-        '                
+        SELECT DISTINCT 
+            A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
+            A.CRSE_NUMB, 
+            A.FECHA_INICIO_NRC
+        FROM (
+                SELECT DISTINCT
+                        SUBJ_CODE, CRSE_NUMB, NOMBRE_CURSO, FECHA_INICIO_NRC,
+                        ROW_NUMBER() OVER (PARTITION BY DNI, SUBJ_CODE, CRSE_NUMB ORDER BY FECHA_INICIO_NRC DESC) AS orden_ultimo_intento
+                FROM BANINST1.SZVALDI
+                WHERE DNI IN (' + @StudentList + ')
+                AND PROGRAM_CODE = ''' + @ProgramCode + '''
+                AND SUBSTR(AREA_CODE,4,1) <>  ''C''
+        ) A
+        WHERE A.orden_ultimo_intento = 1
+        '
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Curso)
@@ -82,7 +99,7 @@ BEGIN
         EXEC sp_executesql @QUERY
 
         -- Resultados finales
-        SELECT Curso   
+        SELECT DISTINCT Curso   
         FROM #RESULTADO
         ORDER BY Curso
 

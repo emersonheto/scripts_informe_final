@@ -59,28 +59,30 @@ BEGIN
         -- Consulta dinámica con CTE adaptado
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         WITH cursos_recuperados AS (
-            SELECT 
-                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
-                A.SUBJ_CODE,
-                A.CRSE_NUMB,
-                A.GRDE_CODE,
-                A.FECHA_INICIO_NRC,
-                A.ESTADO_ASIGNATURA,
-                COUNT(*) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
-                ROW_NUMBER() OVER (
-                    PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
-                    ORDER BY A.FECHA_INICIO_NRC DESC
-                ) AS intento_desde_ultimo
-            FROM BANINST1.SZVALDI A
-            WHERE A.DNI IN (' + @StudentList + ')
-                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+                SELECT 
+                        A.DNI,
+                        A.NOMBRE,
+                        NVL( A.STUDYPATH_BLOQUE,A.BLOQUE_MATRICULA) AS STUDYPATH_BLOQUE,  -- BLOQUE_MATRICULA como sección antigua 
+                        NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
+                        NVL(A.GRDE_CODE,''0'') AS GRDE_CODE, 
+                        ''RECUPERADO'' AS ESTADO_RECUPERACION,
+                        A.FECHA_INICIO_NRC,
+                        A.ESTADO_ASIGNATURA,
+                        COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+                        ROW_NUMBER() OVER (		
+                                PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC ASC
+                        ) AS numero_de_intento
+                FROM BANINST1.SZVALDI A
+                WHERE A.DNI  IN (' + @StudentList + ')
+                        AND  A.PROGRAM_CODE = ''' + @ProgramCode + '''    
+                        AND SUBSTR(A.AREA_CODE,4,1) <>''C''  
         )
-        SELECT DISTINCT CURSO
+                
+        SELECT DNI,NOMBRE,STUDYPATH_BLOQUE,NOMBRE_CURSO, GRDE_CODE,FECHA_INICIO_NRC,ESTADO_RECUPERACION
         FROM cursos_recuperados
-        WHERE total_intentos > 1
-          AND intento_desde_ultimo = 1
-        ORDER BY CURSO' 
+        WHERE total_intentos > 1 AND 					
+            numero_de_intento <=2
+        ORDER BY FECHA_INICIO_NRC ASC ' 
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion_Antigua, Curso, Nota, Estado_Recuperacion)

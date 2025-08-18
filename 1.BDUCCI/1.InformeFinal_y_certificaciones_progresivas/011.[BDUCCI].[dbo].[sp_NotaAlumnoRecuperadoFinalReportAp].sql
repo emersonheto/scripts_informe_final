@@ -57,15 +57,33 @@ BEGIN
 
         -- Consulta dinámica simplificada
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        SELECT DNI, NOMBRE, NVL(STUDYPATH_BLOQUE,'' '') AS STUDYPATH_BLOQUE, 
-               NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
-               NVL(GRDE_CODE,''0'') AS GRDE_CODE, ''RECUPERADO'' AS ESTADO_RECUPERACION
-        FROM BANINST1.SZVALDI
-        WHERE DNI IN (' + @StudentList + ')
-            AND PROGRAM_CODE = ''' + @ProgramCode + '''
-            AND BLOQUE_MATRICULA IS NOT NULL
-            AND NVL(STUDYPATH_BLOQUE, '' '') <> BLOQUE_MATRICULA
-            AND SUBSTR(AREA_CODE,4,1)<>''C'' '
+				  WITH cursos_recuperados AS (
+						SELECT 
+								DNI, NOMBRE, NVL(A.STUDYPATH_BLOQUE,BLOQUE_MATRICULA) AS STUDYPATH_BLOQUE, 
+							 NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
+							 NVL(GRDE_CODE,''0'') AS GRDE_CODE, ''RECUPERADO'' AS ESTADO_RECUPERACION,
+								A.FECHA_INICIO_NRC,
+								A.ESTADO_ASIGNATURA,
+								COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+								ROW_NUMBER() OVER (
+										PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
+										ORDER BY A.FECHA_INICIO_NRC ASC
+								) AS numero_de_intento 
+						FROM BANINST1.SZVALDI A
+						WHERE   
+						A.DNI IN  (' + @StudentList + ')
+								AND A.PROGRAM_CODE= ''' + @ProgramCode + '''
+								AND SUBSTR(A.AREA_CODE,4,1) <> ''C'' 
+				)	
+				
+				SELECT 
+					DNI,NOMBRE,STUDYPATH_BLOQUE,NOMBRE_CURSO, GRDE_CODE,ESTADO_RECUPERACION -- , numero_de_intento, FECHA_INICIO_NRC
+				FROM cursos_recuperados
+				WHERE 
+						total_intentos > 1  AND 
+					 numero_de_intento <= 2
+				ORDER BY  FECHA_INICIO_NRC asc  				
+				'		
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion_Antigua, Curso, Nota, Estado_Recuperacion)

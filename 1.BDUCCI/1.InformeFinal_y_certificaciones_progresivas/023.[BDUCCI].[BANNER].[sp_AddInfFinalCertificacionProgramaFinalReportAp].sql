@@ -90,16 +90,18 @@ BEGIN
                 SELECT DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
                     SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 
                         ELSE 0 END) AS CursosAprobados,
-                    BLOQUE_MATRICULA AS SECCION,
+                    -- BLOQUE_MATRICULA AS SECCION,
                     PROGRAM_DESC AS PROGRAMA
                 FROM BANINST1.SZVALDI
                 WHERE DNI IN (' + @StudentList + ')
                     AND PROGRAM_CODE = ''' + @ProgramCode + '''
                     
                     AND SUBSTR(AREA_CODE,4,1)<>''C''
-                GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, BLOQUE_MATRICULA, PROGRAM_DESC)
+                GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,PROGRAM_DESC
+								-- BLOQUE_MATRICULA 
+								)
 
-            SELECT DNI, NOMBRE, SECCION, PROGRAMA
+            SELECT DNI, NOMBRE,  PROGRAMA -- , SECCION
                 FROM T_RESUMEN A
                 INNER JOIN (
                     SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
@@ -144,7 +146,7 @@ BEGIN
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion, Programa)
-            SELECT DNI, NOMBRE, SECCION, PROGRAMA 
+            SELECT DNI, NOMBRE, NULL, PROGRAMA 
             FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery4, '''', '''''') + ''')'
             
             DECLARE @QUERY5 NVARCHAR(MAX) = N'

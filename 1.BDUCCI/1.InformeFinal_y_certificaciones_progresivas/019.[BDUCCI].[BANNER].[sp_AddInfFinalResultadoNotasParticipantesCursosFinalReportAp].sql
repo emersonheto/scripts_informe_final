@@ -68,7 +68,7 @@ BEGIN
         IF LEN(@StudentList) > 0
             SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
 
-        DECLARE @BDOracle VARCHAR(10)='BANNER';
+        DECLARE @BDOracle VARCHAR(10)='DEVL';
         
         IF (@p_Accion=1)
         BEGIN
@@ -82,8 +82,8 @@ BEGIN
             -- Consulta Oracle para Tipo_Reporte = 4
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
-                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
-                A.BLOQUE_MATRICULA AS SECCION,
+                A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
+                NULL AS SECCION,
                 A.PROGRAM_DESC AS PROGRAMA
             FROM BANINST1.SZVALDI A
             INNER JOIN BANINST1.SZVMALLA B 
@@ -98,7 +98,7 @@ BEGIN
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
-                A.NRC||'' - ''||A.NOMBRE_CURSO AS CURSO,
+                A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
                 A.BLOQUE_MATRICULA AS SECCION,
                 A.PROGRAM_DESC AS PROGRAMA
             FROM BANINST1.SZVALDI A
@@ -113,7 +113,7 @@ BEGIN
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
-            INSERT INTO #RESULTADO (Curso, Seccion, Programa)
+            INSERT INTO #RESULTADO (Curso,Seccion , Programa)
             SELECT CURSO, SECCION, PROGRAMA 
             FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery4, '''', '''''') + ''')'
             
@@ -131,7 +131,7 @@ BEGIN
                     Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    SECCION AS 'Seccion',
+                    NULL AS 'Seccion',
                     ISNULL(Curso,'') AS 'Curso',
                     GETDATE() AS 'Fecha_Registro',
                     NULL AS 'Fecha_Edicion',
@@ -142,7 +142,7 @@ BEGIN
                     @ProgramCode AS 'Programa_Codigo',
                     @p_IdDocumentoFinalReportAp AS 'IdDocumentoFinalReportAp'
                 FROM #RESULTADO 
-                GROUP BY Curso, Seccion, Programa;
+                GROUP BY Curso, Programa;
 
                 DROP TABLE #RESULTADO;
 
@@ -158,7 +158,7 @@ BEGIN
                     Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    SECCION AS 'Seccion',
+                    -- SECCION AS 'Seccion',
                     ISNULL(Curso,'') AS 'Curso',
                     GETDATE() AS 'Fecha_Registro',
                     NULL AS 'Fecha_Edicion',
