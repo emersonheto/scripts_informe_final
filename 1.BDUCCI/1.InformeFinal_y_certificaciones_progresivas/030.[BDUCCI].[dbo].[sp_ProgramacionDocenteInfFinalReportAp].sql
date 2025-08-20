@@ -20,7 +20,7 @@ SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
 
-  SELECT  Ciclo,Asignaturas,Docente,Horas_Lectivas,Fecha_Inicio,Fecha_Fin
+  SELECT  Ciclo,Seccion,Asignaturas,Docente,Horas_Lectivas,Fecha_Inicio,Fecha_Fin
 	  FROM [dbo].[tblInfFinalProgramacionDocente]
 	  WHERE Programa_Codigo= @ProgramCode 
 		  AND Tipo_Reporte = @TipoReporte 
