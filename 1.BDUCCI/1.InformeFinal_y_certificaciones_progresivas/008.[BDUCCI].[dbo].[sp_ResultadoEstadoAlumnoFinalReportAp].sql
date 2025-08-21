@@ -53,28 +53,55 @@ BEGIN
 
         -- Consulta dinámica simplificada
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
-        WITH T_CURSOSAPROBADOS AS (
-            SELECT PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
-                   SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 
-                       ELSE 0 END) AS CursosAprobados
-            FROM BANINST1.SZVALDI
-            WHERE DNI IN (' + @StudentList + ')
-                AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(AREA_CODE,4,1)<>''C'' 
-            GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
-        )
-        SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
-                    ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''Activo'' THEN A.STUDYPATH_STATUS_DESC 
-                        ELSE ''DESAPROBADO'' END) END) AS ESTADO_ACADEMICO,
-               A.PIDM
-        FROM T_CURSOSAPROBADOS A
-        INNER JOIN (
-            SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
-            FROM BANINST1.SZVMALLA
-            GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
-        ) B ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-            AND B.PROGRAM=A.PROGRAM_CODE 
-            AND B.MODALIDAD=A.DEPT_CODE'
+				WITH EstadosPorArea AS (
+							SELECT 
+									A.PIDM,
+									A.AREA_CODE,
+									-- Calculamos cursos aprobados una sola vez
+									SUM(CASE 
+											WHEN A.ESTADO_ASIGNATURA = ''Aprobado'' 
+													 AND A.PORCENT_INASISTENCIA <= 20 
+											THEN 1 ELSE 0 
+									END) AS CursosAprobados,
+									B.CANTCURSOS_MALLA,
+									MAX(A.STUDYPATH_STATUS_DESC) AS STUDYPATH_STATUS_DESC,
+									-- Estado del área
+									CASE 
+											WHEN SUM(CASE 
+															WHEN A.ESTADO_ASIGNATURA = ''Aprobado'' 
+																	 AND A.PORCENT_INASISTENCIA <= 20 
+															THEN 1 ELSE 0 
+													 END) = B.CANTCURSOS_MALLA THEN ''APROBADO''
+											WHEN MAX(A.STUDYPATH_STATUS_DESC) <> ''Activo'' THEN MAX(A.STUDYPATH_STATUS_DESC)
+											ELSE ''DESAPROBADO''
+									END AS ESTADO_AREA
+							FROM BANINST1.SZVALDI A
+							INNER JOIN (
+									SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, AREA_CODE, COUNT(KEY_RULE) AS CANTCURSOS_MALLA
+									FROM BANINST1.SZVMALLA
+									GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD, AREA_CODE
+							) B ON B.TERM_CODE_EFF = A.VERSION_PLAN
+									AND B.PROGRAM = A.PROGRAM_CODE
+									AND B.MODALIDAD = A.DEPT_CODE
+									AND B.AREA_CODE = A.AREA_CODE
+							WHERE A.DNI IN (' + @StudentList + ')
+								AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+								AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+							GROUP BY A.PIDM, A.AREA_CODE, B.CANTCURSOS_MALLA
+					)
+
+					SELECT 
+							PIDM,
+							CASE 
+									WHEN COUNT(CASE WHEN ESTADO_AREA = ''DESAPROBADO'' THEN 1 END) > 0 THEN ''DESAPROBADO''
+									WHEN COUNT(CASE WHEN ESTADO_AREA != ''APROBADO'' THEN 1 END) > 0 THEN MAX(ESTADO_AREA)
+									ELSE ''APROBADO''
+							END AS Estado_Academico
+					FROM EstadosPorArea
+					GROUP BY PIDM
+					ORDER BY PIDM
+				
+				'
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Estado, IDAlumno)

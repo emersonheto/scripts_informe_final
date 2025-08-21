@@ -101,6 +101,8 @@ BEGIN
                     B.PROGRAM = A.PROGRAM_CODE 
                     AND B.TERM_CODE_EFF = A.VERSION_PLAN 
                     AND B.KEY_RULE = A.ASIGNATURA
+                    AND B.MODALIDAD = A.DEPT_CODE
+                    AND A.AREA_CODE=B.AREA_CODE
                 )
                 INNER JOIN SATURN.SSRMEET C ON (
                     C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
@@ -109,6 +111,7 @@ BEGIN
             WHERE 
                 A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                AND SUBSTR(A.AREA_CODE,4,1)<>''C''
             GROUP BY 
                 SUBSTR(A.AREA_DESC,9,3),
                 A.NOMBRE_CURSO,

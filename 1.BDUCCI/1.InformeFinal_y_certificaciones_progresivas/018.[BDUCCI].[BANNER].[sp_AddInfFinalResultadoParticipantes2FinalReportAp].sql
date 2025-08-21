@@ -89,7 +89,7 @@ BEGIN
                     FROM BANINST1.SZVALDI
                     WHERE DNI IN (' + @StudentList + ')
                         AND PROGRAM_CODE = ''' + @ProgramCode + '''
-                        
+                        AND SUBSTR(AREA_CODE, 4, 1) <> ''C''
                     GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, DEPT_CODE, PROGRAM_DESC)
 
             SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
@@ -103,6 +103,7 @@ BEGIN
                         SELECT TERM_CODE_EFF, ''' + @ProgramCode + ''' AS PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
                             FROM BANINST1.SZVMALLA
                             WHERE PROGRAM = ''' + @ProgramCode + '''
+                            AND SUBSTR(AREA_CODE, 4, 1) <> ''C''
                             GROUP BY TERM_CODE_EFF, MODALIDAD) B 
                 ON B.TERM_CODE_EFF=A.VERSION_PLAN 
                 AND B.MODALIDAD=A.DEPT_CODE'

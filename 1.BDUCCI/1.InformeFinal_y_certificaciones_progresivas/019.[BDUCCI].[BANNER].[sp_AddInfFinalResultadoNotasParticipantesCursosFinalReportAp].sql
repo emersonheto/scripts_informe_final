@@ -90,6 +90,7 @@ BEGIN
                 ON B.TERM_CODE_EFF=A.VERSION_PLAN 
                 AND B.PROGRAM=A.PROGRAM_CODE 
                 AND B.MODALIDAD=A.DEPT_CODE
+                AND SUBSTR(B.AREA_CODE,4,1)<>''C''
             WHERE A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
                 

@@ -175,6 +175,7 @@ BEGIN
                                 MODALIDAD, 
                                 COUNT(KEY_RULE) AS CANTCURSOS
                         FROM BANINST1.SZVMALLA
+                        WHERE SUBSTR(AREA_CODE, 4, 1) <> ''C''
                         GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
                 ) B ON B.TERM_CODE_EFF = A.VERSION_PLAN 
                         AND B.PROGRAM = A.PROGRAM_CODE 

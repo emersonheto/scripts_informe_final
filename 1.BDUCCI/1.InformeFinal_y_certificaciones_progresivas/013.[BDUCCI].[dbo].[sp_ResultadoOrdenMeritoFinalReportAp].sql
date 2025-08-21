@@ -58,7 +58,7 @@ BEGIN
 
         -- Consulta dinámica manteniendo la estructura original pero con nuevos filtros
         DECLARE @OracleQuery NVARCHAR(MAX) = N'	
-					WITH datos_base AS (
+				WITH datos_base AS (
 						SELECT DISTINCT
 								PIDM, DNI, STUDYPATH_STATUS_DESC, NOMBRE,
 								A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS NOMBRE_CURSO,
@@ -71,19 +71,19 @@ BEGIN
 								ROW_NUMBER() OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC DESC) AS ultimo_intento 
 						FROM BANINST1.SZVALDI A
 						WHERE   
-								A.DNI IN  (' + @StudentList + ') 
-								and  A.PROGRAM_CODE =  ''' + @ProgramCode + ''' 
+								A.DNI IN (' + @StudentList + ')     
+								AND  A.PROGRAM_CODE =  ''' + @ProgramCode + ''' 
 								AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
-					),	
-					T_NOTAS AS (
-					SELECT 
-							PIDM, DNI, STUDYPATH_STATUS_DESC, NOMBRE, NOMBRE_CURSO, 
-							VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, ASIGNATURA, 
-							ESTADO_ASIGNATURA, PORCENT_INASISTENCIA, NOTA, AREA_CODE
-					FROM datos_base
-					WHERE ultimo_intento = 1
+				),		
+				T_NOTAS AS (
+						SELECT 
+								PIDM, DNI, STUDYPATH_STATUS_DESC, NOMBRE, NOMBRE_CURSO, 
+								VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, ASIGNATURA, 
+								ESTADO_ASIGNATURA, PORCENT_INASISTENCIA, NOTA, AREA_CODE
+						FROM datos_base
+						WHERE ultimo_intento = 1
 				)
-				,T_RESUMEN AS (
+				 ,T_RESUMEN AS (
 						SELECT 
 								PIDM, DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, AREA_CODE,
 								SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
@@ -92,7 +92,7 @@ BEGIN
 						FROM T_NOTAS
 						GROUP BY PIDM, DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, AREA_CODE
 				)
-				, T_APROBADOS AS (
+				 , T_APROBADOS AS (
 						SELECT 
 								A.PIDM, A.DNI, A.NOMBRE, 
 								-- A.SUMANOTAS, B.CANTCURSOS, A.CURSOSAPROBADOS,A.AREA_CODE
@@ -126,16 +126,15 @@ BEGIN
 				-- CONSULTA FINAL PARA EL ORDEN DE MÉRITO
 				-- ==========================================
 				SELECT 
-						ROW_NUMBER() OVER (ORDER BY R.ORDEN, R.PROMEDIO DESC, R.NOMBRE) AS Nro,
+						-- ROW_NUMBER() OVER (ORDER BY R.ORDEN, R.PROMEDIO DESC, R.NOMBRE) AS Nro,
 						R.DNI AS Codigo,
-						R.NOMBRE AS "Apellidos_Nombres",
-						N.NOMBRE_CURSO AS "Curso",
-						N.NOTA AS "Nota",
-						-- LISTAGG(N.NOMBRE_CURSO ||''[''||N.NOTA||'']'', '', '') WITHIN GROUP (ORDER BY N.NOMBRE_CURSO) AS "Nombre de los cursos",
-						R.PROMEDIO AS "Promedio",
+						R.NOMBRE AS Apellidos_Nombres,
+						N.NOMBRE_CURSO AS Curso,
+						N.NOTA AS Nota,						
+						R.PROMEDIO AS Promedio,
 						CASE 
 								WHEN R.ORDEN = 1 THEN ''PRIMER LUGAR''
-								WHEN R.ORDEN = 2 THEN ''SEGUNDO LUGAR''
+								WHEN R.ORDEN = 2 THEN ''SEGUNDO LUGAR'' 
 								WHEN R.ORDEN = 3 THEN ''TERCER LUGAR''
 								ELSE TO_CHAR(R.ORDEN)
 						END AS Orden
@@ -148,12 +147,12 @@ BEGIN
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Curso, Nota, Promedio, Orden)
-        SELECT DNI AS Codigo, 
-               NOMBRE AS Apellidos_Nombres,
-               NOMBRE_CURSO AS Curso,
-               NOTA,
-               PROMEDIO,
-               ORDEN
+        SELECT Codigo, 
+               Apellidos_Nombres,
+               Curso,
+               Nota,
+               Promedio,
+               Orden
         FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')'
 
         EXEC sp_executesql @QUERY
