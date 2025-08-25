@@ -47,7 +47,7 @@ BEGIN
 
         -- Tabla temporal para resultados
         CREATE TABLE #RESULTADO ( 
-            CICLO NVARCHAR(5),
+            CICLO NVARCHAR(10),
             ASIGNATURA VARCHAR(200),
             APELLIDOS_NOMBRE_DOCENTE VARCHAR(200),
             HORAS_LECTIVAS FLOAT,
@@ -56,24 +56,40 @@ BEGIN
         )
 
         -- Consulta dinámica simplificada
-        DECLARE @OracleQuery NVARCHAR(MAX) = N'        
-        SELECT DISTINCT SUBSTR(A.AREA_DESC,9,3) AS CICLO, A.NOMBRE_CURSO, A.NOMBRE_DOCENTE, 
-                B.HT as HORAS_LECTIVAS, C.SSRMEET_START_DATE AS FECHA_INICIO, C.SSRMEET_END_DATE AS FECHA_FIN,
-                                    A.BLOQUE_MATRICULA AS SECCION,
-                                A.PERIODO_MATRICULA AS PERIODO
-        FROM BANINST1.SZVALDI A
-        INNER JOIN BANINST1.SZVMALLA B 
-            ON B.PROGRAM = A.PROGRAM_CODE 
-            AND B.TERM_CODE_EFF = A.VERSION_PLAN 
-            AND B.KEY_RULE = A.ASIGNATURA
-            AND A.AREA_CODE = B.AREA_CODE
-        INNER JOIN SSRMEET C 
-            ON C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
-            AND C.SSRMEET_CRN = A.NRC
-        WHERE A.DNI IN (' + @StudentList + ') 
-            AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-            AND SUBSTR(A.AREA_CODE,4,1) <> ''C''     
-        '
+        DECLARE @OracleQuery NVARCHAR(MAX) = N'
+        
+            SELECT DISTINCT   
+						 CASE
+								-- MAESTRÍAS
+								WHEN A.PROGRAM_CODE LIKE ''MG%''  THEN 
+									TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
+
+								-- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+								WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
+										''MÓDULO''
+								
+								-- OTROS (CGR, cursos libres, etc.)
+								ELSE 
+										''ÚNICO''
+						END AS CICLO,
+
+						 A.NOMBRE_CURSO, A.NOMBRE_DOCENTE, 
+								B.HT as HORAS_LECTIVAS, C.SSRMEET_START_DATE AS FECHA_INICIO, C.SSRMEET_END_DATE AS FECHA_FIN,
+								A.BLOQUE_MATRICULA AS SECCION,
+								A.PERIODO_MATRICULA AS PERIODO
+            FROM BANINST1.SZVALDI A
+            INNER JOIN BANINST1.SZVMALLA B 
+                ON B.PROGRAM = A.PROGRAM_CODE 
+                AND B.TERM_CODE_EFF = A.VERSION_PLAN 
+                AND B.KEY_RULE = A.ASIGNATURA
+								AND SUBSTR(B.AREA_CODE,4,1) <> ''C''   
+            INNER JOIN SSRMEET C 
+                ON C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
+                AND C.SSRMEET_CRN = A.NRC
+            WHERE A.DNI IN (' + @StudentList + ') 
+                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''     
+         '
 
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (CICLO, SECCION, ASIGNATURA, APELLIDOS_NOMBRE_DOCENTE, HORAS_LECTIVAS, FECHA_INICIO_ASIGNATURA, FECHA_FIN_ASIGNATURA)

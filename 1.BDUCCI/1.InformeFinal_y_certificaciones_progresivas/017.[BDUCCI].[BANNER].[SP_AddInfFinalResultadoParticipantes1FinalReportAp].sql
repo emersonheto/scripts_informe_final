@@ -70,7 +70,7 @@ BEGIN
 
         IF(@p_Accion=1)
         BEGIN
-            DECLARE @BDOracle VARCHAR(10)='BANNER';
+            DECLARE @BDOracle VARCHAR(10)='DEVL';
 
             -- Crear tabla temporal sin índice (como en el primer SP)
             CREATE TABLE #RESULTADO ( 
@@ -83,14 +83,14 @@ BEGIN
             -- Consultas Oracle mejor estructuradas (como en el primer SP)
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
-                (CASE WHEN NVL(STYP_DESC,'' '')='' '' THEN ''NO TIENE'' ELSE STYP_DESC END) AS TipoAlumno,
-                PIDM, 
-                MAX(BLOQUE_MATRICULA) AS SECCION,
-                PROGRAM_DESC AS PROGRAMA
-            FROM BANINST1.SZVALDI
-            WHERE DNI IN (' + @StudentList + ')
-                AND PROGRAM_CODE = ''' + @ProgramCode + '''
-			GROUP BY STYP_DESC, PIDM, PROGRAM_DESC'
+							(CASE WHEN NVL(STYP_DESC,'' '')='' '' THEN ''NO TIENE'' ELSE STYP_DESC END) AS TipoAlumno,
+							PIDM, 
+							'''' AS SECCION,
+							PROGRAM_DESC AS PROGRAMA
+						FROM BANINST1.SZVALDI
+						WHERE DNI IN (' + @StudentList + ')
+								AND PROGRAM_CODE = ''' + @ProgramCode + '''
+						GROUP BY STYP_DESC, PIDM, PROGRAM_DESC'
             
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
@@ -130,7 +130,7 @@ BEGIN
                     Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    SECCION AS 'Seccion',
+                    '' AS 'Seccion',
                     Tipo AS 'Tipo_Alumno',
                     COUNT(IDAlumno) AS 'Nro_Estudiantes',
                     GETDATE() AS 'Fecha_Registro',
