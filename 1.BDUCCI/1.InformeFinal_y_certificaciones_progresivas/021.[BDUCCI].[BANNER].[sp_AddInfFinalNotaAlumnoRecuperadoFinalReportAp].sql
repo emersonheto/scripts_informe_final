@@ -99,7 +99,7 @@ BEGIN
                     COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
                     ROW_NUMBER() OVER (
                             PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
-                            ORDER BY A.FECHA_INICIO_NRC ASC
+                            ORDER BY A.FECHA_INICIO_NRC DESC
                     ) AS numero_de_intento 
             FROM BANINST1.SZVALDI A
             WHERE   

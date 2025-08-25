@@ -66,7 +66,7 @@ BEGIN
 
             -- Crear tabla temporal sin índice
             CREATE TABLE #RESULTADO ( 
-                CICLO NVARCHAR(5),
+                CICLO NVARCHAR(10),
                 ASIGNATURA VARCHAR(200),
                 APELLIDOS_NOMBRE_DOCENTE VARCHAR(200),
                 HORAS_LECTIVAS FLOAT,
@@ -86,39 +86,61 @@ BEGIN
 
             -- Query 4 para Oracle
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
-            SELECT 
-                SUBSTR(A.AREA_DESC,9,3) AS CICLO,
-                A.NOMBRE_CURSO,
-                A.NOMBRE_DOCENTE,
-                B.HT AS HORAS_LECTIVAS,
-                TO_CHAR(MIN(C.SSRMEET_START_DATE), ''YYYY-MM-DD'') AS FECHA_INICIO,
-                TO_CHAR(MAX(C.SSRMEET_END_DATE), ''YYYY-MM-DD'') AS FECHA_FIN,
-                A.BLOQUE_MATRICULA AS SECCION,
-                A.PROGRAM_DESC AS PROGRAMA
-            FROM 
-                BANINST1.SZVALDI A
-                INNER JOIN BANINST1.SZVMALLA B ON (
-                    B.PROGRAM = A.PROGRAM_CODE 
-                    AND B.TERM_CODE_EFF = A.VERSION_PLAN 
-                    AND B.KEY_RULE = A.ASIGNATURA
-                    AND B.MODALIDAD = A.DEPT_CODE
-                    AND A.AREA_CODE=B.AREA_CODE
-                )
-                INNER JOIN SATURN.SSRMEET C ON (
-                    C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
-                    AND C.SSRMEET_CRN = A.NRC
-                )
-            WHERE 
-                A.DNI IN (' + @StudentList + ')
-                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(A.AREA_CODE,4,1)<>''C''
+            WITH datos_base AS (
+                SELECT 
+                    CASE
+                        -- MAESTRÍAS
+                        WHEN A.PROGRAM_CODE LIKE ''MG%''  THEN 
+                            TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
+                        -- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+                        WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
+                            ''MÓDULO''
+                        -- OTROS (CGR, cursos libres, etc.)
+                        ELSE 
+                            ''ÚNICO''
+                    END AS CICLO,
+                    A.NOMBRE_CURSO,
+                    A.NOMBRE_DOCENTE,
+                    B.HT AS HORAS_LECTIVAS,
+                    C.SSRMEET_START_DATE,
+                    C.SSRMEET_END_DATE,
+                    A.BLOQUE_MATRICULA AS SECCION,
+                    A.PROGRAM_DESC AS PROGRAMA
+                FROM 
+                    BANINST1.SZVALDI A
+                    INNER JOIN BANINST1.SZVMALLA B ON (
+                        B.PROGRAM = A.PROGRAM_CODE 
+                        AND B.TERM_CODE_EFF = A.VERSION_PLAN 
+                        AND B.KEY_RULE = A.ASIGNATURA
+                        AND B.MODALIDAD = A.DEPT_CODE
+                        AND A.AREA_CODE = B.AREA_CODE
+                    )
+                    INNER JOIN SATURN.SSRMEET C ON (
+                        C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
+                        AND C.SSRMEET_CRN = A.NRC
+                    )
+                WHERE 
+                    A.DNI IN (' + @StudentList + ')
+                    AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                    AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+            )
+            SELECT DISTINCT
+                CICLO,
+                NOMBRE_CURSO,
+                NOMBRE_DOCENTE,
+                HORAS_LECTIVAS,
+                TO_CHAR(MIN(SSRMEET_START_DATE), ''YYYY-MM-DD'') AS FECHA_INICIO,
+                TO_CHAR(MAX(SSRMEET_END_DATE), ''YYYY-MM-DD'') AS FECHA_FIN,
+                SECCION,
+                PROGRAMA
+            FROM datos_base
             GROUP BY 
-                SUBSTR(A.AREA_DESC,9,3),
-                A.NOMBRE_CURSO,
-                A.NOMBRE_DOCENTE,
-                B.HT,
-                A.BLOQUE_MATRICULA,
-                A.PROGRAM_DESC';
+                CICLO,
+                NOMBRE_CURSO,
+                NOMBRE_DOCENTE,
+                HORAS_LECTIVAS,
+                SECCION,
+                PROGRAMA';
             
             -- Query 5 para Oracle
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'

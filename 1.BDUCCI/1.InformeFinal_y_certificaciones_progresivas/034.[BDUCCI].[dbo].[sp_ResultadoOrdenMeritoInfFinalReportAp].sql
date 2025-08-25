@@ -20,9 +20,12 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Obtener orden de mérito
+        -- Obtener orden de mérito, numerado por curso, con reconteo desde el 1 por estudiante
         SELECT  
-            CONVERT(VARCHAR(10), ROW_NUMBER() OVER (ORDER BY Promedio DESC, Apellidos_Nombres)) AS No,
+            CONVERT(VARCHAR(10), ROW_NUMBER() OVER (
+                PARTITION BY Codigo 
+                ORDER BY Curso
+            )) AS No,
             Codigo,
             Apellidos_Nombres,
             Curso,
@@ -34,7 +37,7 @@ BEGIN
             AND Tipo_Reporte = @TipoReporte
             AND UPPER(ISNULL(Area,'')) = (CASE WHEN @TipoReporte=5 THEN UPPER(@Area) ELSE UPPER(ISNULL(Area,'')) END)
             AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
-        ORDER BY Promedio DESC, Apellidos_Nombres
+        ORDER BY Promedio DESC, Apellidos_Nombres, Curso
 
     END TRY
     BEGIN CATCH
