@@ -19,13 +19,15 @@ BEGIN
 	   INSERT INTO #RESULTADO
 	   SELECT  DISTINCT 
 			   A.Codigo ,
-			   A.Apellidos_Nombres
-		FROM [dbo].[tblInfFinalMemorandumRecuperados] AS A  --[dbo].[tblInfFinal_Memorandum_Recuperados] 
-		INNER JOIN [dbo].tblInfFinalCertificacionPrograma AS B ON A.IdDocumentoFinalReportAp = B.IdDocumentoFinalReportAp 
-		AND A.Codigo = B.Codigo		
-		WHERE A.Programa_Codigo=@ProgramCode 
-		AND A.IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp
+			   A.ApellidosNombres
+		   FROM [dbo].[tblInfFinalMemorandumFinalReportAp] AS A  --[dbo].[tblInfFinal_Memorandum_Recuperados] 
+			 -- tblInfFinalMemorandumFinalReportAp
+			 INNER JOIN [dbo].tblInfFinalCertificacionPrograma AS B 
+			 ON A.IdDocumentoFinalReportAp = B.IdDocumentoFinalReportAp 
+			 AND A.Codigo = B.Codigo
 			 
+			 WHERE A.ProgramaCodigo=@ProgramCode 
+			 AND A.IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp
 		   --ORDER BY Apellidos_Nombres
 
 	   SELECT 

@@ -85,71 +85,79 @@ BEGIN
             )        
 
             -- Consulta Oracle para Tipo_Reporte = 4
-            DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
-						WITH datos_base AS (
-						SELECT 
-									PIDM,DNI,STUDYPATH_BLOQUE,STUDYPATH_STATUS_DESC,NOMBRE,
-									-- NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
-									A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS NOMBRE_CURSO,
-									VERSION_PLAN,PROGRAM_CODE,DEPT_CODE,ASIGNATURA,ESTADO_ASIGNATURA,PORCENT_INASISTENCIA,to_number(NVL(GRDE_CODE,''0'')) AS NOTA,PROGRAM_DESC AS PROGRAMA, BLOQUE_MATRICULA AS SECCION,
-									COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
-									ROW_NUMBER() OVER (	PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 	ORDER BY A.FECHA_INICIO_NRC ASC	) AS primer_intento ,
-									ROW_NUMBER() OVER (	PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 	ORDER BY A.FECHA_INICIO_NRC DESC	) AS ultimo_intento 
-							FROM BANINST1.SZVALDI A
-							WHERE   
-								A.DNI IN  (' + @StudentList + ') 
-								and  A.PROGRAM_CODE =  ''' + @ProgramCode + ''' 
-									AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
-						)	,	
+            DECLARE @OracleQuery4 NVARCHAR(MAX)  = N'
+            WITH datos_base AS (
+                SELECT  PIDM,
+                        DNI,
+                        STUDYPATH_STATUS_DESC,
+                        NOMBRE,
+                        A.SUBJ_CODE || A.CRSE_NUMB || '' - '' || A.NOMBRE_CURSO AS NOMBRE_CURSO,
+                        VERSION_PLAN,
+                        PROGRAM_CODE,
+                        DEPT_CODE,
+                        ASIGNATURA,
+                        ESTADO_ASIGNATURA,
+                        PORCENT_INASISTENCIA,
+                        TO_NUMBER(NVL(GRDE_CODE,''0'')) AS NOTA,
+                        PROGRAM_DESC AS PROGRAMA,
+                        COUNT(A.NRC) OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB) AS total_intentos,
+                        ROW_NUMBER() OVER (PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB ORDER BY A.FECHA_INICIO_NRC DESC) AS ultimo_intento
+                FROM BANINST1.SZVALDI A
+                WHERE A.DNI IN (' + @StudentList + ')  
+                    AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                    AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
+            ),
             T_NOTAS AS (
-                SELECT PIDM, DNI, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, NOMBRE, 
-                       NOMBRE_CURSO, VERSION_PLAN, 
-                       PROGRAM_CODE, DEPT_CODE, ASIGNATURA, ESTADO_ASIGNATURA, 
-                       PORCENT_INASISTENCIA,  NOTA,
-                       SECCION,
-                       PROGRAMA
+                    SELECT PIDM, DNI, STUDYPATH_STATUS_DESC, NOMBRE,
+                            NOMBRE_CURSO, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
+                            ASIGNATURA, ESTADO_ASIGNATURA, PORCENT_INASISTENCIA, NOTA,
+                            PROGRAMA
                     FROM datos_base
-                    WHERE  
-										ultimo_intento=1 
-            ),T_RESUMEN AS (
-                SELECT PIDM, STUDYPATH_BLOQUE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
-                        SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
-                        SUM(NOTA) AS SumaNotas
+                    WHERE ultimo_intento = 1
+            ),
+            T_RESUMEN AS (
+                    SELECT PIDM, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
+                        SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20
+                            THEN 1 ELSE 0 END) AS CursosAprobados,
+                        SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20
+                            THEN NOTA ELSE 0 END) AS SumaNotas
                     FROM T_NOTAS
-                    GROUP BY PIDM, STUDYPATH_BLOQUE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE)
-            ,T_APROBADOS AS (
-                SELECT PIDM, SUMANOTAS, CANTCURSOS
+                    GROUP BY PIDM, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
+            ),
+            T_APROBADOS AS (
+                    SELECT PIDM, SumaNotas , CantCursos, CursosAprobados
                     FROM T_RESUMEN A
                     INNER JOIN (
-                            SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
+                            SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CantCursos
                             FROM BANINST1.SZVMALLA
-							WHERE SUBSTR(AREA_CODE,4,1) <> ''C''
-                            GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD) B 
-                        ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-                        AND B.PROGRAM=A.PROGRAM_CODE 
-                        AND B.MODALIDAD=A.DEPT_CODE 
-                    WHERE CURSOSAPROBADOS=CANTCURSOS)
-
-                SELECT DNI, NOMBRE, NOMBRE_CURSO, NOTA, D.PROMEDIO,
-                        (CASE WHEN ORDEN=1 THEN ''PRIMER LUGAR'' 
-                            WHEN ORDEN=2 THEN ''SEGUNDO LUGAR'' 
-                            ELSE ''TERCER LUGAR'' END) AS ORDEN,
-                        SECCION,
-                        PROGRAMA
-                    FROM T_NOTAS C
-                    INNER JOIN 
-                            (SELECT PIDM, ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
-                                FROM T_APROBADOS) D 
-                        ON C.PIDM=D.PIDM
-                    INNER JOIN
-                            (SELECT ROWNUM AS ORDEN, PROMEDIO 
-                                FROM
-                                    (SELECT DISTINCT ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
-                                        FROM T_APROBADOS
-                                        ORDER BY PROMEDIO DESC)
-                                WHERE ROWNUM <= 3) E 
-                        ON E.PROMEDIO=D.PROMEDIO'
-
+                            WHERE SUBSTR(AREA_CODE,4,1) <> ''C''
+                            GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
+                    ) B
+                    ON B.TERM_CODE_EFF=A.VERSION_PLAN
+                    AND B.PROGRAM=A.PROGRAM_CODE
+                    AND B.MODALIDAD=A.DEPT_CODE
+                    WHERE CursosAprobados=CantCursos
+            ),
+            T_RANKING AS (
+                    SELECT PIDM,
+                        ROUND(SumaNotas/CantCursos,3) AS Promedio,
+                        DENSE_RANK() OVER (ORDER BY ROUND(SumaNotas/CantCursos,3) DESC) AS Orden
+                    FROM T_APROBADOS
+            )
+            SELECT  N.DNI,
+                    N.NOMBRE,
+                    N.NOMBRE_CURSO,
+                    N.NOTA,
+                    R.PROMEDIO,
+                    CASE R.Orden    WHEN 1 THEN ''PRIMER LUGAR''
+                                    WHEN 2 THEN ''SEGUNDO LUGAR''
+                                    WHEN 3 THEN ''TERCER LUGAR'' END AS ORDEN,
+                    N.PROGRAMA,
+                    '''' AS SECCION
+            FROM T_NOTAS N
+            INNER JOIN T_RANKING R ON N.PIDM = R.PIDM
+            WHERE R.Orden <= 3
+            '
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             WITH T_NOTAS AS (
@@ -178,30 +186,32 @@ BEGIN
                             SELECT TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
                                 FROM BANINST1.SZVMALLA
                                 WHERE AREA_CODE=''' + @p_Area + '''
-                                GROUP BY TERM_CODE_EFF, PROGRAM) B 
-                        ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-                        AND B.PROGRAM=A.PROGRAM_CODE
-                    WHERE CURSOSAPROBADOS=CANTCURSOS)
+                                GROUP BY TERM_CODE_EFF, PROGRAM
+                    ) B 
+                    ON B.TERM_CODE_EFF=A.VERSION_PLAN 
+                    AND B.PROGRAM=A.PROGRAM_CODE
+                    WHERE CURSOSAPROBADOS=CANTCURSOS
+            )
 
-                SELECT DNI, NOMBRE, NOMBRE_CURSO, NOTA, D.PROMEDIO,
-                        (CASE WHEN ORDEN=1 THEN ''PRIMER LUGAR'' 
-                            WHEN ORDEN=2 THEN ''SEGUNDO LUGAR'' 
-                            ELSE ''TERCER LUGAR'' END) AS ORDEN,
-                        SECCION,
-                        PROGRAMA
-                    FROM T_NOTAS C
-                    INNER JOIN 
-                            (SELECT PIDM, ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
-                                FROM T_APROBADOS) D 
-                        ON C.PIDM=D.PIDM
-                    INNER JOIN
-                            (SELECT ROWNUM AS ORDEN, PROMEDIO 
-                                FROM
-                                    (SELECT DISTINCT ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
-                                        FROM T_APROBADOS
-                                        ORDER BY PROMEDIO DESC)
-                                WHERE ROWNUM <= 3) E 
-                        ON E.PROMEDIO=D.PROMEDIO'
+            SELECT DNI, NOMBRE, NOMBRE_CURSO, NOTA, D.PROMEDIO,
+                    (CASE WHEN ORDEN=1 THEN ''PRIMER LUGAR'' 
+                        WHEN ORDEN=2 THEN ''SEGUNDO LUGAR'' 
+                        ELSE ''TERCER LUGAR'' END) AS ORDEN,
+                    SECCION,
+                    PROGRAMA
+            FROM T_NOTAS C
+            INNER JOIN 
+                    (SELECT PIDM, ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
+                        FROM T_APROBADOS) D 
+                ON C.PIDM=D.PIDM
+            INNER JOIN
+                (SELECT ROWNUM AS ORDEN, PROMEDIO 
+                    FROM
+                        (SELECT DISTINCT ROUND(SUMANOTAS/CANTCURSOS,3) AS PROMEDIO
+                            FROM T_APROBADOS
+                            ORDER BY PROMEDIO DESC)
+                    WHERE ROWNUM <= 3) E 
+            ON E.PROMEDIO=D.PROMEDIO'
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'

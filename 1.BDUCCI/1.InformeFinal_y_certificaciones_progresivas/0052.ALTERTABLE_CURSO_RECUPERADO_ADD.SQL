@@ -2,3 +2,7 @@ ALTER TABLE [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] ADD 
 GO
 
 ALTER TABLE [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] ALTER COLUMN [Seccion] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AI NULL
+
+
+
+ALTER TABLE [dbo].[tblInfFinalResultadoOrdenMeritoParticipantes] ALTER COLUMN [Seccion] varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AI NULL
