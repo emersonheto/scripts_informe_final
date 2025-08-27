@@ -48,6 +48,7 @@ BEGIN
         -- Tabla temporal para resultados
         CREATE TABLE #RESULTADO ( 
             CICLO NVARCHAR(10),
+            SECCION NVARCHAR(10),
             ASIGNATURA VARCHAR(200),
             APELLIDOS_NOMBRE_DOCENTE VARCHAR(200),
             HORAS_LECTIVAS FLOAT,
@@ -66,7 +67,7 @@ BEGIN
 
 								-- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
 								WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
-										''MÓDULO''
+										''ÚNICO''
 								
 								-- OTROS (CGR, cursos libres, etc.)
 								ELSE 
