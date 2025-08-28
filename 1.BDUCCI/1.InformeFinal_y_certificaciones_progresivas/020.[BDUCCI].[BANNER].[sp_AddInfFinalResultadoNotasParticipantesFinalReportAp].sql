@@ -208,54 +208,87 @@ BEGIN
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             WITH T_NOTAS AS (
-                SELECT DISTINCT A.PIDM, A.DNI, A.STUDYPATH_BLOQUE, A.STUDYPATH_STATUS_DESC, A.NOMBRE, 
-                       A.NRC||'' - ''||A.NOMBRE_CURSO AS NOMBRE_CURSO,
-                       NVL(A.STYP_DESC,'' '') AS TIPO_ALUMNO, A.VERSION_PLAN, A.PROGRAM_CODE, A.DEPT_CODE, 
-                       A.ASIGNATURA, A.ESTADO_ASIGNATURA, A.PORCENT_INASISTENCIA, 
-                       TO_NUMBER(NVL(A.GRDE_CODE,''0'')) AS NOTA,
-                       A.BLOQUE_MATRICULA AS SECCION,
-                       A.PROGRAM_DESC AS PROGRAMA
+                SELECT 
+                    A.PIDM,
+                    A.DNI,
+                    A.STUDYPATH_BLOQUE,
+                    A.STUDYPATH_STATUS_DESC,
+                    A.NOMBRE,
+                    A.ASIGNATURA||'' - ''||A.NOMBRE_CURSO AS NOMBRE_CURSO,
+                    NVL(A.STYP_DESC,'' '') AS TIPO_ALUMNO,
+                    A.VERSION_PLAN,
+                    A.PROGRAM_CODE,
+                    A.DEPT_CODE,
+                    A.ASIGNATURA,
+                    A.ESTADO_ASIGNATURA,
+                    A.PORCENT_INASISTENCIA,
+                    A.BLOQUE_MATRICULA AS SECCION,
+                    A.PROGRAM_DESC AS PROGRAMA,
+                    TO_NUMBER(NVL(A.GRDE_CODE,''0'')) AS NOTA
                 FROM BANINST1.SZVALDI A
                 INNER JOIN BANINST1.SZVMALLA B 
-                    ON B.PROGRAM=A.PROGRAM_CODE 
-                    AND B.TERM_CODE_EFF=A.VERSION_PLAN 
-                    AND B.KEY_RULE=A.ASIGNATURA 
-                    AND B.AREA_CODE=A.AREA_CODE 
-                    AND B.AREA_CODE=''' + @p_Area + '''
+                    ON B.PROGRAM = A.PROGRAM_CODE 
+                    AND B.TERM_CODE_EFF = A.VERSION_PLAN 
+                    AND B.KEY_RULE = A.ASIGNATURA 
+                    AND B.AREA_CODE = A.AREA_CODE 
+                    AND B.AREA_CODE = ''' + @p_Area + '''
                 WHERE A.DNI IN (' + @StudentList + ')
-                    AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
             ),
             T_RESUMEN AS (
-                SELECT PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
-                       SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
-                       SUM(NOTA) AS SumaNotas
+                SELECT 
+                    PIDM,
+                    STUDYPATH_BLOQUE,
+                    STUDYPATH_STATUS_DESC,
+                    VERSION_PLAN,
+                    PROGRAM_CODE,
+                    DEPT_CODE,
+                    SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
+                    SUM(NOTA) AS SumaNotas
                 FROM T_NOTAS
-                GROUP BY PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE)
-
-            SELECT C.DNI AS CODIGO, C.NOMBRE AS APELLIDOS_NOMBRES, C.NOMBRE_CURSO AS CURSO, C.NOTA, 
-                   D.PROMEDIO, C.TIPO_ALUMNO, D.ESTADO_ACADEMICO,
-                   (CASE WHEN (SELECT MAX(NVL(PO.SMBPOGN_REQUEST_NO,0))
-                                FROM SATURN.SMBPOGN PO
-                                WHERE PO.SMBPOGN_TERM_CODE_EFF=C.VERSION_PLAN 
-                                    AND PO.SMBPOGN_PROGRAM=C.PROGRAM_CODE 
-                                    AND PO.SMBPOGN_PIDM=C.PIDM)=0 THEN ''NO CAPP'' 
-                        ELSE ''OK'' END) ESTADO_CAPP,
-                   C.SECCION, C.PROGRAMA
-            FROM T_NOTAS C
-            INNER JOIN (
-                SELECT A.PIDM, ROUND(A.SUMANOTAS/B.CANTCURSOS,0) AS PROMEDIO, 
-                       (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
-                            ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''Activo'' THEN A.STUDYPATH_STATUS_DESC 
-                                    ELSE ''DESAPROBADO'' END) END) AS ESTADO_ACADEMICO, STUDYPATH_BLOQUE
+                GROUP BY PIDM, STUDYPATH_BLOQUE, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
+            ),
+            T_ESTADO_FINAL AS (
+                SELECT 
+                    A.PIDM,
+                    ROUND(A.SumaNotas / B.CANTCURSOS, 0) AS PROMEDIO, 
+                    (CASE 
+                        WHEN A.CursosAprobados = B.CANTCURSOS THEN ''APROBADO''
+                        WHEN A.STUDYPATH_STATUS_DESC<>''Activo'' THEN A.STUDYPATH_STATUS_DESC
+                        ELSE ''DESAPROBADO''
+                    END) AS ESTADO_ACADEMICO
                 FROM T_RESUMEN A
                 INNER JOIN (
                     SELECT TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
                     FROM BANINST1.SZVMALLA
-                    WHERE AREA_CODE=''' + @p_Area + '''
-                    GROUP BY TERM_CODE_EFF, PROGRAM) B 
-                ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-                AND B.PROGRAM=A.PROGRAM_CODE
-            ) D ON D.PIDM=C.PIDM AND D.STUDYPATH_BLOQUE = C.SECCION'
+                    WHERE AREA_CODE = ''' + @p_Area + '''
+                    GROUP BY TERM_CODE_EFF, PROGRAM
+                ) B ON B.TERM_CODE_EFF = A.VERSION_PLAN 
+                AND B.PROGRAM = A.PROGRAM_CODE
+            )
+            SELECT 
+                C.DNI AS CODIGO,
+                C.NOMBRE AS APELLIDOS_NOMBRES,
+                C.NOMBRE_CURSO AS CURSO,
+                C.NOTA,
+                D.PROMEDIO,
+                C.TIPO_ALUMNO,
+                D.ESTADO_ACADEMICO,
+                (CASE 
+                    WHEN (SELECT MAX(NVL(PO.SMBPOGN_REQUEST_NO,0))
+                        FROM SATURN.SMBPOGN PO
+                        WHERE PO.SMBPOGN_TERM_CODE_EFF = C.VERSION_PLAN
+                            AND PO.SMBPOGN_PROGRAM = C.PROGRAM_CODE
+                            AND PO.SMBPOGN_PIDM = C.PIDM) = 0 
+                    THEN ''NO CAPP'' 
+                    ELSE ''OK'' 
+                END) AS ESTADO_CAPP,
+                SECCION,
+                PROGRAMA
+            FROM T_NOTAS C
+            INNER JOIN T_ESTADO_FINAL D 
+                ON D.PIDM = C.PIDM
+            ORDER BY C.DNI, C.NOMBRE_CURSO
+            '
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'

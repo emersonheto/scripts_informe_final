@@ -99,7 +99,7 @@ BEGIN
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
-                A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
+                A.ASIGNATURA||'' - ''||NOMBRE_CURSO AS CURSO,
                 A.BLOQUE_MATRICULA AS SECCION,
                 A.PROGRAM_DESC AS PROGRAMA
             FROM BANINST1.SZVALDI A
@@ -109,7 +109,7 @@ BEGIN
                 AND B.KEY_RULE=A.ASIGNATURA 
                 AND B.AREA_CODE=''' + @p_Area + '''
             WHERE A.DNI IN (' + @StudentList + ')
-                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                --AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
             ';
 
             -- Consultas dinámicas completas con INSERT
@@ -159,7 +159,7 @@ BEGIN
                     Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    -- SECCION AS 'Seccion',
+                    SECCION AS 'Seccion',
                     ISNULL(Curso,'') AS 'Curso',
                     GETDATE() AS 'Fecha_Registro',
                     NULL AS 'Fecha_Edicion',
