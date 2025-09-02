@@ -21,12 +21,12 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-		SET @p_IdDocumentoFinalReportAp = (
-			SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-			FROM [dbo].[tblCodigoInformeFinal]
-			WHERE IdDocumento = @p_IdDocumento
-			  AND IdPrograma = @ProgramCode
-		)
+		-- SET @p_IdDocumentoFinalReportAp = (
+		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
+		-- 	FROM [dbo].[tblCodigoInformeFinal]
+		-- 	WHERE IdDocumento = @p_IdDocumento
+		-- 	  AND IdPrograma = @ProgramCode
+		-- )
     
         -- Validación de parámetros
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
@@ -144,38 +144,53 @@ BEGIN
             
             -- Query 5 para Oracle
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
-            SELECT 
-                SUBSTR(A.AREA_DESC,9,3) AS CICLO,
-                A.NOMBRE_CURSO,
-                A.NOMBRE_DOCENTE,
-                B.HT AS HORAS_LECTIVAS,
-                TO_CHAR(MIN(C.SSRMEET_START_DATE), ''YYYY-MM-DD'') AS FECHA_INICIO,
-                TO_CHAR(MAX(C.SSRMEET_END_DATE), ''YYYY-MM-DD'') AS FECHA_FIN,
-                A.BLOQUE_MATRICULA AS SECCION,
-                A.PROGRAM_DESC AS PROGRAMA
-            FROM 
-                BANINST1.SZVALDI A
-                INNER JOIN BANINST1.SZVMALLA B ON (
-                    B.PROGRAM = A.PROGRAM_CODE 
-                    AND B.TERM_CODE_EFF = A.VERSION_PLAN 
-                    AND B.KEY_RULE = A.ASIGNATURA
-                    AND B.AREA_CODE = ''' + @p_Area + '''
+                SELECT CICLO,
+                        NOMBRE_CURSO,
+                        NOMBRE_DOCENTE,
+                        HT AS HORAS_LECTIVAS,
+                        MIN(FECHA_INICIO) AS FECHA_INICIO,
+                        MAX(FECHA_FIN) AS FECHA_FIN,
+                        SECCION,
+                        PROGRAMA
+                FROM (
+                    SELECT DISTINCT
+                        CASE
+                            -- MAESTRÍAS
+                            WHEN A.PROGRAM_CODE LIKE ''MG%'' THEN 
+                                TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
+                            -- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+                            WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
+                                ''MÓDULO''
+                            -- OTROS (CGR, cursos libres, etc.)
+                            ELSE 
+                                ''ÚNICO''
+                        END AS CICLO,                        
+                        A.NOMBRE_CURSO,
+                        A.NOMBRE_DOCENTE,
+                        B.HT,
+                        C.SSRMEET_START_DATE AS FECHA_INICIO,
+                        C.SSRMEET_END_DATE AS FECHA_FIN,
+                        A.BLOQUE_MATRICULA AS SECCION,
+                        A.PROGRAM_DESC AS PROGRAMA
+                    FROM BANINST1.SZVALDI A
+                    INNER JOIN BANINST1.SZVMALLA B 
+                        ON B.PROGRAM = A.PROGRAM_CODE 
+                        AND B.TERM_CODE_EFF = A.VERSION_PLAN 
+                        AND B.KEY_RULE = A.ASIGNATURA 
+                        AND B.AREA_CODE = ''' + @p_Area + '''
+                    INNER JOIN SATURN.SSRMEET C 
+                        ON C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
+                        AND C.SSRMEET_CRN = A.NRC
+                    WHERE A.DNI IN (' + @StudentList + ')
                 )
-                INNER JOIN SATURN.SSRMEET C ON (
-                    C.SSRMEET_TERM_CODE = A.PERIODO_MATRICULA 
-                    AND C.SSRMEET_CRN = A.NRC
-                )
-            WHERE 
-                A.DNI IN (' + @StudentList + ')
-                AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
-                AND SUBSTR(A.AREA_CODE,4,1) <> ''C''
-            GROUP BY 
-                SUBSTR(A.AREA_DESC,9,3),
-                A.NOMBRE_CURSO,
-                A.NOMBRE_DOCENTE,
-                B.HT,
-                A.BLOQUE_MATRICULA,
-                A.PROGRAM_DESC';
+                GROUP BY CICLO,
+                        SECCION,
+                        NOMBRE_CURSO,
+                        NOMBRE_DOCENTE,
+                        HT,
+                        PROGRAMA
+            ';
+
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
@@ -248,6 +263,15 @@ BEGIN
             ELSE IF(@p_Tipo_Reporte=5)
             BEGIN
 	            EXEC sp_executesql @QUERY5;
+                
+                WITH CTE AS (
+                        SELECT *,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY CICLO, ASIGNATURA, APELLIDOS_NOMBRE_DOCENTE
+                                ORDER BY FECHA_INICIO_ASIGNATURA
+                            ) AS RN
+                        FROM #RESULTADO
+                    )
             
                 INSERT INTO [dbo].[tblInfFinalProgramacionDocente] (
                     Seccion, Ciclo, Asignaturas, Docente, Horas_Lectivas, 
@@ -270,7 +294,8 @@ BEGIN
                     PROGRAMA AS 'Programa',
                     @ProgramCode AS 'Programa_Codigo',
                     @p_IdDocumentoFinalReportAp AS 'IdDocumentoFinalReportAp'
-                FROM #RESULTADO 
+                FROM CTE
+                 WHERE RN = 1
                 ORDER BY CICLO, FECHA_INICIO_ASIGNATURA;
 
                 DROP TABLE #RESULTADO;
@@ -282,7 +307,8 @@ BEGIN
         ELSE IF(@p_Accion=2)
         BEGIN
             DELETE FROM [dbo].[tblInfFinalProgramacionDocente] 
-            WHERE Programa_Codigo = @ProgramCode AND Tipo_Reporte = @p_Tipo_Reporte
+            --WHERE Programa_Codigo = @ProgramCode AND Tipo_Reporte = @p_Tipo_Reporte
+            WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
                 'ELIMINAR PROGRAMACIÓN DOCENTE' AS 'MSG';

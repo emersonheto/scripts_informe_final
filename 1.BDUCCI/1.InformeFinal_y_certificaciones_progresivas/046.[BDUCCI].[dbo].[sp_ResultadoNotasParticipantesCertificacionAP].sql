@@ -34,7 +34,7 @@ BEGIN
 			Student.value('(StudentCode)[1]', 'VARCHAR(9)')
 		FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
 
-		DECLARE @BDOracle VARCHAR(10) = 'DEVL';
+		DECLARE @BDOracle VARCHAR(10) = 'BANNER';
 
 		-- Construir lista de alumnos
 		DECLARE @StudentList NVARCHAR(MAX) = ''
@@ -43,6 +43,8 @@ BEGIN
 		
 		IF LEN(@StudentList) > 0
 			SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
+
+		DECLARE @SafeAreacert NVARCHAR(MAX) = REPLACE(@AreaCert, '''', '''''');
 
 		-- Tabla de resultados
 		CREATE TABLE #RESULTADO ( 
@@ -82,7 +84,7 @@ BEGIN
 					AND B.TERM_CODE_EFF = A.VERSION_PLAN 
 					AND B.KEY_RULE = A.ASIGNATURA 
 					AND B.AREA_CODE = A.AREA_CODE 
-					AND B.AREA_CODE = ''' + @AreaCert + '''
+					AND B.AREA_CODE = ''' + @SafeAreacert + '''
 				WHERE A.DNI IN (' + @StudentList + ')
 				--SUBSTR(AREA_CODE, 4, 1) <> ''C''
 			),
@@ -115,7 +117,7 @@ BEGIN
 						PROGRAM, 
 						COUNT(KEY_RULE) AS CANTCURSOS
 					FROM BANINST1.SZVMALLA
-					WHERE AREA_CODE = ''' + @AreaCert + '''
+					WHERE AREA_CODE = ''' + @SafeAreacert + '''
 					GROUP BY TERM_CODE_EFF, PROGRAM
 				) B ON B.TERM_CODE_EFF = A.VERSION_PLAN AND B.PROGRAM = A.PROGRAM_CODE
 			)

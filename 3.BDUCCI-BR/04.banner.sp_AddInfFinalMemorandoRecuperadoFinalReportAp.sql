@@ -10,7 +10,7 @@ MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
 (
 	 @Seccion VARCHAR(30),	 
 	 @DNI VARCHAR(20),
@@ -25,12 +25,12 @@ AS
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-        SET @p_IdDocumentoFinalReportAp = (
-            SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@User_creacion, ' ', ''))
-            FROM [dbo].[tblCodigoInformeFinal]
-            WHERE IdDocumento = @p_IdDocumento
-                AND IdPrograma = @ProgramCode
-		)
+        -- SET @p_IdDocumentoFinalReportAp = (
+        --     SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@User_creacion, ' ', ''))
+        --     FROM [dbo].[tblCodigoInformeFinal]
+        --     WHERE IdDocumento = @p_IdDocumento
+        --         AND IdPrograma = @ProgramCode
+		-- )
         IF(@Accion=1)
             BEGIN
             
