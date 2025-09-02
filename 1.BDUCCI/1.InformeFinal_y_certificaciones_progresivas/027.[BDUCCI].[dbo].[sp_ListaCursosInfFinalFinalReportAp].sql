@@ -8,11 +8,8 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Report que lista los cursos
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ListaCursosInfFinalFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ListaCursosInfFinalFinalReportAp] 
 (
-	@ProgramCode VARCHAR(3),
-	@TipoReporte INT,
-	@Area VARCHAR(20),
 	@IdDocumentoFinalReportAp VARCHAR(15)
 )
 AS
@@ -21,10 +18,7 @@ BEGIN
 	BEGIN TRY
 		SELECT Curso 
 			FROM [dbo].[tblInfFinalResultadoNotasParticipantesCursos]
-			WHERE Programa_Codigo = @ProgramCode								
-				AND Tipo_Reporte = @TipoReporte 
-				AND UPPER(ISNULL(Area,'')) = (CASE @TipoReporte WHEN 5 THEN UPPER(@Area) ELSE UPPER(ISNULL(Area,'')) END)
-				AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
+			WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
 			ORDER BY Curso;
 	END TRY
 	BEGIN CATCH

@@ -21,12 +21,12 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-		SET @p_IdDocumentoFinalReportAp = (
-			SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-			FROM [dbo].[tblCodigoInformeFinal]
-			WHERE IdDocumento = @p_IdDocumento
-			  AND IdPrograma = @ProgramCode
-		)
+		-- SET @p_IdDocumentoFinalReportAp = (
+		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
+		-- 	FROM [dbo].[tblCodigoInformeFinal]
+		-- 	WHERE IdDocumento = @p_IdDocumento
+		-- 	  AND IdPrograma = @ProgramCode
+		-- )
     
         -- Validación de parámetros
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
@@ -307,7 +307,8 @@ BEGIN
         ELSE IF(@p_Accion=2)
         BEGIN
             DELETE FROM [dbo].[tblInfFinalProgramacionDocente] 
-            WHERE Programa_Codigo = @ProgramCode AND Tipo_Reporte = @p_Tipo_Reporte
+            --WHERE Programa_Codigo = @ProgramCode AND Tipo_Reporte = @p_Tipo_Reporte
+            WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
                 'ELIMINAR PROGRAMACIÓN DOCENTE' AS 'MSG';

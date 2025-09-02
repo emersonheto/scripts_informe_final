@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Adiciona o elimina archivos anexos
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_AddAnexosInfFinalAp]
+ALTER PROCEDURE [dbo].[sp_AddAnexosInfFinalAp]
 	@p_Seccion VARCHAR(50),
 	@p_Orden VARCHAR(50),
 	@p_NameFile VARCHAR(50),
@@ -24,12 +24,12 @@ AS
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-		SET @p_IdDocumentoFinalReportAp = (
-			SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-			FROM [dbo].[tblCodigoInformeFinal]
-			WHERE IdDocumento = @p_IdDocumento
-			  AND IdPrograma = @ProgramCode
-		)
+		-- SET @p_IdDocumentoFinalReportAp = (
+		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
+		-- 	FROM [dbo].[tblCodigoInformeFinal]
+		-- 	WHERE IdDocumento = @p_IdDocumento
+		-- 	  AND IdPrograma = @ProgramCode
+		-- )
 	
 		 IF(@p_Accion=1)
 			BEGIN
@@ -41,9 +41,10 @@ BEGIN
 		 ELSE IF(@p_Accion=2)
 				BEGIN
 					DELETE FROM [dbo].[tblInfFinalAnexos] 
-					WHERE Seccion=@p_Seccion 
-						AND Tipo_Reporte=@p_TipoReporte
-						AND UPPER(ISNULL(Area,'')) = (CASE @p_TipoReporte WHEN 2 THEN UPPER(@p_Area) ELSE UPPER(ISNULL(Area,'')) END )
+					-- WHERE Seccion=@p_Seccion 
+					-- 	AND Tipo_Reporte=@p_TipoReporte
+					-- 	AND UPPER(ISNULL(Area,'')) = (CASE @p_TipoReporte WHEN 2 THEN UPPER(@p_Area) ELSE UPPER(ISNULL(Area,'')) END )
+					WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
 
 					SELECT 1 AS 'NRO_RESPUESTA','SE ELIMINARON CORRECTAMENTE LOS ANEXOS DE LA SECCION' AS 'MSG'
 			END
