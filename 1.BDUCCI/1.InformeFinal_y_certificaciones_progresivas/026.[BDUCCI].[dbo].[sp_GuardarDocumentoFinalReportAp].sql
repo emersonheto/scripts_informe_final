@@ -59,7 +59,8 @@ BEGIN
 		UPDATE [tblInfFinalResultadoNotasParticipantesCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
 		UPDATE [tblInfFinalResultadoNotasParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
 		UPDATE [tblInfFinalMemorandumFinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperados] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+		UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+        UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperados] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
 		UPDATE [tblInfFinalResultadoOrdenMeritoParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
 		UPDATE [tblInfFinalCertificacionPrograma] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
 		UPDATE [tblInfFinalDatosdelosEstudiantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
