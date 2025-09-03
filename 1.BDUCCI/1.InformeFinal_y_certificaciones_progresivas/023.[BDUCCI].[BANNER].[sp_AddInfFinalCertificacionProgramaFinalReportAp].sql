@@ -77,8 +77,7 @@ BEGIN
             -- Crear tabla temporal para resultados
             CREATE TABLE #RESULTADO ( 
                 Codigo VARCHAR(100),
-                Apellidos_Nombres VARCHAR(200),
-                Seccion VARCHAR(50),
+                Apellidos_Nombres VARCHAR(200),                
                 Programa VARCHAR(100)
             )
 
@@ -90,7 +89,6 @@ BEGIN
                 SELECT DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
                     SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 
                         ELSE 0 END) AS CursosAprobados,
-                    -- BLOQUE_MATRICULA AS SECCION,
                     PROGRAM_DESC AS PROGRAMA
                 FROM BANINST1.SZVALDI
                 WHERE DNI IN (' + @StudentList + ')
@@ -98,10 +96,10 @@ BEGIN
                     
                     AND SUBSTR(AREA_CODE,4,1)<>''C''
                 GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,PROGRAM_DESC
-								-- BLOQUE_MATRICULA 
+							
 								)
 
-            SELECT DNI, NOMBRE,  PROGRAMA -- , SECCION
+            SELECT DNI, NOMBRE,  PROGRAMA 
                 FROM T_RESUMEN A
                 INNER JOIN (
                     SELECT TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
@@ -119,7 +117,6 @@ BEGIN
                 SELECT DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
                     SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 
                         ELSE 0 END) AS CursosAprobados,
-                    BLOQUE_MATRICULA AS SECCION,
                     A.PROGRAM_DESC AS PROGRAMA
                 FROM BANINST1.SZVALDI A
                 INNER JOIN BANINST1.SZVMALLA B 
@@ -131,9 +128,9 @@ BEGIN
                 WHERE DNI IN (' + @StudentList + ')
                     AND PROGRAM_CODE = ''' + @ProgramCode + '''
                     
-                GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, BLOQUE_MATRICULA, A.PROGRAM_DESC)
+                GROUP BY DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,  A.PROGRAM_DESC)
 
-            SELECT DNI, NOMBRE, SECCION, PROGRAMA
+            SELECT DNI, NOMBRE,  PROGRAMA
                 FROM T_RESUMEN A
                 INNER JOIN (
                     SELECT TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
@@ -146,24 +143,24 @@ BEGIN
 
             -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
-            INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion, Programa)
-            SELECT DNI, NOMBRE, NULL, PROGRAMA 
+            INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Programa)
+            SELECT DNI, NOMBRE, PROGRAMA 
             FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery4, '''', '''''') + ''')'
             
             DECLARE @QUERY5 NVARCHAR(MAX) = N'
-            INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion, Programa)
-            SELECT DNI, NOMBRE, SECCION, PROGRAMA 
+            INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Programa)
+            SELECT DNI, NOMBRE, PROGRAMA 
             FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery5, '''', '''''') + ''')'
 
             IF(@p_Tipo_Reporte=4)
             BEGIN
                 EXEC sp_executesql @QUERY4;
                 
-                INSERT INTO dbo.tblInfFinalCertificacionPrograma (
-                    Seccion, No, Codigo, Apellidos_Nombres, Fecha_Registro, 
+                INSERT INTO dbo.tblInfFinalCertificacionPrograma (seccion,
+                     No, Codigo, Apellidos_Nombres, Fecha_Registro, 
                     Fecha_Edicion, Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp)
                 SELECT
-                    Seccion AS 'Seccion',
+                    null,
                     STR(ROW_NUMBER() OVER (ORDER BY Apellidos_Nombres)) AS 'No',  
                     Codigo,
                     Apellidos_Nombres,
@@ -187,11 +184,11 @@ BEGIN
             BEGIN
                 EXEC sp_executesql @QUERY5;
                 
-                INSERT INTO dbo.tblInfFinalCertificacionPrograma (
-                    Seccion, No, Codigo, Apellidos_Nombres, Fecha_Registro, 
+                INSERT INTO dbo.tblInfFinalCertificacionPrograma (seccion,
+                     No, Codigo, Apellidos_Nombres, Fecha_Registro, 
                     Fecha_Edicion, Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp)
                 SELECT
-                    Seccion AS 'Seccion',
+                    null,
                     STR(ROW_NUMBER() OVER (ORDER BY Apellidos_Nombres)) AS 'No',  
                     Codigo,
                     Apellidos_Nombres,

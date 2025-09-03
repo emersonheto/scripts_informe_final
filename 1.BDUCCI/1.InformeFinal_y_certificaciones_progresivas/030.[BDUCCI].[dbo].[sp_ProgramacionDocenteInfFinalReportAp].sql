@@ -7,36 +7,52 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Reporte de programacion de horarios de docentes
 ====================================================================================================*/
-
-CREATE PROCEDURE [dbo].[sp_ProgramacionDocenteInfFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ProgramacionDocenteInfFinalReportAp] 
 (
-	 @ProgramCode VARCHAR(3),
-	 @TipoReporte INT,
-	 @Area VARCHAR(20),
-	 @IdDocumentoFinalReportAp VARCHAR(15)
+    @IdDocumentoFinalReportAp VARCHAR(50)
 )
 AS
 SET NOCOUNT ON
 BEGIN
-	BEGIN TRY
+    BEGIN TRY
+ 
+    ;WITH Grupos AS (
+        SELECT  
+            Asignaturas,
+            Docente,
+            SUM(CASE WHEN ISNUMERIC(Horas_Lectivas) = 1 THEN CAST(Horas_Lectivas AS INT) ELSE 0 END) AS Horas_Lectivas,
+            MIN(Fecha_Inicio) AS Fecha_Inicio,
+            MAX(Fecha_Fin) AS Fecha_Fin
+        FROM 
+            [dbo].[tblInfFinalProgramacionDocente]
+        WHERE 
+            IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp
+        GROUP BY 
+            Asignaturas, Docente
+    )
+    SELECT
+        STUFF((
+            SELECT DISTINCT ', ' + T2.Ciclo
+            FROM [dbo].[tblInfFinalProgramacionDocente] T2
+            WHERE T2.IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp
+              AND T2.Asignaturas = G.Asignaturas
+              AND T2.Docente = G.Docente
+            FOR XML PATH('')
+        ), 1, 2, '') AS Ciclo,
+        G.Asignaturas,
+        G.Docente,        
+        G.Horas_Lectivas,
+        G.Fecha_Inicio,
+        G.Fecha_Fin
+    FROM 
+        Grupos G
+    ORDER BY 
+        G.Asignaturas, G.Docente;
 
-  SELECT  Ciclo,Seccion,Asignaturas,Docente,Horas_Lectivas,Fecha_Inicio,Fecha_Fin
-	  FROM [dbo].[tblInfFinalProgramacionDocente]
-	  WHERE Programa_Codigo= @ProgramCode 
-		  AND Tipo_Reporte = @TipoReporte 
-		  AND UPPER(ISNULL(Area,''))= (CASE @TipoReporte WHEN 5 THEN UPPER(@Area) ELSE UPPER(ISNULL(Area,'')) END )
-	  	  AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
-	  ORDER BY CICLO,Asignaturas
-
-	END TRY
-	BEGIN CATCH
-		DECLARE	@ErrorMessage VARCHAR(4000),
-				@ErrorSeverity INT,
-				@ErrorState INT;
-		SELECT	@ErrorMessage =ERROR_MESSAGE(),
-				@ErrorSeverity=ERROR_SEVERITY(),
-				@ErrorState=ERROR_STATE();
-				RAISERROR(@ErrorMessage,@ErrorSeverity,@ErrorState);
-				SELECT @ErrorMessage AS status
-	END CATCH		
+    END TRY
+    BEGIN CATCH
+        SELECT 
+            -1 AS NRO_RESPUESTA,
+            ERROR_MESSAGE() AS MSG;
+    END CATCH      
 END

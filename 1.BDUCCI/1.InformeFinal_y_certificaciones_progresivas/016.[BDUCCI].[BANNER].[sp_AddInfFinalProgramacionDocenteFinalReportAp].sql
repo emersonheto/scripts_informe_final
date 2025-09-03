@@ -160,7 +160,7 @@ BEGIN
                                 TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
                             -- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
                             WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
-                                ''MÓDULO''
+                                ''ÚNICO''
                             -- OTROS (CGR, cursos libres, etc.)
                             ELSE 
                                 ''ÚNICO''

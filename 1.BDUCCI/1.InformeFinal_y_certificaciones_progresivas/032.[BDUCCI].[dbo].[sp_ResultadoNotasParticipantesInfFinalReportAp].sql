@@ -8,7 +8,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Muestra los resultados de notas de los participantes en el archivo
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoNotasParticipantesInfFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesInfFinalReportAp] 
 (
 	--@XmlStudents XML,
 	@ProgramCode VARCHAR(3),
@@ -32,8 +32,8 @@ BEGIN
 			Estado_CAPP 
 		FROM [dbo].[tblInfFinalResultadoNotasParticipantes] 
 		WHERE Programa_Codigo = @ProgramCode			
-			AND Tipo_Reporte= @TipoReporte 
-			AND UPPER(ISNULL(Area,'')) = (CASE WHEN @TipoReporte=5 THEN UPPER(@Area) ELSE UPPER(isnull(Area,'')) END)
+			-- AND Tipo_Reporte= @TipoReporte 
+			-- AND UPPER(ISNULL(Area,'')) = (CASE WHEN @TipoReporte=5 THEN UPPER(@Area) ELSE UPPER(isnull(Area,'')) END)
 			AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
 		ORDER BY Apellidos_Nombres,Codigo
 	END TRY
