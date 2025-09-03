@@ -11,7 +11,7 @@ OBJETIVO: Muestra la programacion de horarios de los docentes de la certificaci√
 CREATE PROCEDURE [dbo].[sp_ListaProgramasCertificacionAP] 
 (
 	@studentCode VARCHAR(12),
-    @program VARCHAR(12)
+    @programa VARCHAR(12)
 )
 AS 
 SET NOCOUNT ON
@@ -23,28 +23,30 @@ BEGIN
 	   IF @studentCode IS NOT NULL
 		SET @WHERE_CLAUSE += ' AND A.DNI=''''' + @studentCode +''''''
 	   
-	   IF @program IS NOT NULL
-	   	SET @WHERE_CLAUSE += ' AND A.PROGRAM_CODE=''''' + @program +''''''
+	   IF @programa IS NOT NULL
+	   	SET @WHERE_CLAUSE += ' AND A.PROGRAM_CODE=''''' + @programa +''''''
 	   
        CREATE TABLE #RESULTADO ( 
 		Programa VARCHAR(40)
        )
 
 	   DECLARE @QUERY NVARCHAR(MAX) = '
-       SELECT AREA_DESC 
-		   FROM OPENQUERY ('+@BDOracle+',''
-			  SELECT DISTINCT B.AREA_DESC
-				  FROM BANINST1.SZVALDI A
-				  INNER JOIN BANINST1.SZVMALLA B 
-					  ON B.PROGRAM=A.PROGRAM_CODE 
-					  AND B.TERM_CODE_EFF=A.VERSION_PLAN 
-					  AND B.KEY_RULE=A.ASIGNATURA 
-					  AND B.AREA_CODE=A.AREA_CODE 
-					  AND SUBSTR(B.AREA_CODE,4,1)=''''C''''
-					  ' + @WHERE_CLAUSE + '
-          ''
-          )
-          '
+       	SELECT AREA_DESC 
+		FROM OPENQUERY ('+@BDOracle+',''
+			SELECT DISTINCT NVL(C.SMRALIB_DESCRIPTION,B.AREA_DESC) AREA_DESC
+			FROM BANINST1.SZVALDI A
+			INNER JOIN SATURN.SMRALIB C 
+			ON C.SMRALIB_AREA=A.AREA_CODE
+			INNER JOIN BANINST1.SZVMALLA B 
+				ON B.PROGRAM=A.PROGRAM_CODE 
+				AND B.TERM_CODE_EFF=A.VERSION_PLAN 
+				AND B.KEY_RULE=A.ASIGNATURA 
+				AND B.AREA_CODE=A.AREA_CODE 
+				AND SUBSTR(B.AREA_CODE,4,1)=''''C''''
+				' + @WHERE_CLAUSE + '
+		''
+		)
+		'
 		   
        INSERT INTO #RESULTADO
        EXEC (@QUERY)
