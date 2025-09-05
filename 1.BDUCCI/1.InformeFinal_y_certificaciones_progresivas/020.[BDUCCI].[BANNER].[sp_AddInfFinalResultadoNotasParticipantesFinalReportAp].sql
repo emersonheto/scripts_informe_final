@@ -21,13 +21,6 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-    	-- SET @p_IdDocumentoFinalReportAp = (
-		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-		-- 	FROM [dbo].[tblCodigoInformeFinal]
-		-- 	WHERE IdDocumento = @p_IdDocumento
-		-- 	  AND IdPrograma = @ProgramCode
-		-- )
-    
         -- Validación de parámetros más robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
@@ -206,83 +199,101 @@ BEGIN
             ORDER BY C.DNI, C.SUBJ_CODE, C.CRSE_NUMB, C.FECHA_INICIO_NRC'
 
             -- Consulta Oracle para Tipo_Reporte = 5
+            -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
-            WITH cursos_con_intentos AS (
-                SELECT 
-                    A.PIDM, A.DNI, A.NOMBRE, A.STUDYPATH_STATUS_DESC,
-                    NVL(A.STYP_DESC, '' '') AS TIPO_ALUMNO, A.VERSION_PLAN, A.PROGRAM_CODE,
-                    A.DEPT_CODE, A.SUBJ_CODE, A.CRSE_NUMB, A.ASIGNATURA, A.PORCENT_INASISTENCIA,
-                    A.FECHA_INICIO_NRC, A.ESTADO_ASIGNATURA,
-                    TO_NUMBER(NVL(GRDE_CODE, ''0'')) AS NOTA,
-                    A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
-                    A.BLOQUE_MATRICULA AS SECCION, A.PROGRAM_DESC AS PROGRAMA,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB 
-                        ORDER BY A.FECHA_INICIO_NRC DESC
-                    ) AS orden_ultimo_intento
-                FROM BANINST1.SZVALDI A
-                WHERE A.DNI IN (' + @StudentList + ')
-                    AND A.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
-            ),
-            T_NOTAS AS (
-                SELECT *
-                FROM cursos_con_intentos
-                WHERE orden_ultimo_intento = 1
-            ),
-            T_RESUMEN AS (
-                SELECT 
-                    PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
-                    SUM(CASE WHEN ESTADO_ASIGNATURA = ''Aprobado'' AND PORCENT_INASISTENCIA <= 20 THEN 1 ELSE 0 END) AS CursosAprobados,
-                    SUM(NOTA) AS SumaNotas,
-                    -- ===== CAMBIO 1: Contar los cursos que se están sumando =====
-                    COUNT(NOTA) AS CursosLlevados
-                FROM T_NOTAS
-                GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
-            ),
-            T_ESTADO_FINAL AS (
-                SELECT 
-                    A.PIDM,
-                    -- ===== CAMBIO 2: Usar el nuevo contador para el promedio =====
-                    CASE 
-                        WHEN A.CursosLlevados > 0 THEN ROUND(A.SumaNotas / A.CursosLlevados, 0)
-                        ELSE 0 
-                    END AS PROMEDIO,
-                    -- ==========================================================
-                    CASE 
-                        WHEN A.CursosAprobados = B.CANTCURSOS THEN ''APROBADO''
-                        WHEN A.STUDYPATH_STATUS_DESC <> ''Activo'' THEN A.STUDYPATH_STATUS_DESC
-                        ELSE ''DESAPROBADO''
-                    END AS ESTADO_ACADEMICO
-                FROM T_RESUMEN A
-                INNER JOIN (
+            WITH 
+                cursos_con_intentos AS (
                     SELECT 
-                        TERM_CODE_EFF, PROGRAM, MODALIDAD, COUNT(KEY_RULE) AS CANTCURSOS
-                    FROM BANINST1.SZVMALLA
-                    GROUP BY TERM_CODE_EFF, PROGRAM, MODALIDAD
-                ) B ON B.TERM_CODE_EFF = A.VERSION_PLAN 
-                    AND B.PROGRAM = A.PROGRAM_CODE 
-                    AND B.MODALIDAD = A.DEPT_CODE
-            )
+                        A.PIDM, A.DNI, A.NOMBRE, A.STUDYPATH_STATUS_DESC,
+                        NVL(A.STYP_DESC, '' '') AS TIPO_ALUMNO, A.VERSION_PLAN, A.PROGRAM_CODE,
+                        A.DEPT_CODE, A.ASIGNATURA, A.PORCENT_INASISTENCIA,
+                        A.FECHA_INICIO_NRC, A.ESTADO_ASIGNATURA,
+                        TO_NUMBER(NVL(GRDE_CODE, ''0'')) AS NOTA,
+                        A.ASIGNATURA || '' - '' || A.NOMBRE_CURSO AS NOMBRE_CURSO_COMPLETO,
+                        A.BLOQUE_MATRICULA AS SECCION, A.PROGRAM_DESC AS PROGRAMA,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY A.DNI, A.ASIGNATURA 
+                            ORDER BY A.FECHA_INICIO_NRC DESC
+                        ) AS orden_ultimo_intento
+                    FROM BANINST1.SZVALDI A
+                    WHERE A.DNI IN (' + @StudentList + ')
+                        AND A.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
+                ),
+                T_NOTAS AS (
+                    SELECT *
+                    FROM cursos_con_intentos
+                    WHERE orden_ultimo_intento = 1
+                ),
+                T_RESUMEN AS (
+                    SELECT 
+                        PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
+                        SUM(CASE WHEN ESTADO_ASIGNATURA = ''Aprobado'' AND PORCENT_INASISTENCIA <= 20 THEN 1 ELSE 0 END) AS CursosAprobados,
+                        SUM(NOTA) AS SumaNotas,
+                        COUNT(ASIGNATURA) AS CursosLlevados
+                    FROM T_NOTAS
+                    GROUP BY PIDM, STUDYPATH_STATUS_DESC, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
+                ),
+                T_ESTADO_FINAL AS (
+                    SELECT 
+                        A.PIDM,
+                        -- CORRECCIÓN: El promedio se divide entre el total de cursos de la malla (B.CANTCURSOS).
+                        CASE 
+                            WHEN B.CANTCURSOS > 0 THEN ROUND(A.SumaNotas / B.CANTCURSOS, 0)
+                            ELSE 0 
+                        END AS PROMEDIO,
+                        CASE 
+                            WHEN A.CursosAprobados = B.CANTCURSOS THEN ''APROBADO''
+                            WHEN A.STUDYPATH_STATUS_DESC <> ''Activo'' THEN A.STUDYPATH_STATUS_DESC
+                            ELSE ''DESAPROBADO''
+                        END AS ESTADO_ACADEMICO
+                    FROM T_RESUMEN A
+                    INNER JOIN (
+                        SELECT 
+                            TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
+                        FROM BANINST1.SZVMALLA
+                        WHERE AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
+                        GROUP BY TERM_CODE_EFF, PROGRAM
+                    ) B ON B.TERM_CODE_EFF = A.VERSION_PLAN AND B.PROGRAM = A.PROGRAM_CODE
+                ),                
+                ALUMNOS_CON_INFO_BASE AS (
+                    SELECT DISTINCT DNI, NOMBRE, PIDM, TIPO_ALUMNO, VERSION_PLAN, PROGRAM_CODE
+                    FROM T_NOTAS
+                ),
+                CURSOS_REQUERIDOS AS (
+                    SELECT DISTINCT 
+                        KEY_RULE AS ASIGNATURA, 
+                        KEY_RULE || '' - '' || ASIGNATURA AS NOMBRE_CURSO_COMPLETO
+                    FROM BANINST1.SZVMALLA 
+                    WHERE AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
+                ),
+                GRID_ALUMNO_CURSO AS (
+                    SELECT
+                        A.DNI, A.NOMBRE, A.PIDM, A.TIPO_ALUMNO, A.VERSION_PLAN, A.PROGRAM_CODE,
+                        C.ASIGNATURA, C.NOMBRE_CURSO_COMPLETO
+                    FROM ALUMNOS_CON_INFO_BASE A
+                    CROSS JOIN CURSOS_REQUERIDOS C
+                )                
             SELECT 
-                C.DNI AS CODIGO,
-                C.NOMBRE AS APELLIDOS_NOMBRES,
-                C.CURSO,
-                C.NOTA,
+                G.DNI AS CODIGO,
+                G.NOMBRE AS APELLIDOS_NOMBRES,
+                G.NOMBRE_CURSO_COMPLETO AS CURSO,
+                NVL(C.NOTA, 0) AS NOTA, -- Si no hay nota, se pone 0
                 D.PROMEDIO,
-                C.TIPO_ALUMNO,
+                G.TIPO_ALUMNO,
                 D.ESTADO_ACADEMICO,
                 CASE WHEN (
                     SELECT MAX(NVL(SMBPOGN_REQUEST_NO, 0))
                     FROM SATURN.SMBPOGN PO
-                    WHERE PO.SMBPOGN_TERM_CODE_EFF = C.VERSION_PLAN
-                        AND PO.SMBPOGN_PROGRAM = C.PROGRAM_CODE
-                        AND PO.SMBPOGN_PIDM = C.PIDM
+                    WHERE PO.SMBPOGN_TERM_CODE_EFF = G.VERSION_PLAN
+                        AND PO.SMBPOGN_PROGRAM = G.PROGRAM_CODE
+                        AND PO.SMBPOGN_PIDM = G.PIDM
                 ) = 0 THEN ''NO CAPP'' ELSE ''OK'' END AS ESTADO_CAPP,
-                C.SECCION,
-                C.PROGRAMA
-            FROM T_NOTAS C
-            INNER JOIN T_ESTADO_FINAL D ON D.PIDM = C.PIDM
-            ORDER BY C.DNI, C.SUBJ_CODE, C.CRSE_NUMB, C.FECHA_INICIO_NRC
+                NVL(C.SECCION, '''') AS SECCION,    -- Si la sección es NULL, se convierte a ''
+                NVL(C.PROGRAMA, '''') AS PROGRAMA  -- Si el programa es NULL, se convierte a ''
+            FROM GRID_ALUMNO_CURSO G
+            LEFT JOIN T_NOTAS C ON G.DNI = C.DNI AND G.ASIGNATURA = C.ASIGNATURA
+            INNER JOIN T_ESTADO_FINAL D ON D.PIDM = G.PIDM
+            ORDER BY G.DNI, G.NOMBRE_CURSO_COMPLETO
             '
 
             -- Consultas dinámicas completas con INSERT
@@ -342,7 +353,7 @@ BEGIN
                     Fecha_Edicion, Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    Seccion,
+                    ISNULL(Seccion, ''),
                     STR(ROW_NUMBER() OVER (ORDER BY Codigo)) AS 'No',  
                     Codigo,
                     Apellidos_Nombres,

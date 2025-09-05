@@ -8,7 +8,7 @@ AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra los resultados de los alumnos de la certificación
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoCertificacionAP]
+ALTER PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoCertificacionAP]
 (
 	 @XmlStudents XML,
 	 @AreaCert VARCHAR(20)
@@ -62,18 +62,18 @@ BEGIN
 			  WHERE A.DNI IN (' + @StudentList + ')
 			  GROUP BY PIDM,STUDYPATH_STATUS_DESC,VERSION_PLAN,PROGRAM_CODE,DEPT_CODE)
 
-			  SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''''APROBADO'''' 
-						   ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''''Activo'''' THEN A.STUDYPATH_STATUS_DESC 
-						   ELSE ''''DESAPROBADO'''' END) END) AS ESTADO_ACADEMICO,
-						 A.PIDM
-				  FROM T_CURSOSAPROBADOS A
-				  INNER JOIN (
-							 SELECT TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
-								 FROM BANINST1.SZVMALLA
-								 WHERE AREA_CODE='''''+@AreaCert+'''''
-								 GROUP BY TERM_CODE_EFF, PROGRAM) B 
-						ON B.TERM_CODE_EFF=A.VERSION_PLAN 
-						AND B.PROGRAM=A.PROGRAM_CODE
+		SELECT (CASE WHEN A.CURSOSAPROBADOS>=B.CANTCURSOS THEN ''''APROBADO'''' 
+					ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''''Activo'''' THEN A.STUDYPATH_STATUS_DESC 
+					ELSE ''''DESAPROBADO'''' END) END) AS ESTADO_ACADEMICO,
+					A.PIDM
+			FROM T_CURSOSAPROBADOS A
+			INNER JOIN (
+						SELECT TERM_CODE_EFF, PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
+							FROM BANINST1.SZVMALLA
+							WHERE AREA_CODE='''''+@AreaCert+'''''
+							GROUP BY TERM_CODE_EFF, PROGRAM) B 
+				ON B.TERM_CODE_EFF=A.VERSION_PLAN 
+				AND B.PROGRAM=A.PROGRAM_CODE
 			''
           )
           '

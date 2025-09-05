@@ -23,17 +23,30 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION GuardarInfFinalAP
         
-        DECLARE
-        @IdDocumentoFinalReportAp VARCHAR(15),
-        @CleanUsuario VARCHAR(200);
+DECLARE
+            @IdDocumentoFinalReportAp VARCHAR(15),
+            @CleanUsuario VARCHAR(200),
+            @IdSemiLimpio VARCHAR(20),
+            @IdBase VARCHAR(15),      
+            @NuevoCorrelativo VARCHAR(3);
+        
+        SET @NuevoCorrelativo = (
+            SELECT FORMAT(NroCorrelativo + 1, '000')
+            FROM [dbo].[tblCodigoInformeFinal]
+            WHERE IdDocumento = @p_IdDocumento
+              AND IdPrograma = @ProgramCode
+        );
 
-        SET @CleanUsuario = REPLACE(@UsuarioCreacion, ' ', '');        
-
-        SET @IdDocumentoFinalReportAp = REPLACE(
+        SET @CleanUsuario = REPLACE(@UsuarioCreacion, ' ', '');
+        SET @IdSemiLimpio = REPLACE(
             REPLACE(@IdDocumentoFinalReportApTMP, @CleanUsuario, ''), 
             'TMP', 
             ''
         );
+
+        SET @IdBase = LEFT(@IdSemiLimpio, LEN(@IdSemiLimpio) - 3);
+
+        SET @IdDocumentoFinalReportAp = CONCAT(@IdBase, @NuevoCorrelativo);
 		
 		SET @PathDocumento = REPLACE(@PathDocumento, '[CODIGO]', @IdDocumentoFinalReportAp)
 
