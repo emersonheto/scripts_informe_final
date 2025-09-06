@@ -1,5 +1,3 @@
-USE [BDUCCI]
-GO
 /* ========================================================================================================================
 NOMBRE		: [pgpt].[sp_EmiConstanciaIns_UC]
 FECHA		: 29/01/2024
@@ -10,7 +8,8 @@ MODIFICACIONES
 NRO		FECHA		USUARIO							MODIFICACION
 1		21/05/2024	Carlos Marín (NetConsultores) 	Ajuste en la descripción de puestos y modificación del query para traer los cursos
 2		14/04/2025	Carlos Estrada(Softbrilliance) 	Ajuste en el nombre del archivo a insertar en pgpt.tblGeneratedDocuments
-3		03/06/2025	Emerson Herrera(Waytech)		Se agrega un nuevo tipo de constancia [9] para certificación progresiva de programas de maestrías.	
+3		20/05/2025	Emerson Herrera(Waytech)		Se agrega un nuevo tipo de constancia [9] para certificación progresiva de programas de maestrías.	
+4       03/05/2025  Emerson Herrera(Waytech)		Se agrega el parámetro iddocumentofinalreportap para la inserción .
 ======================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaIns_UC]
     @Nombres VARCHAR(50)= NULL,
@@ -34,7 +33,8 @@ ALTER PROCEDURE [pgpt].[sp_EmiConstanciaIns_UC]
 	@seccion VARCHAR(15) = NULL,
 	@tipoConstancia INT = NULL,
 	@FechaIni VARCHAR(30) =NULL,
-	@FechaFin VARCHAR(30) = NULL
+	@FechaFin VARCHAR(30) = NULL,
+	@iddocumentofinalreportap VARCHAR(50) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -70,11 +70,17 @@ BEGIN
 
     DECLARE @NombreArchivo VARCHAR(20)
     SET @NombreArchivo = @AnioActual + @BODY + RIGHT('00000' + CAST(@NumeroSiguiente AS VARCHAR(6)), 6)
+		
+		DECLARE @CodigoDocumento VARCHAR(100)
+		IF @tipoConstancia = 9
+			SET @CodigoDocumento =CONCAT('EPUC.',@seccion,'.',@CodigoArea,'.',@dni)
+		ELSE
+			SET @CodigoDocumento =CONCAT('EPUC',@TipoCertificado,@seccion,'.',@CodigoArea,'.',@dni)
 
 
-	    INSERT INTO pgpt.tblGeneratedDocuments (dni,seccion,archivo,fechaCreacion,tipoConstancia,version,razonAnulacion,codigoFormato,estado)
+	    INSERT INTO pgpt.tblGeneratedDocuments (dni,seccion,archivo,fechaCreacion,tipoConstancia,version,razonAnulacion,codigoFormato,estado,iddocumentofinalreportap)
 		VALUES (
-			@dni,@seccion,CONCAT('EPUC',@TipoCertificado,@seccion,'.',@CodigoArea,'.',@dni)  ,GETDATE(),@tipoConstancia,'','',@NombreArchivo,1
+			@dni,@seccion,@CodigoDocumento ,GETDATE(),@tipoConstancia,1,'',@NombreArchivo,1,@iddocumentofinalreportap
 	);
 
 	DECLARE @IDDocumentoGenerado INT;
@@ -96,16 +102,16 @@ BEGIN
     -- Insertar datos en la tabla tblEmiConstancia_UC
     INSERT INTO pgpt.tblEmiConstancia_UC (Nombres, APPat, APMat, Sede, TipoPrograma, Programa, IDSeccionC, codigoArea,
         NombreCertificadoConstancia, PeriodoInicio,PeriodoFin,FechaInicio,FechaFin,IDDocumentoGenerado, Creditos, Promedio, Deuda, HorasLectivas,
-        OrdenMerito, cargo, NombreDirector)
+        OrdenMerito, cargo, NombreDirector,iddocumentofinalreportap)
     VALUES (@Nombres, @APPat, @APMat, @Sede, @TipoPrograma, @Programa, @seccion, @CodigoArea,
         @NombreCertificadoConstancia,@PeriodoInicio,@PeriodoFin,@FechaIni,@FechaFin,@IDDocumentoGenerado, @Creditos, @Promedio, @Deuda, @HorasLectivas,
-        @OrdenMerito, '', '');
+        @OrdenMerito, '', '',@iddocumentofinalreportap);
 		DECLARE @IdEmiConstancia INT;
     SET @IdEmiConstancia = SCOPE_IDENTITY();
 	-- Insetar datos en la tabla [tblEmiConstanciaAsignaturas_UC]
+	
 
-
-	--llamada a BANNER para insertar las notas
+	--llamada a DEVL para insertar las notas
 
 	DECLARE @table table
 (
@@ -115,11 +121,11 @@ BEGIN
 )
 
 DECLARE @Sql NVARCHAR(MAX)
-SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
+SET @Sql = 'SELECT * FROM Openquery(DEVL,'''
 
 		SET @Sql = @Sql + ' SELECT B.SFRSTCR_GRDE_CODE AS Nota, '
-		SET @Sql = @Sql + ' I.ASIGNATURA AS Curso, '
-		SET @Sql = @Sql + ' B.SFRSTCR_CREDIT_HR AS Creditos '
+		SET @Sql = @Sql + ' I.ASIGNATURA as Curso, '
+		SET @Sql = @Sql + ' B.SFRSTCR_CREDIT_HR as Creditos '
 		SET @Sql = @Sql + ' FROM SPRIDEN A '
 		SET @Sql = @Sql + ' INNER JOIN sfrstcr B ON B.sfrstcr_pidm=A.SPRIDEN_PIDM '
 		SET @Sql = @Sql + ' INNER JOIN sorlcur C ON C.sorlcur_pidm = B.sfrstcr_pidm '
@@ -131,7 +137,15 @@ SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
 		SET @Sql = @Sql + ' INNER JOIN SZVMALLA I on I.PROGRAM = C.SORLCUR_PROGRAM AND I.RULE_SUBJ_CODE || I.RULE_CRSE_NUMB = F.SSBSECT_SUBJ_CODE || F.SSBSECT_CRSE_NUMB '
 --		SET @Sql = @Sql + ' AND I.TERM_CODE_EFF = B.SFRSTCR_TERM_CODE '
 		SET @Sql = @Sql + ' WHERE  B.sfrstcr_blck_code is not null AND C.sorlcur_cact_code  = ''''ACTIVE'''' '
-		SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
+		-- SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
+		
+		-- Aplicar filtro de sección solo si @iddocumentofinalreportap es nulo || validando si proviene de Informe Final Certificaciones progresivas 
+		IF @iddocumentofinalreportap IS NULL
+				SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
+		ELSE
+				SET @Sql = @Sql + ' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
+	
+		
 		SET @Sql = @Sql + ' GROUP BY I.ASIGNATURA,B.SFRSTCR_GRDE_CODE,B.SFRSTCR_CREDIT_HR '
 		SET @Sql = @Sql + ' ORDER BY I.ASIGNATURA asc '
    		SET @Sql = @Sql + '     '');'
