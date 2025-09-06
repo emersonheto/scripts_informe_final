@@ -24,13 +24,6 @@ AS
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-		-- SET @p_IdDocumentoFinalReportAp = (
-		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-		-- 	FROM [dbo].[tblCodigoInformeFinal]
-		-- 	WHERE IdDocumento = @p_IdDocumento
-		-- 	  AND IdPrograma = @ProgramCode
-		-- )
-	
 		 IF(@p_Accion=1)
 			BEGIN
 					INSERT [dbo].[tblInfFinalAnexos]([Seccion],[Archivo],[Orden],[Fecha],[Tipo_Reporte],[Area], [IdDocumentoFinalReportAp]) 

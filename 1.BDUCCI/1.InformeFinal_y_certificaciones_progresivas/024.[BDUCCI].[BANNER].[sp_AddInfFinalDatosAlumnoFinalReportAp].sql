@@ -22,14 +22,7 @@ ALTER PROCEDURE [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp]
 AS 
 SET NOCOUNT ON
 BEGIN
-    BEGIN TRY
-    	-- SET @p_IdDocumentoFinalReportAp = (
-		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-		-- 	FROM [dbo].[tblCodigoInformeFinal]
-		-- 	WHERE IdDocumento = @p_IdDocumento
-		-- 	  AND IdPrograma = @ProgramCode
-		-- )
-    
+    BEGIN TRY    
         -- Validación de parámetros más robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN

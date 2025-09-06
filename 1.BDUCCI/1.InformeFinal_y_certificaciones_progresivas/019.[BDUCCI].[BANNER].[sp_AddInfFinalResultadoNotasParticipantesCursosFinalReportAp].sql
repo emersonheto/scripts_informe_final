@@ -20,14 +20,7 @@ ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesCursosFinalRe
 AS 
 SET NOCOUNT ON
 BEGIN
-    BEGIN TRY
-    	-- SET @p_IdDocumentoFinalReportAp = (
-		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-		-- 	FROM [dbo].[tblCodigoInformeFinal]
-		-- 	WHERE IdDocumento = @p_IdDocumento
-		-- 	  AND IdPrograma = @ProgramCode
-		-- )
-    
+    BEGIN TRY    
         -- Validación de parámetros más robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
@@ -68,7 +61,7 @@ BEGIN
         IF LEN(@StudentList) > 0
             SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
 
-        DECLARE @BDOracle VARCHAR(10)='DEVL';
+        DECLARE @BDOracle VARCHAR(10)='BANNER';
         
         IF (@p_Accion=1)
         BEGIN
@@ -98,18 +91,35 @@ BEGIN
 
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
-            SELECT DISTINCT 
-                A.ASIGNATURA||'' - ''||NOMBRE_CURSO AS CURSO,
-                A.BLOQUE_MATRICULA AS SECCION,
-                A.PROGRAM_DESC AS PROGRAMA
-            FROM BANINST1.SZVALDI A
-            INNER JOIN BANINST1.SZVMALLA B 
-                ON B.PROGRAM=A.PROGRAM_CODE 
-                AND B.TERM_CODE_EFF=A.VERSION_PLAN 
-                AND B.KEY_RULE=A.ASIGNATURA 
-                AND B.AREA_CODE=''' + @p_Area + '''
-            WHERE A.DNI IN (' + @StudentList + ')
-                --AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+            WITH                
+                CURSOS_REQUERIDOS AS (
+                    SELECT DISTINCT
+                        B.KEY_RULE AS ASIGNATURA,
+                        B.KEY_RULE || '' - '' || B.ASIGNATURA AS CURSO
+                    FROM BANINST1.SZVMALLA B
+                    WHERE B.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
+                ),
+                CURSOS_LLEVADOS AS (
+                    SELECT *
+                    FROM (
+                        SELECT
+                            A.ASIGNATURA,
+                            A.BLOQUE_MATRICULA AS SECCION,
+                            A.PROGRAM_DESC AS PROGRAMA,
+                            ROW_NUMBER() OVER(PARTITION BY A.ASIGNATURA ORDER BY A.FECHA_INICIO_NRC DESC) as rn
+                        FROM BANINST1.SZVALDI A
+                        WHERE A.DNI IN (' + @StudentList + ')
+                          AND A.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
+                    )
+                    WHERE rn = 1
+                )            
+            SELECT
+                req.CURSO,
+                NVL(llev.SECCION, '''') AS SECCION,   -- Si no se ha llevado, la sección será un texto vacío.
+                NVL(llev.PROGRAMA, '''') AS PROGRAMA -- Si no se ha llevado, el programa será un texto vacío.
+            FROM CURSOS_REQUERIDOS req
+            LEFT JOIN CURSOS_LLEVADOS llev ON req.ASIGNATURA = llev.ASIGNATURA
+            ORDER BY req.CURSO
             ';
 
             -- Consultas dinámicas completas con INSERT

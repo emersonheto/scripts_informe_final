@@ -21,13 +21,6 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-    	-- SET @p_IdDocumentoFinalReportAp = (
-		-- 	SELECT CONCAT(IdAnio, IdInforme, IdDocumento, IdPrograma, IdSede, FORMAT(NroCorrelativo + 1, 'TMP000'), REPLACE(@p_user_creacion, ' ', ''))
-		-- 	FROM [dbo].[tblCodigoInformeFinal]
-		-- 	WHERE IdDocumento = @p_IdDocumento
-		-- 	  AND IdPrograma = @ProgramCode
-		-- )
-    
         -- Validación de parámetros más robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
@@ -143,11 +136,11 @@ BEGIN
                         AND B.AREA_CODE=A.AREA_CODE 
                         AND B.AREA_CODE=''' + @p_Area + '''
                     WHERE A.DNI IN (' + @StudentList + ')
-                        AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
+                        --AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
                         
                     GROUP BY A.PIDM, A.STUDYPATH_STATUS_DESC, A.VERSION_PLAN, A.DEPT_CODE, A.PROGRAM_DESC)
 
-            SELECT (CASE WHEN A.CURSOSAPROBADOS=B.CANTCURSOS THEN ''APROBADO'' 
+            SELECT (CASE WHEN A.CURSOSAPROBADOS>=B.CANTCURSOS THEN ''APROBADO'' 
                         ELSE (CASE WHEN A.STUDYPATH_STATUS_DESC<>''Activo'' THEN A.STUDYPATH_STATUS_DESC 
                         ELSE ''DESAPROBADO'' END) END) AS ESTADO_ACADEMICO,
                     A.PIDM,
@@ -157,8 +150,8 @@ BEGIN
                 INNER JOIN (
                             SELECT TERM_CODE_EFF, ''' + @ProgramCode + ''' AS PROGRAM, COUNT(KEY_RULE) AS CANTCURSOS
                                 FROM BANINST1.SZVMALLA
-                                WHERE PROGRAM = ''' + @ProgramCode + '''
-                                AND AREA_CODE=''' + @p_Area + '''
+                                --WHERE PROGRAM = ''' + @ProgramCode + '''
+                                WHERE AREA_CODE=''' + @p_Area + '''
                                 GROUP BY TERM_CODE_EFF) B 
                     ON B.TERM_CODE_EFF=A.VERSION_PLAN'
 

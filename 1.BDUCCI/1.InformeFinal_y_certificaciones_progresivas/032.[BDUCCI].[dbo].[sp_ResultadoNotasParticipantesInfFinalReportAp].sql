@@ -31,10 +31,8 @@ BEGIN
 			Estado_Academico ,
 			Estado_CAPP 
 		FROM [dbo].[tblInfFinalResultadoNotasParticipantes] 
-		WHERE Programa_Codigo = @ProgramCode			
-			-- AND Tipo_Reporte= @TipoReporte 
-			-- AND UPPER(ISNULL(Area,'')) = (CASE WHEN @TipoReporte=5 THEN UPPER(@Area) ELSE UPPER(isnull(Area,'')) END)
-			AND IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
+		WHERE 
+			IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
 		ORDER BY Apellidos_Nombres,Codigo
 	END TRY
 	BEGIN CATCH

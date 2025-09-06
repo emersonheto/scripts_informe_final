@@ -8,74 +8,61 @@ AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra la lista de cursos de los participantes de la certificación progresiva
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCursosCertificacionAP]
+ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCursosCertificacionAP]
 (
 	 @XmlStudents XML,
-	 @AreaCert VARCHAR(20)
+     @AreaCert VARCHAR(20)
 )
 AS 
 SET NOCOUNT ON
 BEGIN
-	BEGIN TRY
-	IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
-    BEGIN
-        RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
-        RETURN
-    END
-       
-    DECLARE @Students TABLE (
-        StudentCode VARCHAR(9)
-    )
+    BEGIN TRY
+        -- Declaración de variables
+        DECLARE @BDOracle NVARCHAR(128) = N'BANNER';
+        DECLARE @SafeAreacert NVARCHAR(MAX) = REPLACE(@AreaCert, '''', '''''');
+        DECLARE @ExecQuery NVARCHAR(MAX);
+        DECLARE @OracleQuery NVARCHAR(MAX);
 
-    INSERT INTO @Students (StudentCode)
-    SELECT 
-        Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
-    FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
-       
-	DECLARE @BDOracle VARCHAR(10)='BANNER'
-	   
-	DECLARE @StudentList NVARCHAR(MAX) = ''
-    SELECT @StudentList = @StudentList + '''''' + REPLACE(StudentCode, '''', '''''') + ''''','
-    FROM @Students
-        
-    IF LEN(@StudentList) > 0
-        SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
-	
-    CREATE TABLE #RESULTADO ( 
-       Curso VARCHAR(200)
-    )
+        -- Tabla temporal para guardar el resultado
+        CREATE TABLE #RESULTADO ( 
+            Curso VARCHAR(200)
+        );
 
-    DECLARE @QUERY NVARCHAR(MAX) = '
-    SELECT CURSO FROM OPENQUERY ('+@BDOracle+',''
-		SELECT DISTINCT A.ASIGNATURA||'''' - ''''||NOMBRE_CURSO AS CURSO
-			FROM BANINST1.SZVALDI A
-			INNER JOIN BANINST1.SZVMALLA B 
-				ON B.PROGRAM=A.PROGRAM_CODE 
-				AND B.TERM_CODE_EFF=A.VERSION_PLAN 
-				AND B.KEY_RULE=A.ASIGNATURA 
-				AND B.AREA_CODE=A.AREA_CODE 
-				AND B.AREA_CODE='''''+@AreaCert+'''''
-			WHERE A.DNI IN (' + @StudentList + ')
-    ''
-    )'
+        -- ==================== INICIO DE LA MODIFICACIÓN ====================
+        -- Consulta Oracle simplificada que obtiene los cursos directamente de la malla curricular.
+        -- Se usa la columna ASIGNATURA para el nombre del curso, como en la versión final del SP anterior.
+        SET @OracleQuery = N'
+            SELECT DISTINCT KEY_RULE || '' - '' || ASIGNATURA AS CURSO
+            FROM BANINST1.SZVMALLA 
+            WHERE AREA_CODE = ''' + @SafeAreacert + '''';
+        -- ===================== FIN DE LA MODIFICACIÓN ======================
 
-    INSERT INTO #RESULTADO
-    EXEC (@QUERY)
+        -- Se construye y ejecuta la consulta dinámica
+        SET @ExecQuery = N'INSERT INTO #RESULTADO (Curso)
+                           SELECT Curso FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
 
-    SELECT Curso   
-		FROM #RESULTADO
-		ORDER BY Curso 
+        EXEC sp_executesql @ExecQuery;
 
-    DROP TABLE #RESULTADO
-	END TRY
-	BEGIN CATCH
-		DECLARE	@ErrorMessage VARCHAR(4000),
-				@ErrorSeverity INT,
-				@ErrorState INT;
-		SELECT	@ErrorMessage =ERROR_MESSAGE(),
-				@ErrorSeverity=ERROR_SEVERITY(),
-				@ErrorState=ERROR_STATE();
-				RAISERROR(@ErrorMessage,@ErrorSeverity,@ErrorState);
-				SELECT @ErrorMessage AS status
-	END CATCH
+        -- Se devuelve el resultado final
+        SELECT Curso    
+        FROM #RESULTADO
+        ORDER BY Curso;
+
+        DROP TABLE #RESULTADO;
+
+    END TRY
+    BEGIN CATCH
+        -- Limpieza en caso de error
+        IF OBJECT_ID('tempdb..#RESULTADO') IS NOT NULL DROP TABLE #RESULTADO;
+
+        -- Manejo de errores
+        DECLARE @ErrorMessage VARCHAR(4000),
+                @ErrorSeverity INT,
+                @ErrorState INT;
+        SELECT  @ErrorMessage = ERROR_MESSAGE(),
+                @ErrorSeverity = ERROR_SEVERITY(),
+                @ErrorState = ERROR_STATE();
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+        SELECT @ErrorMessage AS status;
+    END CATCH
 END
