@@ -8,17 +8,15 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Lista los archivos anexos
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ListarAnexosInfFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_ListarAnexosInfFinalReportAp] 
 (
-	@IdDocumentoFinalReportAp VARCHAR(15),
-	@TipoReporte INT,
-	@Area VARCHAR(20)
+	@IdDocumentoFinalReportAp VARCHAR(15)
 )
 AS 
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-       SELECT [Seccion] AS 'sSeccion',
+       SELECT --[Seccion] AS 'sSeccion', --para los tipos 4 y 5, sección es NULL
 	          [Orden] AS 'nOrden',
 			  [Archivo] AS 'sNameFile',
 			  [Fecha] AS 'sFecha',
@@ -26,8 +24,8 @@ BEGIN
 			  Area AS 'sArea'
 		   FROM [dbo].[tblInfFinalAnexos]
 		   WHERE [IdDocumentoFinalReportAp]=@IdDocumentoFinalReportAp
-			   AND Tipo_Reporte=@TipoReporte
-			   AND UPPER(ISNULL(Area,'')) = (CASE @TipoReporte WHEN 5 THEN upper(@Area) ELSE UPPER(ISNULL(Area,'')) END)
+			--    AND Tipo_Reporte=@TipoReporte
+			--    AND UPPER(ISNULL(Area,'')) = (CASE @TipoReporte WHEN 5 THEN upper(@Area) ELSE UPPER(ISNULL(Area,'')) END)
 		   ORDER BY [Orden]
 	END TRY
 	BEGIN CATCH

@@ -8,17 +8,13 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Adiciona o elimina archivos anexos
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_AddAnexosInfFinalAp]
-	@p_Seccion VARCHAR(50),
+ALTER PROCEDURE [dbo].[sp_AddAnexosInfFinalAp]	
 	@p_Orden VARCHAR(50),
 	@p_NameFile VARCHAR(50),
 	@p_Fecha VARCHAR(200),
 	@p_TipoReporte INT,
 	@p_Area VARCHAR(20),
 	@p_Accion VARCHAR(200),
-	@ProgramCode VARCHAR(3),
-	@p_user_creacion VARCHAR(200),
-    @p_IdDocumento VARCHAR(5),
     @p_IdDocumentoFinalReportAp VARCHAR(50)
 AS
 SET NOCOUNT ON
@@ -27,7 +23,7 @@ BEGIN
 		 IF(@p_Accion=1)
 			BEGIN
 					INSERT [dbo].[tblInfFinalAnexos]([Seccion],[Archivo],[Orden],[Fecha],[Tipo_Reporte],[Area], [IdDocumentoFinalReportAp]) 
-						VALUES (@p_Seccion,@p_NameFile,@p_Orden,@p_Fecha,@p_TipoReporte,@p_Area, @p_IdDocumentoFinalReportAp)
+						VALUES ('',@p_NameFile,@p_Orden,@p_Fecha,@p_TipoReporte,@p_Area, @p_IdDocumentoFinalReportAp)
 
 					SELECT 0 AS 'NRO_RESPUESTA','SE INSERTO CORRECTAMENTE EL ANEXO A LA SECCIÓN' AS 'MSG'
 			END
