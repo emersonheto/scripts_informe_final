@@ -44,7 +44,7 @@ DECLARE
             ''
         );
 
-        SET @IdBase = LEFT(@IdSemiLimpio, LEN(@IdSemiLimpio) - 3);
+        SET @IdBase = LEFT(@IdSemiLimpio, LEN(@IdSemiLimpio) - 6);
 
         SET @IdDocumentoFinalReportAp = CONCAT(@IdBase, @NuevoCorrelativo);
 		
