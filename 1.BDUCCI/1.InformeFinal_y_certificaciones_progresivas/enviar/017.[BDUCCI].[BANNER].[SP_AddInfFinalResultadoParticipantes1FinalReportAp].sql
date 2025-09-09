@@ -65,7 +65,7 @@ BEGIN
 
         IF(@p_Accion=1)
         BEGIN
-            DECLARE @BDOracle VARCHAR(10)='DEVL';
+            DECLARE @BDOracle VARCHAR(10)='BANNER';
 
             -- Crear tabla temporal sin índice (como en el primer SP)
             CREATE TABLE #RESULTADO ( 
