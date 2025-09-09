@@ -10,3 +10,7 @@ OBJETIVO	: Crear tablas y añadir columnas a tablas existentes
 ALTER TABLE [dbo].[tblInfFinalSeccionCertificar] ADD    
     [Programa_Codigo] VARCHAR(3),
     [IdDocumentoFinalReportAp] VARCHAR(50)
+
+--va a permitir saber a partir de qué id temporal se creó el id definitivo
+ALTER TABLE [dbo].[tblDocumentoFinalReportAp] ADD
+    [IdDocumentoFinalReportApTMP] VARCHAR(50)

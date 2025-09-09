@@ -19,16 +19,13 @@ ALTER PROCEDURE [dbo].[sp_GuardarDocumentoFinalReportAp]
     @IdDocumentoFinalReportApTMP VARCHAR(50)
 AS
 BEGIN
-    SET NOCOUNT ON;
-    BEGIN TRY
-        BEGIN TRANSACTION GuardarInfFinalAP
-        
+    SET NOCOUNT ON;        
 DECLARE
-            @IdDocumentoFinalReportAp VARCHAR(15),
+            @IdDocumentoFinalReportAp VARCHAR(15),            
             @CleanUsuario VARCHAR(200),
             @IdSemiLimpio VARCHAR(20),
             @IdBase VARCHAR(15),      
-            @NuevoCorrelativo VARCHAR(3);
+            @NuevoCorrelativo VARCHAR(3);            
         
         SET @NuevoCorrelativo = (
             SELECT FORMAT(NroCorrelativo + 1, '000')
@@ -47,46 +44,66 @@ DECLARE
         SET @IdBase = LEFT(@IdSemiLimpio, LEN(@IdSemiLimpio) - 6);
 
         SET @IdDocumentoFinalReportAp = CONCAT(@IdBase, @NuevoCorrelativo);
-		
-		SET @PathDocumento = REPLACE(@PathDocumento, '[CODIGO]', @IdDocumentoFinalReportAp)
 
-        INSERT INTO [dbo].[tblDocumentoFinalReportAp] (
-            IdDocumentoFinalReportAp,
-            PathDocumento,
-            FechaRegistro,
-            UsuarioCreacion,
-            TipoReporte
+        --Si el id ya existe, no guarda ni actualiza nada, solo retorna el id existente
+        IF EXISTS (
+            SELECT 1
+            FROM [dbo].[tblDocumentoFinalReportAp]
+            WHERE IdDocumentoFinalReportApTMP = @IdDocumentoFinalReportApTMP
         )
-        VALUES (
-            @IdDocumentoFinalReportAp,
-            @PathDocumento,
-            GETDATE(),
-            @UsuarioCreacion,
-            @TipoReporte
-        )
-        
-        UPDATE [tblInfFinalSeccionCertificar] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-        UPDATE [tblInfFinalProgramacionDocente] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalResultadoParticipantes1FinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalResultadoParticipantes2FinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalResultadoNotasParticipantesCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalResultadoNotasParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalMemorandumFinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-        UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperados] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalResultadoOrdenMeritoParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalCertificacionPrograma] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalDatosdelosEstudiantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
-		UPDATE [tblInfFinalAnexos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+        BEGIN            
+            SELECT 0 AS 'NRO_RESPUESTA',
+            ( SELECT IdDocumentoFinalReportAp
+            FROM [dbo].[tblDocumentoFinalReportAp]
+            WHERE IdDocumentoFinalReportApTMP = @IdDocumentoFinalReportApTMP) AS 'MSG';
+            RETURN;
+        END
 
-		UPDATE [dbo].[tblCodigoInformeFinal] SET NroCorrelativo = NroCorrelativo + 1 WHERE IdDocumento = @p_IdDocumento AND IdPrograma = @ProgramCode
+        BEGIN TRANSACTION GuardarInfFinalAP;
+
+        BEGIN TRY
 		
-        COMMIT TRAN GuardarInfFinalAP;
-        
-        SELECT 0 AS 'NRO_RESPUESTA', @IdDocumentoFinalReportAp AS 'MSG'
-        
-        DROP TABLE #RESULTADO
-    END TRY
+            SET @PathDocumento = REPLACE(@PathDocumento, '[CODIGO]', @IdDocumentoFinalReportAp)
+
+            INSERT INTO [dbo].[tblDocumentoFinalReportAp] (
+                IdDocumentoFinalReportAp,
+                PathDocumento,
+                FechaRegistro,
+                UsuarioCreacion,
+                TipoReporte,
+                IdDocumentoFinalReportApTMP
+            )
+            VALUES (
+                @IdDocumentoFinalReportAp,
+                @PathDocumento,
+                GETDATE(),
+                @UsuarioCreacion,
+                @TipoReporte,
+                @IdDocumentoFinalReportApTMP
+            )
+            
+            UPDATE [tblInfFinalSeccionCertificar] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalProgramacionDocente] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalResultadoParticipantes1FinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalResultadoParticipantes2FinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalResultadoNotasParticipantesCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalResultadoNotasParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalMemorandumFinalReportAp] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalConsolidadoNotasEstudiantesRecuperados] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalResultadoOrdenMeritoParticipantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalCertificacionPrograma] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalDatosdelosEstudiantes] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+            UPDATE [tblInfFinalAnexos] SET IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp WHERE IdDocumentoFinalReportAp = @IdDocumentoFinalReportApTMP
+
+            UPDATE [dbo].[tblCodigoInformeFinal] SET NroCorrelativo = NroCorrelativo + 1 WHERE IdDocumento = @p_IdDocumento AND IdPrograma = @ProgramCode
+		
+            COMMIT TRAN GuardarInfFinalAP;
+            
+            SELECT 0 AS 'NRO_RESPUESTA', @IdDocumentoFinalReportAp AS 'MSG'
+            
+            DROP TABLE #RESULTADO
+        END TRY
     BEGIN CATCH
 		ROLLBACK TRAN GuardarInfFinalAP
     
