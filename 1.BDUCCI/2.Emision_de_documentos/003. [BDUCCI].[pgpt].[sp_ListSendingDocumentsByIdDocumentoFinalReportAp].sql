@@ -40,21 +40,21 @@ BEGIN
 	)
 	SELECT 
 		per.IDPersonaN AS pidm,
-		listaAp.Programa_Codigo as escuelaId,
+		lista.Programa_Codigo as escuelaId,
 		'' as perAcad,
 		lista.Codigo as dni,
 		REPLACE(lista.Apellidos_Nombres, ',', '') as alumno,
 		'LIMA' as sede, 
 		UPPER(ISNULL(esc.Facultad,'POSGRADO')) as tipoEscuela, 
-		ISNULL(lista.Programa,esc.Nombre) AS escuela, 
-		1 as apto,
+		ISNULL(lista.Programa,esc.Nombre) AS escuela,  
+		IIF(ax.Estado_Academico='DESAPROBADO',0,1) as apto,
 		ISNULL(gendoc.estado, 0) as estado,
 		ISNULL(gendoc.archivo, '/') AS archivo,
 		ISNULL(CONVERT(DATETIME, ax.fecha_inicio, 120), '') as fecini,
 		ISNULL(CONVERT(DATETIME, ax.fecha_fin, 120), '') as fecfin,
 		ISNULL(ax.asignatura_xml, '') as asignaturas,
-		ISNULL(listaAp.Correo_Personal, '') as correo,
-		ISNULL(listaAp.Seccion,'') as seccion,
+		ISNULL(lista.Correo_Personal, '') as correo,
+		ISNULL(lista.Seccion,'') as seccion,
 		@tipoConstancia as tipoconstancia, 
 		ISNULL(ax.horas_totales,0) as horas,
 		ISNULL(gendoc.codigoFormato,'') AS codigoFormato,
@@ -63,20 +63,17 @@ BEGIN
 		0 AS totalPaginas
 		,		lista.IdDocumentoFinalReportAp
 		
-	FROM [dbo].tblInfFinalCertificacionPrograma lista 
-	INNER JOIN tblInfFinalDatosdelosEstudiantes listaAp 
-		ON listaAp.CODIGO = lista.CODIGO 
-		AND listaAp.iddocumentofinalreportap = @CodigoDocumentoFinalReportAp
+	FROM [dbo].tblInfFinalDatosdelosEstudiantes lista
 	INNER JOIN dbo.tblPersona per 
 		ON lista.Codigo = per.DNI
 	LEFT JOIN dbo.tblEscuela esc 
-		ON esc.IDEscuela = listaAp.Programa_Codigo
+		ON esc.IDEscuela = lista.Programa_Codigo
 	LEFT JOIN [pgpt].[tblGeneratedDocuments] gendoc 
 		ON gendoc.id = (
 			SELECT TOP 1 id
 			FROM [pgpt].[tblGeneratedDocuments] gd
-			WHERE gd.dni = listaAp.Codigo 
-				AND gd.seccion = listaAp.Seccion 
+			WHERE gd.dni = lista.Codigo 
+				AND gd.seccion = lista.Seccion 
 				AND gd.tipoConstancia = @tipoConstancia
 				AND gd.iddocumentofinalreportap = lista.iddocumentofinalreportap
 				AND gd.estado in (1,2,3,4)
@@ -87,6 +84,7 @@ BEGIN
 			SUM(CAST(c.horas_lectivas AS INT)) as horas_totales,
 			MIN(c.fecha_inicio) as fecha_inicio, 
 			MAX(c.fecha_fin) as fecha_fin,
+			MAX(c.Estado_Academico) as Estado_Academico,
 			CAST((
 				SELECT 
 					RTRIM(c2.Curso) as 'nombre',
@@ -103,6 +101,6 @@ BEGIN
 			AND c.rn = 1  -- Solo el primer registro por curso para evitar duplicados
 	) ax
 	WHERE lista.iddocumentofinalreportap = @CodigoDocumentoFinalReportAp 
-		AND (esc.IDTipoEsc IN ('ECO','POS') OR esc.IDTipoEsc IS NULL);
-	
+		AND lista.Tipo_Reporte=4;
+		
 END
