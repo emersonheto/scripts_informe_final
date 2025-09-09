@@ -6,6 +6,9 @@ NOMBRE	: dbo.sp_FinalReportAP
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: muestra la lista de alumnos que pertenecen a un programa
+MODIFICACIONES:
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_FinalReportAp]
     @studentCode VARCHAR(9),
@@ -28,7 +31,7 @@ BEGIN
             SET @WHERE_CLAUSE += ' AND DNI=''' + @studentCode +'''';
         
         SET @QUERY2 = '
-        SELECT Seccion,TipoPrograma,Programa,Asignatura,EstadoAsignatura,Periodo,Modalidad,Sede,Codigo,ApellidosNombres,ProgramCode,FECHA_TERMINO_NRC FROM (
+        SELECT * FROM (
             SELECT
                 BLOQUE_MATRICULA AS "Seccion",
                 (CASE WHEN SUBJ_CODE = ''PSDP'' THEN ''DIPLOMAS''

@@ -1,17 +1,23 @@
+USE [BDUCCI]
+GO
+
 /* ===================================================================================================================
-NOMBRE		: [pgpt].[sp_listSendingDocumentsByCodInfFinalReportAp]
-FECHA		: 18/11/2022
+NOMBRE		: [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
+FECHA		: 03/06/2025
 AUTOR		: Emerson Herrera (Waytech)
 OBJETIVO	: Listar los programas de Certificaciones de Programas de Especialización AP 
 			  con filtro de código de informe final.
-
+MODIFICACIONES
+NRO 	FECHA		USUARIO		    			MODIFICACION
+01		08/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
 =================================================================================================================== */
-ALTER PROCEDURE [pgpt].[sp_listSendingDocumentsByCodInfFinalReportAp]
+ALTER PROCEDURE [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
 
 	@CodigoDocumentoFinalReportAp varchar(20),
-  @tipoConstancia INT,
-  @nPagina INT = 1
+    @tipoConstancia INT,
+    @nPagina INT = 1
 AS
+SET NOCOUNT ON
 BEGIN
 	-- DECLARE @CodigoDocumentoFinalReportAp VARCHAR(20) = '25INFIFPMAAP024';
 
