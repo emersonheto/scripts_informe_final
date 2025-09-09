@@ -21,11 +21,11 @@ AS
 BEGIN
     SET NOCOUNT ON;        
 DECLARE
-            @IdDocumentoFinalReportAp VARCHAR(15),            
-            @CleanUsuario VARCHAR(200),
-            @IdSemiLimpio VARCHAR(20),
-            @IdBase VARCHAR(15),      
-            @NuevoCorrelativo VARCHAR(3);            
+        @IdDocumentoFinalReportAp VARCHAR(15),            
+        @CleanUsuario VARCHAR(200),
+        @IdSemiLimpio VARCHAR(20),
+        @IdBase VARCHAR(15),      
+        @NuevoCorrelativo VARCHAR(3);            
         
         SET @NuevoCorrelativo = (
             SELECT FORMAT(NroCorrelativo + 1, '000')
