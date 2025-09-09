@@ -15,9 +15,8 @@ ALTER PROCEDURE [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
 
 	@CodigoDocumentoFinalReportAp varchar(20),
     @tipoConstancia INT,
-    @nPagina INT = 1
+    @numeroPagina INT = 1
 AS
-SET NOCOUNT ON
 BEGIN
 	-- DECLARE @CodigoDocumentoFinalReportAp VARCHAR(20) = '25INFIFPMAAP024';
 
