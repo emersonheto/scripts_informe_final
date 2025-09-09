@@ -51,3 +51,14 @@ GO
 --va a permitir saber a partir de qué id temporal se creó el id definitivo
 ALTER TABLE [dbo].[tblDocumentoFinalReportAp] ADD
     [IdDocumentoFinalReportApTMP] VARCHAR(50)
+GO
+ALTER TABLE [dbo].[tblInfFinalResultadoParticipantes2FinalReportAp] ALTER COLUMN [Seccion] varchar(50) NULL
+GO
+ALTER TABLE [dbo].[tblInfFinalResultadoParticipantes1FinalReportAp] ALTER COLUMN [Seccion] varchar(50) NULL
+GO
+ALTER TABLE [dbo].[tblInfFinalResultadoNotasParticipantesCursos] ALTER COLUMN [Seccion] varchar(50) NULL
+GO
+ALTER TABLE [dbo].[tblInfFinalCertificacionPrograma] ALTER COLUMN [Seccion] varchar(50)  NULL
+
+
+

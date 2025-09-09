@@ -34,15 +34,10 @@ BEGIN
 			AND rn.seccion=pd.seccion
 		WHERE rn.iddocumentofinalreportap = @IdDocumentoFinalReportAp
 	) 
--- 	SELECT 
--- 	codigo,SUM(nota),SUM(horas_lectivas), MIN(fecha_inicio), MAX(fecha_fin), estado_academico 
--- 	from CursosConHoras 
--- 	where rn=1 and codigo='16676389'
--- 	GROUP BY CODIGO,estado_academico 
 	 
 	SELECT 
 		per.IDPersonaN AS pidm,
-		ISNULL(t.InternalId,0) InternalId,  -- luego se habilita 
+		ISNULL(t.InternalId,0) InternalId, 
 		per.Nombres,
 		per.Appat,
 		per.ApMat,
@@ -64,7 +59,6 @@ BEGIN
     NULL AS PeriodoFin,
 		ISNULL(ax.horas_totales,0) as HorasLectivas,
 		CASE WHEN ax.Estado_Academico ='DESAPROBADO' THEN 'Desaprobado' ELSE '' END AS Motivo,
-		--'' as Motivo,
 		CASE WHEN t.InternalId IS NOT NULL THEN 1 ELSE 0 END AS EstadoDocGenerado,
 		IIF(ax.Estado_Academico='DESAPROBADO',1,0) as Desaprobado,  -- luego invertir
 		lista.IdDocumentoFinalReportAp,
@@ -75,13 +69,12 @@ BEGIN
 	FROM tblInfFinalDatosdelosEstudiantes lista  
 	LEFT JOIN [dbo].tblInfFinalCertificacionPrograma listaAp 
 		ON listaAp.CODIGO = lista.CODIGO 
-		AND listaAp.iddocumentofinalreportap = @IdDocumentoFinalReportAp  	--		select * from 	select * from dbo.tblSede where   select * from  dbo.tblAlumnoEstado where IDAlumno='16676389' and IDSeccionC='24MGPDM315'
+		AND listaAp.iddocumentofinalreportap = @IdDocumentoFinalReportAp  
 	INNER JOIN dbo.tblPersona per 
 		ON lista.Codigo = per.DNI
 	LEFT JOIN dbo.tblEscuela esc 
 		ON esc.IDEscuela = lista.Programa_Codigo
-	-- LEFT JOIN dbo.tblInfFinalSeccionCertificar sec  ON lista.Seccion = sec.Seccion AND sed.NombreSede = sec.Nombre_Sede   -- observar   select * from dbo.tblInfFinalSeccionCertificar where seccion=''
-	LEFT JOIN [pgpt].[tblGeneratedDocuments] gendoc   -- select * from dbo.tblInfFinalSeccionCertificar where iddocumentofinalreportap='25INFCPMGPAP034'
+	LEFT JOIN [pgpt].[tblGeneratedDocuments] gendoc
 		ON gendoc.id = (
 			SELECT TOP 1 id
 			FROM [pgpt].[tblGeneratedDocuments] gd
@@ -103,16 +96,15 @@ BEGIN
 				SELECT 
 					RTRIM(c2.Curso) as 'nombre',
 					CAST(COALESCE(c2.Nota, '0') AS INT) as 'nota',
-					CAST(c2.horas_lectivas AS INT) as 'horas'
-					-- c2.Estado_Academico as 'estado'
+					CAST(c2.horas_lectivas AS INT) as 'horas' 
 				FROM CursosConHoras c2
 				WHERE c2.Codigo = lista.Codigo 
-					AND c2.rn = 1  -- Solo el primer registro por curso
+					AND c2.rn = 1 
 				FOR XML PATH('curso'), ROOT('lista')
 			) AS NVARCHAR(MAX)) as asignatura_xml
 		FROM CursosConHoras c
 		WHERE c.Codigo = lista.Codigo 
-			AND c.rn = 1  -- Solo el primer registro por curso para evitar duplicados
+			AND c.rn = 1 
 		GROUP BY c.Estado_Academico
 	) ax
 	WHERE lista.iddocumentofinalreportap = @IdDocumentoFinalReportAp 
