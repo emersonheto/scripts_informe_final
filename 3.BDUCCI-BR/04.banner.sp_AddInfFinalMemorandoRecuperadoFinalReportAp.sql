@@ -10,7 +10,7 @@ MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
 
-ALTER PROCEDURE [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
+CREATE PROCEDURE [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
 (
 	 @Seccion VARCHAR(30),	 
 	 @DNI VARCHAR(20),

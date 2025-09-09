@@ -1,10 +1,12 @@
 USE [BDUCCI]
 GO
-/* ===================================================================================================================
-FECHA		: 03/06/2025
-AUTOR		: Brus Paucar (WAYTECH)
-OBJETIVO	: crear tablas para la sección MEMORANDUM
-=================================================================================================================== */
+/*====================================================================================================
+NOMBRE	: dbo.tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos
+FECHA	: 08/09/2025
+AUTOR	: Emerson Herrera(Waytech)
+OBJETIVO: se crean tablas y se añaden columnas necesarias
+
+====================================================================================================*/
 --Tabla para guardar los datos del informe final de memorandum de recuperados
 CREATE TABLE dbo.tblInfFinalMemorandumFinalReportAp(
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -36,3 +38,16 @@ CREATE TABLE dbo.tblDatosMemoFinalReportAp (
     NroEdicionB VARCHAR(5),
     Monto DECIMAL(10,2) NOT NULL
 );
+
+ALTER TABLE [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] ADD [Area] varchar(20) NULL
+GO
+ALTER TABLE [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] ALTER COLUMN [Seccion] varchar(50)  NULL
+GO
+--Agregar columnas en tabla Certificacion
+ALTER TABLE [dbo].[tblInfFinalSeccionCertificar] ADD    
+    [Programa_Codigo] VARCHAR(3),
+    [IdDocumentoFinalReportAp] VARCHAR(50)
+GO
+--va a permitir saber a partir de qué id temporal se creó el id definitivo
+ALTER TABLE [dbo].[tblDocumentoFinalReportAp] ADD
+    [IdDocumentoFinalReportApTMP] VARCHAR(50)

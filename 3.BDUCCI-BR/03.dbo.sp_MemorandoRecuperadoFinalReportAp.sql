@@ -10,7 +10,7 @@ MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_MemorandoRecuperadoFinalReportAp] 
+CREATE PROCEDURE [dbo].[sp_MemorandoRecuperadoFinalReportAp] 
 (
      @programCode VARCHAR(20),
      @DNI  VARCHAR(20)

@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar Matos (Waytech)
 OBJETIVO: Registro de la información de la sección a certificar para los tipos 4 y 5
 ====================================================================================================*/
 
-ALTER PROCEDURE [BANNER].[SP_AddInfFinalSeccionCertificarAPFinalReport] 
+CREATE PROCEDURE [BANNER].[SP_AddInfFinalSeccionCertificarAPFinalReport] 
 (
 	@XmlStudents XML,
 	@ProgramCode VARCHAR(3),

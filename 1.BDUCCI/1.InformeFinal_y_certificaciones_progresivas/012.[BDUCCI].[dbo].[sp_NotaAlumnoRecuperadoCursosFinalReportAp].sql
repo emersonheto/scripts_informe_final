@@ -10,7 +10,7 @@ NRO		    FECHA		USUARIO					    MODIFICACION
 1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoCursosFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoCursosFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
