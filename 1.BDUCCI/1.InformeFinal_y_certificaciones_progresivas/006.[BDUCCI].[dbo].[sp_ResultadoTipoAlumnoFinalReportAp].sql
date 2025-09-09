@@ -6,6 +6,8 @@ NOMBRE	: [dbo].[sp_ResultadoTipoAlumnoFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra los resultados por tipo de alumno
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoTipoAlumnoFinalReportAp] 

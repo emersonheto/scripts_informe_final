@@ -3,8 +3,10 @@ NOMBRE	: dbo.sp_ListaAreasCertificacionAP
 FECHA	: 25/01/2024
 AUTOR	: Saul Muñoz (SOLMIT)
 OBJETIVO: Muestra la programacion de horarios de los docentes de la sección y certificación, para la aplicación Informe Final
+
 MODIFICACIONES:
-NRO					FECHA					USUARIO					MODIFICACION
+NRO		    FECHA		USUARIO					    MODIFICACIÓN
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_ListaAreasCertificacionAP] 
 (
@@ -15,7 +17,7 @@ AS
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-	   DECLARE  @BDOracle VARCHAR(10)='DEVL';
+	   DECLARE  @BDOracle VARCHAR(10)='BANNER';
 
        CREATE TABLE #RESULTADO ( 
        Area VARCHAR(20)
@@ -24,8 +26,7 @@ BEGIN
 	   DECLARE @QUERY NVARCHAR(MAX) = '
        SELECT AREA_CODE 
 		   FROM OPENQUERY ('+@BDOracle+',''
-			  SELECT DISTINCT B.AREA_CODE
-				-- SELECT DISTINCT NVL(C.SMRALIB_DESCRIPTION,B.AREA_DESC) AREA_DESC
+			  SELECT DISTINCT B.AREA_CODE 
 				  FROM BANINST1.SZVALDI A
 					INNER JOIN SATURN.SMRALIB C 
 					ON C.SMRALIB_AREA=A.AREA_CODE

@@ -1,4 +1,13 @@
-USE BDUCCI;
+USE [BDUCCI]
+GO
+
+/*====================================================================================================
+NOMBRE	: [BANNER].[sp_AddInfFinalNotaAlumnoRecuperadoCursosFinalReportAp]
+FECHA	: 08/09/2025
+AUTOR	: Emerson Herrera (Waytech)
+OBJETIVO: Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+====================================================================================================*/
+
 
 CREATE PROCEDURE [dbo].[sp_CertificacionProgramaRecuperadosInfFinalAP] 
 (
@@ -20,15 +29,13 @@ BEGIN
 	   SELECT  DISTINCT 
 			   A.Codigo ,
 			   A.ApellidosNombres
-		   FROM [dbo].[tblInfFinalMemorandumFinalReportAp] AS A  --[dbo].[tblInfFinal_Memorandum_Recuperados] 
-			 -- tblInfFinalMemorandumFinalReportAp
+		   FROM [dbo].[tblInfFinalMemorandumFinalReportAp] AS A 
 			 INNER JOIN [dbo].tblInfFinalCertificacionPrograma AS B 
 			 ON A.IdDocumentoFinalReportAp = B.IdDocumentoFinalReportAp 
 			 AND A.Codigo = B.Codigo
 			 
 			 WHERE A.ProgramaCodigo=@ProgramCode 
-			 AND A.IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp
-		   --ORDER BY Apellidos_Nombres
+			 AND A.IdDocumentoFinalReportAp = @IdDocumentoFinalReportAp 
 
 	   SELECT 
 			   STR(ROW_NUMBER() OVER (ORDER BY Apellidos_Nombres))   AS 'No', 

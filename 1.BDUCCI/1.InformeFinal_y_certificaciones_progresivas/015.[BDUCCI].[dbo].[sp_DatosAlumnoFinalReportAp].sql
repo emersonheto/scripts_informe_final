@@ -6,6 +6,8 @@ NOMBRE	: [dbo].[sp_DatosAlumnoFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los datos de los alumnos par el Informe
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_DatosAlumnoFinalReportAp] 

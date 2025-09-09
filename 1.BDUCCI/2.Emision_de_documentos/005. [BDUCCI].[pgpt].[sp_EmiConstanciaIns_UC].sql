@@ -9,7 +9,7 @@ NRO		FECHA		USUARIO							MODIFICACION
 1		21/05/2024	Carlos Marín (NetConsultores) 	Ajuste en la descripción de puestos y modificación del query para traer los cursos
 2		14/04/2025	Carlos Estrada(Softbrilliance) 	Ajuste en el nombre del archivo a insertar en pgpt.tblGeneratedDocuments
 3		20/05/2025	Emerson Herrera(Waytech)		Se agrega un nuevo tipo de constancia [9] para certificación progresiva de programas de maestrías.	
-4       03/05/2025  Emerson Herrera(Waytech)		Se agrega el parámetro iddocumentofinalreportap para la inserción .
+4       08/09/2025  Emerson Herrera(Waytech)		Se agrega el parámetro iddocumentofinalreportap para la inserción.
 ======================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaIns_UC]
     @Nombres VARCHAR(50)= NULL,

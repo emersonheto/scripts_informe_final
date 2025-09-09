@@ -6,6 +6,8 @@ NOMBRE	: [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda la programacion de horarios de los docentes
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]

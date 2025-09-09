@@ -6,9 +6,12 @@ NOMBRE	: [dbo].[sp_ResultadoOrdenMeritoInfFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Muestra los resultados de orden de mérito de los participantes
+
+NRO		    FECHA		USUARIO					    MODIFICACIÓN
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_ResultadoOrdenMeritoInfFinalReportAp]
+ALTER PROCEDURE [dbo].[sp_ResultadoOrdenMeritoInfFinalReportAp]
 (
     --@XmlStudents XML,
     @ProgramCode VARCHAR(3),

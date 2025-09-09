@@ -6,6 +6,8 @@ NOMBRE	: [BANNER].[SP_AddInfFinalResultadoParticipantes1FinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda el resumen por tipo de alumno
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[SP_AddInfFinalResultadoParticipantes1FinalReportAp]
@@ -63,7 +65,7 @@ BEGIN
 
         IF(@p_Accion=1)
         BEGIN
-            DECLARE @BDOracle VARCHAR(10)='DEVL';
+            DECLARE @BDOracle VARCHAR(10)='BANNER';
 
             -- Crear tabla temporal sin índice (como en el primer SP)
             CREATE TABLE #RESULTADO ( 

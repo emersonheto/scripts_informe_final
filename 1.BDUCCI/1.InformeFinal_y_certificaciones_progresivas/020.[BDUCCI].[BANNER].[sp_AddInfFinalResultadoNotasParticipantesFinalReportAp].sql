@@ -6,6 +6,8 @@ NOMBRE	: [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de notas de los participantes
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]

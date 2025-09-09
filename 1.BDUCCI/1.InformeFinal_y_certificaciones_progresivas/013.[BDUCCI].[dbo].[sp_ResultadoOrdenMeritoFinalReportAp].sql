@@ -6,6 +6,8 @@ NOMBRE	: [dbo].[sp_ResultadoOrdenMeritoFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de orden de mérito de los alumnos
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoOrdenMeritoFinalReportAp] 

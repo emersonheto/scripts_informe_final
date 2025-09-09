@@ -6,9 +6,11 @@ NOMBRE	: [dbo].[sp_NotaAlumnoRecuperadoFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra las notas de los alumnos que recuperaron
+NRO		    FECHA		USUARIO					    MODIFICACION
+1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
-CREATE PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoFinalReportAp] 
+ALTER PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoFinalReportAp] 
 (
     @XmlStudents XML,
     @ProgramCode VARCHAR(3)
