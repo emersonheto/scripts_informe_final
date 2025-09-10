@@ -3,7 +3,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: dbo.sp_MemorandoRecuperadoFinalReportAp
-FECHA	: 14/10/2023
+FECHA	: 09/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Lista todos los cursos desaprobados y posteriormente aprobados.
 MODIFICACIONES:

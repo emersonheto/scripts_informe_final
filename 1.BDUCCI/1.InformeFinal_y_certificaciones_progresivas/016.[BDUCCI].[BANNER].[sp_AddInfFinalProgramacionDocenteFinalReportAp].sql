@@ -185,9 +185,7 @@ BEGIN
                         HT,
                         PROGRAMA
             ';
-
-
-            -- Consultas dinámicas completas con INSERT
+            
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (
                 CICLO, ASIGNATURA, APELLIDOS_NOMBRE_DOCENTE, 
@@ -301,16 +299,14 @@ BEGIN
         END
         ELSE IF(@p_Accion=2)
         BEGIN
-            DELETE FROM [dbo].[tblInfFinalProgramacionDocente] 
-            --WHERE Programa_Codigo = @ProgramCode AND Tipo_Reporte = @p_Tipo_Reporte
+            DELETE FROM [dbo].[tblInfFinalProgramacionDocente]             
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
                 'ELIMINAR PROGRAMACIÓN DOCENTE' AS 'MSG';
         END
     END TRY 
-    BEGIN CATCH
-        -- Limpiar tablas temporales en caso de error
+    BEGIN CATCH        
         IF OBJECT_ID('tempdb..#RESULTADO') IS NOT NULL
             DROP TABLE #RESULTADO;
             

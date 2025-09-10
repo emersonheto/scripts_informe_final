@@ -134,7 +134,7 @@ BEGIN
 )
 
 DECLARE @Sql NVARCHAR(MAX)
-SET @Sql = 'SELECT * FROM Openquery(DEVL,'''
+SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
 		SET @Sql = @Sql + ' SELECT B.SFRSTCR_GRDE_CODE AS Nota, '
 		SET @Sql = @Sql + ' I.ASIGNATURA as Curso, '
 		SET @Sql = @Sql + ' B.SFRSTCR_CREDIT_HR as Creditos '

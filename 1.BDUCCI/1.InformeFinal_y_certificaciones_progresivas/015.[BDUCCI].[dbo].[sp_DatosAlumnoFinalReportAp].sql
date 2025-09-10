@@ -47,7 +47,7 @@ BEGIN
         IF LEN(@StudentList) > 0
             SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
 
-        -- Tabla temporal para resultados (igual a la original)
+        
         CREATE TABLE #RESULTADO ( 
             Codigo VARCHAR(10),
             Apellidos_Nombres VARCHAR(200),
@@ -56,7 +56,7 @@ BEGIN
             Correo_Personal VARCHAR(100)
         )
 
-        -- Consulta dinámica manteniendo la estructura original pero con nuevos filtros
+        
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         SELECT DISTINCT A.DNI, A.NOMBRE, NVL(SPRTELE_PHONE_NUMBER,'' '') AS TELEFONO, 
                A.DNI || ''@continental.edu.pe'' AS correo_continental,
@@ -92,7 +92,7 @@ BEGIN
 
         EXEC sp_executesql @QUERY
 
-        -- Resultados finales (igual al original)
+        
         SELECT 
             STR(ROW_NUMBER() OVER (ORDER BY Apellidos_Nombres)) AS 'No',  
             Codigo,

@@ -3,8 +3,8 @@ GO
 
 /*====================================================================================================
 NOMBRE	: dbo.sp_CursoMemoFinalReportAp
-FECHA	: 14/10/2023
-AUTOR	: Saul Muñoz (SOLMIT)
+FECHA	: 09/09/2025
+AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Muestra en el MEMORANDUM la nota del curso específico para el que se crea el documento.
 MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION

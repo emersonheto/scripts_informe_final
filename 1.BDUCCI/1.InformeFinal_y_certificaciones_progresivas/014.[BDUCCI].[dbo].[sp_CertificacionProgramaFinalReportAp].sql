@@ -39,7 +39,7 @@ BEGIN
 
         DECLARE @BDOracle VARCHAR(10) = 'BANNER';
 
-        -- Construir lista de Students para Oracle
+        
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -47,13 +47,13 @@ BEGIN
         IF LEN(@StudentList) > 0
             SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
 
-        -- Tabla temporal para resultados (igual a la original)
+        
         CREATE TABLE #RESULTADO ( 
             Codigo VARCHAR(10),
             Apellidos_Nombres VARCHAR(200)
         )
 
-        -- Consulta dinámica manteniendo la estructura original pero con nuevos filtros
+        
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         WITH T_RESUMEN AS ( 
             SELECT DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
@@ -85,7 +85,7 @@ BEGIN
 
         EXEC sp_executesql @QUERY
 
-        -- Resultados finales (igual al original)
+        
         SELECT 
             STR(ROW_NUMBER() OVER (ORDER BY Apellidos_Nombres)) AS 'No',  
             Codigo,

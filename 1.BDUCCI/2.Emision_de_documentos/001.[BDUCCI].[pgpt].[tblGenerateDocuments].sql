@@ -8,4 +8,4 @@ AUTOR		: Emerson Herrera Waytech
 OBJETIVO	: Agregar columna iddocumentofinalreportap a tabla tblGeneratedDocuments
 ====================================================================================   */
 
-ALTER TABLE [pgpt].[tblGeneratedDocuments] ADD iddocumentofinalreportap VARCHAR(20) NULL;
+ALTER TABLE [pgpt].[tblGeneratedDocuments] ADD idDocumentofinalreportap VARCHAR(20) NULL;

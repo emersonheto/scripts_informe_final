@@ -3,7 +3,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: dbo.sp_MemorandoRecuperadoAsignaturaFRAp
-FECHA	: 14/10/2023
+FECHA	: 09/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Lista todas las notas de las asignaturas que ha cursado el alumno durante todo el programa.
 MODIFICACIONES:

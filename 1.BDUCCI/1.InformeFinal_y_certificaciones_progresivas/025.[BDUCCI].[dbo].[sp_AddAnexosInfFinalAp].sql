@@ -32,9 +32,6 @@ BEGIN
 		 ELSE IF(@p_Accion=2)
 				BEGIN
 					DELETE FROM [dbo].[tblInfFinalAnexos] 
-					-- WHERE Seccion=@p_Seccion 
-					-- 	AND Tipo_Reporte=@p_TipoReporte
-					-- 	AND UPPER(ISNULL(Area,'')) = (CASE @p_TipoReporte WHEN 2 THEN UPPER(@p_Area) ELSE UPPER(ISNULL(Area,'')) END )
 					WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
 
 					SELECT 1 AS 'NRO_RESPUESTA','SE ELIMINARON CORRECTAMENTE LOS ANEXOS DE LA SECCION' AS 'MSG'

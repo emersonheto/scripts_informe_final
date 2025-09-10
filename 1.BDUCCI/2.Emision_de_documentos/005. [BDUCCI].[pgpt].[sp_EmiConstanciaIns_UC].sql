@@ -111,7 +111,7 @@ BEGIN
 	-- Insetar datos en la tabla [tblEmiConstanciaAsignaturas_UC]
 	
 
-	--llamada a DEVL para insertar las notas
+	--llamada a BANNER para insertar las notas
 
 	DECLARE @table table
 (
@@ -121,7 +121,7 @@ BEGIN
 )
 
 DECLARE @Sql NVARCHAR(MAX)
-SET @Sql = 'SELECT * FROM Openquery(DEVL,'''
+SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
 
 		SET @Sql = @Sql + ' SELECT B.SFRSTCR_GRDE_CODE AS Nota, '
 		SET @Sql = @Sql + ' I.ASIGNATURA as Curso, '

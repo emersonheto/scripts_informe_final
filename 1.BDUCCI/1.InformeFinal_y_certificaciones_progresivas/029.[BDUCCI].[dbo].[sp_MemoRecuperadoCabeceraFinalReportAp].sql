@@ -2,8 +2,8 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: dbo.sp_MemoRecuperadoCabecera
-FECHA	: 14/10/2023
+NOMBRE	: sp_MemoRecuperadoCabeceraFinalReportAp
+FECHA	: 09/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Datos para la cabecera del MEMORANDUM, se obtienen de la tabla de configuración.
 MODIFICACIONES:

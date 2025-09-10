@@ -20,8 +20,7 @@ CREATE PROCEDURE [BANNER].[sp_AddInfFinalNotaAlumnoRecuperadoCursosFinalReportAp
 AS 
 SET NOCOUNT ON
 BEGIN
-    BEGIN TRY   
-        -- Validación de parámetros más robusta
+    BEGIN TRY           
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
             RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
@@ -33,27 +32,23 @@ BEGIN
             RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
             RETURN
         END
-
-        -- Crear tabla temporal para los estudiantes con clave primaria
+        
         DECLARE @Students TABLE (
             StudentCode VARCHAR(9)
         )
-
-        -- Insertar datos del XML con validación
+        
         INSERT INTO @Students (StudentCode)
         SELECT 
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
         FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
         WHERE Student.value('(StudentCode)[1]', 'VARCHAR(9)') IS NOT NULL;
-
-        -- Verificar que se hayan procesado estudiantes
+        
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
             RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
             RETURN
         END
-
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -64,8 +59,7 @@ BEGIN
         DECLARE @BDOracle VARCHAR(10)='BANNER';
         
         IF (@p_Accion=1)
-        BEGIN
-            -- Crear tabla temporal para resultados
+        BEGIN            
             CREATE TABLE #RESULTADO ( 
                 Curso VARCHAR(200),
                 Seccion VARCHAR(50),
@@ -121,8 +115,7 @@ BEGIN
             WHERE A.DNI IN (' + @StudentList + ')
                 AND A.PROGRAM_CODE = ''' + @ProgramCode + '''
             ';
-
-            -- Consultas dinámicas completas con INSERT
+            
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Curso,Seccion , Programa)
             SELECT CURSO, SECCION, PROGRAMA 
@@ -190,9 +183,7 @@ BEGIN
         END
         ELSE IF(@p_Accion=2)
         BEGIN
-            DELETE FROM [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos] 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte;
+            DELETE FROM [dbo].[tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos]
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',

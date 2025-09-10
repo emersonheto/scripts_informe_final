@@ -56,8 +56,7 @@ BEGIN
             RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
             RETURN
         END
-
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -75,8 +74,6 @@ BEGIN
                 Apellidos_Nombres VARCHAR(200),                
                 Programa VARCHAR(100)
             )
-
-            -- Consultas Oracle separadas para mejor legibilidad
 
             -- Consulta Oracle para Tipo_Reporte = 4
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
@@ -228,8 +225,6 @@ BEGIN
         ELSE IF(@p_Accion=2)                                
         BEGIN
             DELETE FROM [dbo].tblInfFinalCertificacionPrograma 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte;
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',

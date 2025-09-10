@@ -21,33 +21,25 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Declaración de variables
         DECLARE @BDOracle NVARCHAR(128) = N'BANNER';
         DECLARE @SafeAreacert NVARCHAR(MAX) = REPLACE(@AreaCert, '''', '''''');
         DECLARE @ExecQuery NVARCHAR(MAX);
         DECLARE @OracleQuery NVARCHAR(MAX);
 
-        -- Tabla temporal para guardar el resultado
         CREATE TABLE #RESULTADO ( 
             Curso VARCHAR(200)
         );
 
-        -- ==================== INICIO DE LA MODIFICACIÓN ====================
-        -- Consulta Oracle simplificada que obtiene los cursos directamente de la malla curricular.
-        -- Se usa la columna ASIGNATURA para el nombre del curso, como en la versión final del SP anterior.
         SET @OracleQuery = N'
             SELECT DISTINCT KEY_RULE || '' - '' || ASIGNATURA AS CURSO
             FROM BANINST1.SZVMALLA 
             WHERE AREA_CODE = ''' + @SafeAreacert + '''';
-        -- ===================== FIN DE LA MODIFICACIÓN ======================
 
-        -- Se construye y ejecuta la consulta dinámica
         SET @ExecQuery = N'INSERT INTO #RESULTADO (Curso)
                            SELECT Curso FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
 
         EXEC sp_executesql @ExecQuery;
 
-        -- Se devuelve el resultado final
         SELECT Curso    
         FROM #RESULTADO
         ORDER BY Curso;
@@ -56,10 +48,8 @@ BEGIN
 
     END TRY
     BEGIN CATCH
-        -- Limpieza en caso de error
         IF OBJECT_ID('tempdb..#RESULTADO') IS NOT NULL DROP TABLE #RESULTADO;
 
-        -- Manejo de errores
         DECLARE @ErrorMessage VARCHAR(4000),
                 @ErrorSeverity INT,
                 @ErrorState INT;

@@ -289,8 +289,6 @@ BEGIN
         ELSE IF(@p_Accion=2)
         BEGIN
             DELETE FROM [dbo].[tblInfFinalResultadoOrdenMeritoParticipantes] 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte;
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',

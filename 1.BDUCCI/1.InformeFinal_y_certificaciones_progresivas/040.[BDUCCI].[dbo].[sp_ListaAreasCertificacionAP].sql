@@ -1,6 +1,6 @@
 /*====================================================================================================
 NOMBRE	: dbo.sp_ListaAreasCertificacionAP
-FECHA	: 25/01/2024
+FECHA	: 03/06/2025
 AUTOR	: Saul Muñoz (SOLMIT)
 OBJETIVO: Muestra la programacion de horarios de los docentes de la sección y certificación, para la aplicación Informe Final
 

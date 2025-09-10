@@ -4,9 +4,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [dbo].[sp_ObtenerIdFinalDeIdTemp]
-FECHA	: 03/06/2025
+FECHA	: 09/09/2025
 AUTOR	: Brus Paucar (Waytech)
-OBJETIVO: Lista los datos generales del Informe solo con el IdDocumentoFinalReportAp
+OBJETIVO: Obtiene el id: IdDocumentoFinalReportAp a partir del IdDocumentoFinalReportApTMP
 ====================================================================================================*/
 CREATE PROCEDURE [dbo].[sp_ObtenerIdFinalDeIdTemp]
     @IdDocumentoFinalReportApTMP VARCHAR(50)

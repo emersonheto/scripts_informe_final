@@ -22,14 +22,12 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Validar XML
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
             RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
             RETURN
         END
 
-        -- Tabla temporal de alumnos
         DECLARE @Students TABLE (
             StudentCode VARCHAR(9)
         )
@@ -41,7 +39,6 @@ BEGIN
 
         DECLARE @BDOracle VARCHAR(10) = 'BANNER';
 
-        -- Construir lista de alumnos
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -51,7 +48,6 @@ BEGIN
 
         DECLARE @SafeAreacert NVARCHAR(MAX) = REPLACE(@AreaCert, '''', '''''');
 
-        -- Tabla de resultados
         CREATE TABLE #RESULTADO ( 
             Codigo VARCHAR(10),
             Apellidos_Nombres VARCHAR(200),
@@ -63,7 +59,6 @@ BEGIN
             Estado_CAPP VARCHAR(10)
         )
 
-        -- Consulta Oracle MODIFICADA
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         WITH 
             intentos_del_programa AS (
@@ -171,7 +166,6 @@ BEGIN
         ORDER BY G.DNI, G.NOMBRE_CURSO
         '
 
-        -- Ejecutar contra Oracle
         DECLARE @QUERY NVARCHAR(MAX) = N'
         INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Curso, Nota, Promedio, Tipo_Alumno, Estado_Academico, Estado_CAPP)
         SELECT CODIGO, APELLIDOS_NOMBRES, CURSO, NOTA, PROMEDIO, TIPO_ALUMNO, ESTADO_ACADEMICO, ESTADO_CAPP
@@ -179,7 +173,6 @@ BEGIN
 
         EXEC sp_executesql @QUERY
 
-        -- Resultado final
         SELECT 
             STR(ROW_NUMBER() OVER (ORDER BY Codigo, Curso)) AS 'No',
             Codigo,

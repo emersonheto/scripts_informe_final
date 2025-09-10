@@ -27,8 +27,6 @@ BEGIN
 			  Area AS 'sArea'
 		   FROM [dbo].[tblInfFinalAnexos]
 		   WHERE [IdDocumentoFinalReportAp]=@IdDocumentoFinalReportAp
-			--    AND Tipo_Reporte=@TipoReporte
-			--    AND UPPER(ISNULL(Area,'')) = (CASE @TipoReporte WHEN 5 THEN upper(@Area) ELSE UPPER(ISNULL(Area,'')) END)
 		   ORDER BY [Orden]
 	END TRY
 	BEGIN CATCH

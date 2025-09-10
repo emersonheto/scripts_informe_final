@@ -57,8 +57,6 @@ BEGIN
             Estado_Recuperacion VARCHAR(20)
         )
 
-        -- Consulta dinámica manteniendo la estructura original
-        -- Consulta dinámica con CTE adaptado
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         WITH cursos_recuperados AS (
                 SELECT 

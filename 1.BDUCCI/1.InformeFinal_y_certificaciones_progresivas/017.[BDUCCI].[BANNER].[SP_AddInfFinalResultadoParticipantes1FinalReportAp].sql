@@ -47,15 +47,13 @@ BEGIN
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
         FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
         WHERE Student.value('(StudentCode)[1]', 'VARCHAR(9)') IS NOT NULL;
-
-        -- Verificar que se hayan procesado estudiantes
+        
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
             RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
             RETURN
         END
-
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -66,16 +64,14 @@ BEGIN
         IF(@p_Accion=1)
         BEGIN
             DECLARE @BDOracle VARCHAR(10)='BANNER';
-
-            -- Crear tabla temporal sin índice (como en el primer SP)
+            
             CREATE TABLE #RESULTADO ( 
                 Tipo VARCHAR(30),
                 IDAlumno INT,
                 Seccion VARCHAR(50),
                 Programa VARCHAR(100)
             )
-
-            -- Consultas Oracle mejor estructuradas (como en el primer SP)
+            
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
             SELECT DISTINCT 
 							(CASE WHEN NVL(STYP_DESC,'' '')='' '' THEN ''NO TIENE'' ELSE STYP_DESC END) AS TipoAlumno,
@@ -103,8 +99,7 @@ BEGIN
                 AND PROGRAM_CODE = ''' + @ProgramCode + '''
                 
 			GROUP BY STYP_DESC, PIDM, A.PROGRAM_DESC'
-
-            -- Consultas dinámicas completas con INSERT (como en el primer SP)
+            
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Tipo, IDAlumno, Seccion, Programa)
             SELECT TipoAlumno, PIDM, SECCION, PROGRAMA 
@@ -177,8 +172,6 @@ BEGIN
         ELSE IF(@p_Accion=2)
         BEGIN
             DELETE FROM [dbo].[tblInfFinalResultadoParticipantes1FinalReportAp] 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',

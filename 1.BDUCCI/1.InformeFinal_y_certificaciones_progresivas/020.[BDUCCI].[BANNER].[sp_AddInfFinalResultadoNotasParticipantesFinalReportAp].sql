@@ -200,8 +200,6 @@ BEGIN
             INNER JOIN T_ESTADO_FINAL D ON D.PIDM = C.PIDM
             ORDER BY C.DNI, C.SUBJ_CODE, C.CRSE_NUMB, C.FECHA_INICIO_NRC'
 
-            -- Consulta Oracle para Tipo_Reporte = 5
-            -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             WITH 
                 cursos_con_intentos AS (
@@ -298,7 +296,6 @@ BEGIN
             ORDER BY G.DNI, G.NOMBRE_CURSO_COMPLETO
             '
 
-            -- Consultas dinámicas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Curso, Nota, Promedio, Tipo_Alumno, Estado_Academico, Estado_CAPP, Seccion, Programa)
             SELECT CODIGO, APELLIDOS_NOMBRES, CURSO, NOTA, PROMEDIO, TIPO_ALUMNO, ESTADO_ACADEMICO, ESTADO_CAPP, SECCION, PROGRAMA 
@@ -385,9 +382,6 @@ BEGIN
         ELSE IF(@p_Accion=2)
         BEGIN
             DELETE FROM [dbo].[tblInfFinalResultadoNotasParticipantes] 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Area = @p_Area 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte;
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',

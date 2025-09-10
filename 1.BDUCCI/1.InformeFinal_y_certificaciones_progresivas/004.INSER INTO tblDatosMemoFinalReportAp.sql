@@ -1,7 +1,7 @@
 USE [BDUCCI]
 GO
 /* ===================================================================================================================
-FECHA		: 03/06/2025
+FECHA		: 09/09/2025
 AUTOR		: Brus Paucar (WAYTECH)
 OBJETIVO	: guardar los datos de configuración de cabecera para el documento MEMORANDUM
 =================================================================================================================== */
@@ -9,7 +9,7 @@ BEGIN
 	SET FMTONLY OFF
 	BEGIN TRY
 		BEGIN TRANSACTION
-            INSERT INTO dbo.tblDatosMemoFinalReportAp (
+            INSERT INTO [dbo].[tblDatosMemoFinalReportAp] (
                 NombreEncargado,
                 Cargo,
                 Uni,

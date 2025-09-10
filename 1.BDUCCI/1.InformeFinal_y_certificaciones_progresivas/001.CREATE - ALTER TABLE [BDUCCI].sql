@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 /*====================================================================================================
 NOMBRE	: dbo.tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos
-FECHA	: 08/09/2025
+FECHA	: 09/09/2025
 AUTOR	: Emerson Herrera(Waytech)
 OBJETIVO: se crean tablas y se añaden columnas necesarias
 
@@ -59,6 +59,8 @@ GO
 ALTER TABLE [dbo].[tblInfFinalResultadoNotasParticipantesCursos] ALTER COLUMN [Seccion] varchar(50) NULL
 GO
 ALTER TABLE [dbo].[tblInfFinalCertificacionPrograma] ALTER COLUMN [Seccion] varchar(50)  NULL
-
+GO
+--Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+ALTER TABLE [dbo].[tblInfFinalResultadoOrdenMeritoParticipantes] ALTER COLUMN [Seccion] varchar(50) NULL
 
 

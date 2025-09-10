@@ -27,7 +27,7 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY    
-        -- Validación de parámetros más robusta
+        
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
             RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
@@ -40,26 +40,26 @@ BEGIN
             RETURN
         END
 
-        -- Crear tabla temporal para los estudiantes con clave primaria
+        
         DECLARE @Students TABLE (
             StudentCode VARCHAR(9)
         )
 
-        -- Insertar datos del XML con validación
+        
         INSERT INTO @Students (StudentCode)
         SELECT 
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
         FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
         WHERE Student.value('(StudentCode)[1]', 'VARCHAR(9)') IS NOT NULL;
 
-        -- Verificar que se hayan procesado estudiantes
+        
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
             RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
             RETURN
         END
 
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -71,16 +71,13 @@ BEGIN
 
         IF (@p_Accion=1)
         BEGIN
-            -- Crear tabla temporal para resultados
+            
             CREATE TABLE #RESULTADO ( 
                 Codigo VARCHAR(100),
                 Apellidos_Nombres VARCHAR(200),                
                 Programa VARCHAR(100)
             )
-
-            -- Consultas Oracle separadas para mejor legibilidad
-
-            -- Consulta Oracle para Tipo_Reporte = 4 (VERSIÓN ORIGINAL RESTAURADA)
+ 
             DECLARE @OracleQuery4 NVARCHAR(MAX) = N'
             WITH T_RESUMEN AS ( 
                 SELECT DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
@@ -107,8 +104,7 @@ BEGIN
                 AND B.PROGRAM=A.PROGRAM_CODE 
                 AND B.MODALIDAD=A.DEPT_CODE
                 WHERE A.CURSOSAPROBADOS=B.CANTCURSOS'
-
-            -- Consulta Oracle para Tipo_Reporte = 5 (NUEVA LÓGICA ROBUSTA APLICADA AQUÍ)
+            
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
             WITH T_ULTIMO_INTENTO AS (
             -- Paso 1: Aislamos el ÚLTIMO INTENTO de cada curso para cada alumno.
@@ -157,9 +153,7 @@ BEGIN
               AND B.PROGRAM = A.PROGRAM_CODE
               AND B.MODALIDAD = A.DEPT_CODE
             WHERE
-              A.CursosAprobados = B.CANTCURSOS' -- <<-- AQUÍ FALTABA LA COMILLA DE CIERRE
-
-            -- Consultas dinámicas completas con INSERT
+              A.CursosAprobados = B.CANTCURSOS'
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Programa)
             SELECT DNI, NOMBRE, PROGRAMA 
@@ -230,8 +224,6 @@ BEGIN
         ELSE IF(@p_Accion=2)                            
         BEGIN
             DELETE FROM [dbo].tblInfFinalCertificacionPrograma 
-            -- WHERE Programa_Codigo = @ProgramCode 
-            -- AND Tipo_Reporte = @p_Tipo_Reporte;
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
