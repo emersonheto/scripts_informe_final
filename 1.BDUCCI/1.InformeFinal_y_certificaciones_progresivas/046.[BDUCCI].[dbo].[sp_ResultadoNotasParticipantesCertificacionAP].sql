@@ -9,7 +9,7 @@ OBJETIVO: Muestra los resultados de notas de los participantes de la certificaci
 
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 
 ====================================================================================================*/
 
@@ -80,10 +80,40 @@ BEGIN
                 WHERE A.DNI IN (' + @StudentList + ')
             ), 
             T_NOTAS AS (
-                SELECT *
+                SELECT 
+                    PIDM,
+                    DNI,
+                    STUDYPATH_BLOQUE,
+                    STUDYPATH_STATUS_DESC,
+                    NOMBRE,
+                    NOMBRE_CURSO,
+                    TIPO_ALUMNO,
+                    VERSION_PLAN,
+                    PROGRAM_CODE,
+                    DEPT_CODE,
+                    ASIGNATURA,
+                    ESTADO_ASIGNATURA,
+                    PORCENT_INASISTENCIA,
+                    NOTA,
+                    FECHA_INICIO_NRC
                 FROM (
                     SELECT 
-                        i.*,
+                        i.PIDM,
+                        i.DNI,
+                        i.STUDYPATH_BLOQUE,
+                        i.STUDYPATH_STATUS_DESC,
+                        i.NOMBRE,
+                        i.NOMBRE_CURSO,
+                        i.TIPO_ALUMNO,
+                        i.VERSION_PLAN,
+                        i.PROGRAM_CODE,
+                        i.DEPT_CODE,
+                        i.ASIGNATURA,
+                        i.ESTADO_ASIGNATURA,
+                        i.PORCENT_INASISTENCIA,
+                        i.NOTA,
+                        i.FECHA_INICIO_NRC,
+
                         ROW_NUMBER() OVER(
                             PARTITION BY i.DNI, i.ASIGNATURA 
                             ORDER BY i.FECHA_INICIO_NRC DESC

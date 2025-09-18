@@ -7,7 +7,7 @@ OBJETIVO	: Realiza el Update en la tabla pgpt.tblEmiConstancia_UC,GeneratedDocum
 MODIFICACIONES
 NRO		FECHA			USUARIO							MODIFICACION
 1		21/05/2024		Carlos Marín (NetConsultores) 	Ajuste en la descripción de puestos y modificación del query para traer los cursos
-2		08/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la actualización de informe final 
+2		17/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la actualización de informe final 
 ======================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaUpd_UC]
     @InternalId INT,

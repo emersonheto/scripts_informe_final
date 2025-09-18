@@ -7,7 +7,7 @@ AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Almacenar los Datos Generales del Informe Final AP.
 MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
-001             03/06/2025         Brus Paucar (Waytech)          Se trae el id temporal que se creó previamente evitando así volver a crearlo aquí.
+001             17/09/2025         Brus Paucar (Waytech)          Se trae el id temporal que se creó previamente evitando así volver a crearlo aquí.
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_GuardarDocumentoFinalReportAp]

@@ -8,7 +8,7 @@ OBJETIVO: Lista los datos que se necesita para el reporte de memorandum de recup
 MODIFICACIONES:
 NRO	   FECHA		 USUARIO					MODIFICACION
 001	   03/06/2025	 Brus Paucar (Waytech)	    se añade Tipo_Reporte=4 y se controla cuando EDICION = null
-002    08/09/2025   Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+002    17/09/2025   Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_MemoRecuperadoCabecera]

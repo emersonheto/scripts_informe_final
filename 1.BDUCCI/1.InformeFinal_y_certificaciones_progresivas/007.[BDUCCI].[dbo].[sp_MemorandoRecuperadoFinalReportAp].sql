@@ -3,11 +3,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: dbo.sp_MemorandoRecuperadoFinalReportAp
-FECHA	: 09/09/2025
+FECHA	: 17/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Lista todos los cursos desaprobados y posteriormente aprobados.
-MODIFICACIONES:
-NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
 
 CREATE PROCEDURE [dbo].[sp_MemorandoRecuperadoFinalReportAp] 

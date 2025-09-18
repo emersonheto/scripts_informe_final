@@ -9,7 +9,7 @@ OBJETIVO: Obtiene información necesaria para el archivo de informe final
 
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_SeccionCertificarCertificacionAP]
@@ -46,7 +46,7 @@ BEGIN
         );
 
         SET @OracleQuery = N'SELECT KEY_RULE FROM BANINST1.SZVMALLA WHERE AREA_CODE = ''' + @AreaCert + '''';
-        SET @FullQuery = N'SELECT * FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
+        SET @FullQuery = N'SELECT KEY_RULE  FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
         
         INSERT INTO #MallaRequerida (Asignatura)
         EXEC sp_executesql @FullQuery;
@@ -64,7 +64,19 @@ BEGIN
             FROM BANINST1.SZVALDI A
             LEFT JOIN BANINST1.SZVMALLA B ON B.KEY_RULE = A.ASIGNATURA AND B.AREA_CODE = ''' + @AreaCert + '''
             WHERE A.DNI = ''' + @studentCode + '''';
-        SET @FullQuery = N'SELECT * FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
+        SET @FullQuery = N'SELECT ASIGNATURA,
+                            ESTADO_ASIGNATURA,
+                            PORCENT_INASISTENCIA,
+                            TipoPrograma,
+                            Programa,
+                            Periodo,
+                            Modalidad,
+                            SEDE,
+                            Codigo,
+                            ApellidosNombres,
+                            ProgramCode,
+                            FECHA_TERMINO_NRC
+                            FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
         
         INSERT INTO #HistorialAlumno
         EXEC sp_executesql @FullQuery;
@@ -72,7 +84,11 @@ BEGIN
         IF EXISTS (SELECT 1 FROM #HistorialAlumno WHERE Codigo IS NOT NULL)
         BEGIN            
             ;WITH RankedAttempts AS (
-                SELECT *, ROW_NUMBER() OVER(PARTITION BY Asignatura ORDER BY FechaTerminoNRC DESC) as rn
+                SELECT 
+                  Asignatura,
+                  EstadoAsignatura,
+                  PorcentajeInasistencia,
+                  ROW_NUMBER() OVER(PARTITION BY Asignatura ORDER BY FechaTerminoNRC DESC) as rn
                 FROM #HistorialAlumno
             )
             INSERT INTO #UltimosIntentos (Asignatura, EstadoAsignatura, PorcentajeInasistencia)
@@ -83,10 +99,10 @@ BEGIN
             DECLARE @TotalRequerido INT, @TotalAprobados INT, @EstadoFinal VARCHAR(20);
             DECLARE @Programa VARCHAR(200);
 
-            SELECT @TotalRequerido = COUNT(*) FROM #MallaRequerida;
+            SELECT @TotalRequerido = COUNT(1) FROM #MallaRequerida;
             SELECT TOP 1 @Programa = Programa FROM #HistorialAlumno WHERE Programa IS NOT NULL;
 
-            SELECT @TotalAprobados = COUNT(*)
+            SELECT @TotalAprobados = COUNT(1)
             FROM #MallaRequerida malla
             INNER JOIN #UltimosIntentos intentos ON malla.Asignatura = intentos.Asignatura
             WHERE intentos.EstadoAsignatura = 'Aprobado' AND intentos.PorcentajeInasistencia <= 20;
@@ -107,7 +123,7 @@ BEGIN
             -- EL ALUMNO NO TIENE HISTORIAL, DEVOLVEMOS DESAPROBADO
             DECLARE @AreaDesc VARCHAR(200);
             SET @OracleQuery = N'SELECT AREA_DESC FROM BANINST1.SZVMALLA WHERE AREA_CODE = ''' + @AreaCert + ''' AND ROWNUM = 1';
-            SET @FullQuery = N'SELECT * FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
+            SET @FullQuery = N'SELECT AREA_DESC FROM OPENQUERY(' + @BDOracle + ', ''' + REPLACE(@OracleQuery, '''', '''''') + ''')';
             
             CREATE TABLE #AreaDescResult (DescResult VARCHAR(200));
             INSERT INTO #AreaDescResult EXEC sp_executesql @FullQuery;

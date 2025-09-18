@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 /*====================================================================================================
 NOMBRE	: dbo.tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos
-FECHA	: 09/09/2025
+FECHA	: 17/09/2025
 AUTOR	: Emerson Herrera(Waytech)
 OBJETIVO: se crean tablas y se añaden columnas necesarias
 

@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda la programacion de horarios de los docentes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]
@@ -258,7 +258,15 @@ BEGIN
 	            EXEC sp_executesql @QUERY5;
                 
                 WITH CTE AS (
-                        SELECT *,
+                        SELECT 
+                            SECCION,
+                            CICLO,
+                            ASIGNATURA,
+                            APELLIDOS_NOMBRE_DOCENTE,
+                            HORAS_LECTIVAS,
+                            FECHA_INICIO_ASIGNATURA,
+                            FECHA_FIN_ASIGNATURA,
+                            PROGRAMA,
                             ROW_NUMBER() OVER (
                                 PARTITION BY CICLO, ASIGNATURA, APELLIDOS_NOMBRE_DOCENTE
                                 ORDER BY FECHA_INICIO_ASIGNATURA

@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: muestra la lista de alumnos que pertenecen a un programa
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_FinalReportAp]
     @studentCode VARCHAR(9),
@@ -31,7 +31,19 @@ BEGIN
             SET @WHERE_CLAUSE += ' AND DNI=''' + @studentCode +'''';
         
         SET @QUERY2 = '
-        SELECT * FROM (
+        SELECT 
+            Seccion,
+            Programa,
+            Asignatura,
+            EstadoAsignatura,
+            Periodo,
+            Modalidad,
+            Sede,
+            Codigo,
+            ApellidosNombres,
+            ProgramCode,
+            FECHA_TERMINO_NRC
+        FROM (
             SELECT
                 BLOQUE_MATRICULA AS "Seccion",
                 (CASE WHEN SUBJ_CODE = ''PSDP'' THEN ''DIPLOMAS''
@@ -98,7 +110,7 @@ BEGIN
 
         SELECT @EstadoGlobal = CASE
             WHEN COUNT(CASE WHEN EstadoAsignatura = 'Desaprobado' THEN 1 END) > 0 THEN 'Desaprobado'
-            WHEN COUNT(CASE WHEN EstadoAsignatura = 'Aprobado' THEN 1 END) = COUNT(*) THEN 'Aprobado'
+            WHEN COUNT(CASE WHEN EstadoAsignatura = 'Aprobado' THEN 1 END) = COUNT(1) THEN 'Aprobado'
             ELSE 'Desaprobado'
         END
         FROM #UltimosIntentos

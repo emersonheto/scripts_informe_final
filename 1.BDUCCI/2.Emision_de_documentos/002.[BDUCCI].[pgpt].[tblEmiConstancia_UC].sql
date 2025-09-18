@@ -3,7 +3,7 @@ GO
 
 /* ===================================================================================================================
 NOMBRE		: [pgpt].[tblEmiConstancia_UC]
-FECHA		: 08/09/2025
+FECHA		: 17/09/2025
 AUTOR		: Emerson Herrera Waytech
 OBJETIVO	: Agregar columna iddocumentofinalreportap a tabla emiconstancias
 =================================================================================================================== */

@@ -9,7 +9,7 @@ OBJETIVO: Muestra la programacion de horarios de los docentes de la certificaci�
 
 MODIFICACIONES:
 NRO		FECHA		USUARIO					    MODIFICACIÓN
-1       08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+1       17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 
 ====================================================================================================*/
 
@@ -98,7 +98,14 @@ BEGIN
        EXEC (@QUERY);
 
 	   WITH CTE AS (
-			SELECT *,
+			SELECT 
+				CICLO,
+				SECCION,
+				ASIGNATURA,
+				APELLIDOS_NOMBRE_DOCENTE,
+				HORAS_LECTIVAS,
+				FECHA_INICIO_ASIGNATURA,
+				FECHA_FIN_ASIGNATURA,
 				ROW_NUMBER() OVER (
 					PARTITION BY CICLO, ASIGNATURA, APELLIDOS_NOMBRE_DOCENTE
 					ORDER BY FECHA_INICIO_ASIGNATURA

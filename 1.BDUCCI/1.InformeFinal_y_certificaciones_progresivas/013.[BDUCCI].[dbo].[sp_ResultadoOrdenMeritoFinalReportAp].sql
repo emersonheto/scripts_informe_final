@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de orden de mérito de los alumnos
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoOrdenMeritoFinalReportAp] 
@@ -89,7 +89,7 @@ BEGIN
 								PIDM, DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
 								SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN 1 ELSE 0 END) AS CursosAprobados,
 								SUM(CASE WHEN ESTADO_ASIGNATURA=''Aprobado'' AND PORCENT_INASISTENCIA<=20 THEN NOTA ELSE 0 END) AS SumaNotas,
-								COUNT(*) AS TotalCursos
+								COUNT(PIDM) AS TotalCursos
 						FROM T_NOTAS
 						GROUP BY PIDM, DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE
 				)
@@ -119,7 +119,7 @@ BEGIN
 						T_APROBADOS 
 				),
 				T_TOP3 AS (
-						SELECT *
+						SELECT PIDM, DNI, NOMBRE, PROMEDIO, ORDEN
 						FROM T_RANKING
 						WHERE ORDEN <= 3
 				)

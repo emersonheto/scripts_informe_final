@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda la lista de cursos de los participantes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesCursosFinalReportAp]
@@ -102,7 +102,10 @@ BEGIN
                     WHERE B.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
                 ),
                 CURSOS_LLEVADOS AS (
-                    SELECT *
+                    SELECT 
+                        ASIGNATURA,
+                        SECCION,
+                        PROGRAMA
                     FROM (
                         SELECT
                             A.ASIGNATURA,

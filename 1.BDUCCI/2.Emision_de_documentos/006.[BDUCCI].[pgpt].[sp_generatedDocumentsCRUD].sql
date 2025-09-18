@@ -10,7 +10,7 @@ NRO 	FECHA		USUARIO		    MODIFICACION
 03		15/05/2023	PRAPPPROY04	    Registro de razón de anulación de documentos sólo para activos
 04		29/01/2024  Anthony Torres (NetConsultores) Se agregó la columna Token en el retorno del resultado
 05      07/05/2025  EmersonHerrera (waytech)   Se agrega documento 6 Certificaciones de Programas de Especialización AP.
-06		08/09/2025	Emerson Herrera Waytech	Se agrega filtro por iddocumentofinalreportap
+06		17/09/2025	Emerson Herrera Waytech	Se agrega filtro por iddocumentofinalreportap
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_generatedDocumentsCRUD]
 	@id int,

@@ -5,7 +5,7 @@ AUTOR		: José Rios (Proveedor Empresa Zofteam)
 OBJETIVO	: Listar historial de documentos generados
 MODIFICACIONES
 NRO 	FECHA		USUARIO						MODIFICACION
-01		08/09/2025  EmersonHerrera (waytech)    Se agrega filtro por codigo de informe final
+01		17/09/2025  EmersonHerrera (waytech)    Se agrega filtro por codigo de informe final
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_listHistorialSendingDocuments]
 	@seccion VARCHAR (10),

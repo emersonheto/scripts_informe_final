@@ -6,7 +6,7 @@ OBJETIVO	: Obtener la Constancia por InternalId
 
 MODIFICACIONES
 NRO		FECHA			USUARIO		MODIFICACION
-1		08/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la consulta de informe final 
+1		17/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la consulta de informe final 
 ======================================================================================================================== */
 
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaSel_UC] 

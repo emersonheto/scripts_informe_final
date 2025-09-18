@@ -7,7 +7,7 @@ AUTOR		: Emerson Herrera (Waytech)
 OBJETIVO	: Listar las certificaciones progresivas de maestrias con el filtro código de informe final. 
 MODIFICACIONES
 NRO 	FECHA		USUARIO		    			MODIFICACION
-01		08/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
+01		17/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_SelInformeFinalByCodigo_UC]
     @IdDocumentoFinalReportAp VARCHAR(50),

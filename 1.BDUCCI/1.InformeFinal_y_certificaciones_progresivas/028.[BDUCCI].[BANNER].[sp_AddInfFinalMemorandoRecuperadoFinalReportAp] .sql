@@ -3,11 +3,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
-FECHA	: 09/09/2025
+FECHA	: 17/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Registro de notas recuperadas para el documento Informe Final.
-MODIFICACIONES:
-NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
 
 CREATE PROCEDURE [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp]

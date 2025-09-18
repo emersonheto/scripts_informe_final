@@ -3,7 +3,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [dbo].[sp_DatosInfFinalReport]
-FECHA	: 09/09/2025
+FECHA	: 17/09/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Lista los datos generales del Informe solo con el IdDocumentoFinalReportAp
 ====================================================================================================*/

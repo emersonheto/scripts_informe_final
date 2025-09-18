@@ -9,7 +9,7 @@ OBJETIVO: Muestra la lista de cursos de los participantes de la certificación p
 
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCursosCertificacionAP]

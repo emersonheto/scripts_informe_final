@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra los resultados de notas de los participantes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesFinalReportAp] 
@@ -80,7 +80,7 @@ BEGIN
 						TO_NUMBER(NVL(GRDE_CODE, ''0'')) AS NOTA,
 						-- A.NRC || '' - '' || A.NOMBRE_CURSO AS CURSO,
 						A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
-						COUNT(*) OVER (
+						COUNT(1) OVER (
 								PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB
 						) AS total_intentos,
 						ROW_NUMBER() OVER (

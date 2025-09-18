@@ -3,7 +3,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: sp_MemoRecuperadoCabeceraFinalReportAp
-FECHA	: 09/09/2025
+FECHA	: 17/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Datos para la cabecera del MEMORANDUM, se obtienen de la tabla de configuración.
 MODIFICACIONES:

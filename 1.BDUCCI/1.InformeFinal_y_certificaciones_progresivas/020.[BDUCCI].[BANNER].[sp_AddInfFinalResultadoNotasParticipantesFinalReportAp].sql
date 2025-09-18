@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de notas de los participantes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           08/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]
@@ -103,7 +103,7 @@ BEGIN
                         A.SUBJ_CODE||A.CRSE_NUMB||'' - ''||A.NOMBRE_CURSO AS CURSO,
                         A.BLOQUE_MATRICULA AS SECCION,
                         A.PROGRAM_DESC AS PROGRAMA,
-                        COUNT(*) OVER (
+                        COUNT(A.PIDM) OVER (
                                 PARTITION BY A.DNI, A.SUBJ_CODE, A.CRSE_NUMB
                         ) AS total_intentos,
                         ROW_NUMBER() OVER (
@@ -220,7 +220,11 @@ BEGIN
                         AND A.AREA_CODE = ''' + REPLACE(@p_Area, '''', '''''') + '''
                 ),
                 T_NOTAS AS (
-                    SELECT *
+                    SELECT 
+                        PIDM, DNI, NOMBRE, STUDYPATH_STATUS_DESC, TIPO_ALUMNO, 
+                        VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, ASIGNATURA, 
+                        PORCENT_INASISTENCIA, FECHA_INICIO_NRC, ESTADO_ASIGNATURA,
+                        NOTA, NOMBRE_CURSO_COMPLETO, SECCION, PROGRAMA
                     FROM cursos_con_intentos
                     WHERE orden_ultimo_intento = 1
                 ),
