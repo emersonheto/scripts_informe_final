@@ -29,8 +29,7 @@ BEGIN
 			CONVERT(VARCHAR(4),DATEPART(yy,GETDATE())) Anio_Crea,
 			(DATENAME(DAY,Fecha_Inicio) + ' de '+ DATENAME(MONTH,Fecha_Inicio) + ' del ' + DATENAME(year,Fecha_Inicio)) AS Fecha_Inicio,
 			(DATENAME(DAY,Fecha_Fin) + ' de '+ DATENAME(MONTH,Fecha_Fin) + ' del ' + DATENAME(year,Fecha_Fin)) AS Fecha_Fin,
-			--ISNULL(Empresa,' ') AS Empresa 
-			'' AS Empresa --mientras no se defina, mantendremos esto vacío
+			'' AS Empresa
 		FROM [dbo].[tblInfFinalSeccionCertificar]
 		WHERE IdDocumentoFinalReportAp = @p_IdDocumentoFinalReportAp
 	END TRY

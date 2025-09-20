@@ -13,13 +13,13 @@ NRO		    FECHA		USUARIO					    MODIFICACIÓN
 
 ALTER PROCEDURE [dbo].[sp_ListarAnexosInfFinalReportAp] 
 (
-	@IdDocumentoFinalReportAp VARCHAR(15)
+	@IdDocumentoFinalReportAp VARCHAR(50)
 )
 AS 
 SET NOCOUNT ON
 BEGIN
 	BEGIN TRY
-       SELECT --[Seccion] AS 'sSeccion', --para los tipos 4 y 5, sección es NULL
+       SELECT
 	          [Orden] AS 'nOrden',
 			  [Archivo] AS 'sNameFile',
 			  [Fecha] AS 'sFecha',

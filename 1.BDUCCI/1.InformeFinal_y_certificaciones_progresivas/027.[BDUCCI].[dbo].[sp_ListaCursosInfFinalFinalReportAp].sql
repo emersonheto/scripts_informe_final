@@ -12,7 +12,7 @@ NRO		    FECHA		USUARIO					    MODIFICACIÓN
 
 ALTER PROCEDURE [dbo].[sp_ListaCursosInfFinalFinalReportAp] 
 (
-	@IdDocumentoFinalReportAp VARCHAR(15)
+	@IdDocumentoFinalReportAp VARCHAR(50)
 )
 AS
 SET NOCOUNT ON

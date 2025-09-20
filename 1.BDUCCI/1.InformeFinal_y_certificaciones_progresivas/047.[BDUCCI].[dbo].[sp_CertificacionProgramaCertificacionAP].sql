@@ -36,7 +36,7 @@ BEGIN
            Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
        FROM @XmlStudents.nodes('/Students/Student') AS T(Student)
        
-	   DECLARE  @BDOracle VARCHAR(10)='DEVL'
+	   DECLARE  @BDOracle VARCHAR(10)='BANNER'
 	   
 	   DECLARE @StudentList NVARCHAR(MAX) = ''
        SELECT @StudentList = @StudentList + '''''' + REPLACE(StudentCode, '''', '''''') + ''''','

@@ -74,7 +74,7 @@ BEGIN
 				  @Curso NombreAsignatura
 			FROM dbo.tblInfFinalSeccionCertificar
 			WHERE Seccion=@Seccion
-			AND (Tipo_Reporte=1) --se restituye a su estado original porque ya se gestiona en otro SP
+			AND (Tipo_Reporte=1)
 
        DROP TABLE #RESULTADO
 

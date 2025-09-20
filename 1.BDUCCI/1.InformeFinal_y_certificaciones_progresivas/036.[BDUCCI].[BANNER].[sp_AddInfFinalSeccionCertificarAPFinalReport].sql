@@ -2,13 +2,13 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [BANNER].[SP_AddInfFinalSeccionCertificarAPFinalReport]
+NOMBRE	: [BANNER].[sp_AddInfFinalSeccionCertificarApFinalReport]
 FECHA	: 17/09/2025
 AUTOR	: Brus Paucar Matos (Waytech)
 OBJETIVO: Registro de la información de la sección a certificar para los tipos 4 y 5
 ====================================================================================================*/
 
-CREATE PROCEDURE [BANNER].[SP_AddInfFinalSeccionCertificarAPFinalReport] 
+CREATE PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarApFinalReport] 
 (
 	@XmlStudents XML,
 	@ProgramCode VARCHAR(3),

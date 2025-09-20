@@ -1,3 +1,5 @@
+USE [BDUCCI]
+GO
 /* ===================================================================================================================
 NOMBRE		: [pgpt].[sp_listHistorialSendingDocuments]
 FECHA		: 12/05/2023
@@ -14,6 +16,7 @@ ALTER PROCEDURE [pgpt].[sp_listHistorialSendingDocuments]
 	@iddocumentofinalreportap VARCHAR(20) = NULL
 AS
 BEGIN
+	SET NOCOUNT ON;
 	SELECT	[id],
 			[dni],
 			[seccion],

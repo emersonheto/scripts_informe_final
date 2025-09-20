@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [BANNER].[sp_AddInfFinalSeccionCertificarAP]
+NOMBRE	: [BANNER].[sp_AddInfFinalSeccionCertificarAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Registro de la información de la sección a certificar
@@ -11,7 +11,7 @@ NRO		    FECHA		USUARIO					    MODIFICACIÓN
 1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
-ALTER PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarAP] 
+ALTER PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarAp] 
 (
 	 @Seccion VARCHAR(20),
      @Estudiante VARCHAR(20),

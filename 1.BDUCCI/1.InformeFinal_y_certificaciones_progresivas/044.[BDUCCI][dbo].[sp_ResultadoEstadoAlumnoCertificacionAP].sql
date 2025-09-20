@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [dbo].[sp_ResultadoEstadoAlumnoCertificacionAP]
+NOMBRE	: [dbo].[sp_ResultadoEstadoAlumnoCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra los resultados de los alumnos de la certificación
@@ -12,7 +12,7 @@ NRO		FECHA		USUARIO					    MODIFICACIÓN
 1       17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoCertificacionAP]
+ALTER PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoCertificacionAp]
 (
 	 @XmlStudents XML,
 	 @AreaCert VARCHAR(20)

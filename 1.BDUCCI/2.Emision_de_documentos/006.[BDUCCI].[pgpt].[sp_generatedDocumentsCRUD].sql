@@ -1,3 +1,5 @@
+USE [BDUCCI]
+GO
 /* ===================================================================================================================
 NOMBRE		: [pgpt].[sp_generatedDocumentsCRUD]
 FECHA		: 18/11/2022
@@ -9,7 +11,7 @@ NRO 	FECHA		USUARIO		    MODIFICACION
 02		20/02/2023	APOYODEV4	    Registro de razón de anulación de documento generado
 03		15/05/2023	PRAPPPROY04	    Registro de razón de anulación de documentos sólo para activos
 04		29/01/2024  Anthony Torres (NetConsultores) Se agregó la columna Token en el retorno del resultado
-05      07/05/2025  EmersonHerrera (waytech)   Se agrega documento 6 Certificaciones de Programas de Especialización AP.
+05      03/06/2025  EmersonHerrera (waytech)   Se agrega documento 6 Certificaciones de Programas de Especialización AP.
 06		17/09/2025	Emerson Herrera Waytech	Se agrega filtro por iddocumentofinalreportap
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_generatedDocumentsCRUD]
@@ -24,6 +26,7 @@ ALTER PROCEDURE [pgpt].[sp_generatedDocumentsCRUD]
   	@iddocumentofinalreportap VARCHAR(20) = NULL
 AS
 BEGIN
+	SET NOCOUNT ON;
 	BEGIN TRY
 			BEGIN TRANSACTION
 

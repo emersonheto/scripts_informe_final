@@ -10,7 +10,7 @@ NRO 	FECHA		USUARIO		    			MODIFICACION
 01		17/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_SelInformeFinalByCodigo_UC]
-    @IdDocumentoFinalReportAp VARCHAR(50),
+    @IdDocumentoFinalReportAp VARCHAR(60),
     @tipoConstancia INT
 AS
 BEGIN
@@ -29,8 +29,12 @@ BEGIN
 			ROW_NUMBER() OVER (PARTITION BY rn.Codigo, rn.Curso ORDER BY pd.fecha_inicio) as rn
 		FROM [dbo].tblInfFinalResultadoNotasParticipantes rn
 		INNER JOIN [dbo].tblInfFinalProgramacionDocente pd  
-			ON rn.iddocumentofinalreportap = pd.iddocumentofinalreportap 
-			AND rn.Curso LIKE '%' + pd.Asignaturas + '%'
+			ON rn.iddocumentofinalreportap = pd.iddocumentofinalreportap
+			AND CASE 
+                WHEN CHARINDEX(' - ', rn.Curso) > 0 
+                THEN SUBSTRING(rn.Curso, CHARINDEX(' - ', rn.Curso) + 3, LEN(rn.Curso))
+                ELSE rn.Curso
+            END = pd.Asignaturas
 			AND rn.seccion=pd.seccion
 		WHERE rn.iddocumentofinalreportap = @IdDocumentoFinalReportAp
 	) 
@@ -60,10 +64,9 @@ BEGIN
 		ISNULL(ax.horas_totales,0) as HorasLectivas,
 		CASE WHEN ax.Estado_Academico ='DESAPROBADO' THEN 'Desaprobado' ELSE '' END AS Motivo,
 		CASE WHEN t.InternalId IS NOT NULL THEN 1 ELSE 0 END AS EstadoDocGenerado,
-		IIF(ax.Estado_Academico='DESAPROBADO',1,0) as Desaprobado,  -- luego invertir
+		IIF(ax.Estado_Academico='DESAPROBADO',1,0) as Desaprobado,
 		lista.IdDocumentoFinalReportAp,
 		gendoc.version
-		-- , ISNULL(ax.asignatura_xml, '') as asignaturas
 		 
  
 	FROM tblInfFinalDatosdelosEstudiantes lista  

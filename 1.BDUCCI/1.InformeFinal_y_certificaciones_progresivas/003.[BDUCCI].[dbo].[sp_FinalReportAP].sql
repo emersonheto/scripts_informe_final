@@ -17,7 +17,7 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        DECLARE @QUERY2 NVARCHAR(2000);
+        DECLARE @QUERY2 VARCHAR(MAX);
         DECLARE @TS_QUERY VARCHAR(MAX);
         DECLARE @BDOracle VARCHAR(10) = 'BANNER';
         DECLARE @WHERE_CLAUSE NVARCHAR(1000) = '';
@@ -42,10 +42,11 @@ BEGIN
             Codigo,
             ApellidosNombres,
             ProgramCode,
-            FECHA_TERMINO_NRC
+            FECHA_TERMINO_NRC,
+            TipoPrograma
         FROM (
             SELECT
-                BLOQUE_MATRICULA AS "Seccion",
+                BLOQUE_MATRICULA AS Seccion,
                 (CASE WHEN SUBJ_CODE = ''PSDP'' THEN ''DIPLOMAS''
                       WHEN SUBJ_CODE = ''PSEV'' THEN ''EVENTOS''
                       WHEN SUBJ_CODE = ''PSMA'' THEN ''MAESTRIA''
@@ -54,22 +55,22 @@ BEGIN
                       WHEN SUBJ_CODE = ''PSCC'' THEN ''CURSO CERRADO''
                       WHEN SUBJ_CODE = ''PSCU'' THEN ''CURSO''
                       WHEN SUBJ_CODE = ''PSDI'' THEN ''DIPLOMADO''
-                      WHEN SUBJ_CODE = ''PSDO'' THEN ''DOCTORADO'' END) AS "TipoPrograma",
-                PROGRAM_DESC AS "Programa",
-                NOMBRE_CURSO AS "Asignatura",
-                ESTADO_ASIGNATURA AS "EstadoAsignatura",
-                TERM_CTLG AS "Periodo",
+                      WHEN SUBJ_CODE = ''PSDO'' THEN ''DOCTORADO'' END) AS TipoPrograma,
+                PROGRAM_DESC AS Programa,
+                NOMBRE_CURSO AS Asignatura,
+                ESTADO_ASIGNATURA AS EstadoAsignatura,
+                TERM_CTLG AS Periodo,
                 (CASE WHEN INSTR(DEPT_DESC,''SEMI'') > 0 THEN ''SEMIPRESENCIAL''
                       WHEN INSTR(DEPT_DESC,''VIRTUAL'') > 0 THEN ''VIRTUAL''
                       WHEN INSTR(DEPT_DESC,''PRESENCIAL'') > 0 THEN ''PRESENCIAL''
-                      WHEN INSTR(DEPT_DESC,''DISTANCIA'') > 0 THEN ''A DISTANCIA'' END) AS "Modalidad",
+                      WHEN INSTR(DEPT_DESC,''DISTANCIA'') > 0 THEN ''A DISTANCIA'' END) AS Modalidad,
                 (CASE CAMP_CODE WHEN ''F01'' THEN ''AREQUIPA''
                                 WHEN ''F03'' THEN ''CUSCO''
                                 WHEN ''S01'' THEN ''HUANCAYO''
-                                WHEN ''F02'' THEN ''LIMA'' END) AS "Sede",
-                DNI AS "Codigo",
-                NOMBRE AS "ApellidosNombres",
-                PROGRAM_CODE AS "ProgramCode",
+                                WHEN ''F02'' THEN ''LIMA'' END) AS Sede,
+                DNI AS Codigo,
+                NOMBRE AS ApellidosNombres,
+                PROGRAM_CODE AS ProgramCode,
                 FECHA_TERMINO_NRC,
                 ROW_NUMBER() OVER(PARTITION BY ASIGNATURA ORDER BY FECHA_TERMINO_NRC DESC) as rn
             FROM BANINST1.SZVALDI ' + @WHERE_CLAUSE + '
@@ -117,15 +118,15 @@ BEGIN
         WHERE SUBSTRING(Seccion, 6, 2) = 'DM';
         
         SELECT 
-            @studentCode AS "Codigo",
-            @ApellidosNombres AS "ApellidosNombres",
-            @TipoPrograma AS "TipoPrograma",
-            @Programa AS "Programa",
-            @Periodo AS "Periodo",
-            @Modalidad AS "Modalidad",
-            @Sede AS "Sede",
-            @ProgramCode AS "ProgramCode",
-            @EstadoGlobal AS "EstadoAsignatura";
+            @studentCode AS Codigo,
+            @ApellidosNombres AS ApellidosNombres,
+            @TipoPrograma AS TipoPrograma,
+            @Programa AS Programa,
+            @Periodo AS Periodo,
+            @Modalidad AS Modalidad,
+            @Sede AS Sede,
+            @ProgramCode AS ProgramCode,
+            @EstadoGlobal AS EstadoAsignatura;
         
         DROP TABLE #UltimosIntentos;
 

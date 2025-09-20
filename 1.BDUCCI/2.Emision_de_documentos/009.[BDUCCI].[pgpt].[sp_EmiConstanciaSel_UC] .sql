@@ -1,3 +1,10 @@
+USE [BDUCCI]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 /* ========================================================================================================================
 NOMBRE		: [pgpt].[sp_EmiConstanciaSel_UC]
 FECHA		: 29/01/2024
@@ -5,15 +12,16 @@ AUTOR		: Carlos Marin (NetConsultores)
 OBJETIVO	: Obtener la Constancia por InternalId
 
 MODIFICACIONES
-NRO		FECHA			USUARIO		MODIFICACION
-1		17/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la consulta de informe final 
+NRO	  FECHA			USUARIO							MODIFICACION
+01	  14/04/2025	Carlos Estrada(Softbrilliance) 	Ajuste en el nombre del archivo a seleccionar de pgpt.tblGeneratedDocuments
+02	  17/09/2025	Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la consulta de informe final 
 ======================================================================================================================== */
 
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaSel_UC] 
 	@InternalId VARCHAR(10)
 AS
 BEGIN
-	SET NOCOUNT ON
+	SET NOCOUNT ON;
 	
 	--obtener el director
 	DECLARE @idPersona INT

@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [dbo].[sp_ProgramacionEquipoDocenteCertificacionAP]
+NOMBRE	: [dbo].[sp_ProgramacionEquipoDocenteCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra la programacion de horarios de los docentes de la certificación
@@ -13,7 +13,7 @@ NRO		FECHA		USUARIO					    MODIFICACIÓN
 
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_ProgramacionEquipoDocenteCertificacionAP] 
+ALTER PROCEDURE [dbo].[sp_ProgramacionEquipoDocenteCertificacionAp] 
 (
 	 @XmlStudents XML,
 	 @AreaCert VARCHAR (20)

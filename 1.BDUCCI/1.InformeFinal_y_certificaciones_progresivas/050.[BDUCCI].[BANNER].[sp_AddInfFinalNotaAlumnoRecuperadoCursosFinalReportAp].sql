@@ -135,7 +135,6 @@ BEGIN
                     Tipo_Reporte, Usuario_Creacion, Area, Programa, Programa_Codigo, IdDocumentoFinalReportAp
                 )
                 SELECT
-                    -- SECCION AS 'Seccion',
                     ISNULL(Curso,'') AS 'Curso',
                     GETDATE() AS 'Fecha_Registro',
                     NULL AS 'Fecha_Edicion',

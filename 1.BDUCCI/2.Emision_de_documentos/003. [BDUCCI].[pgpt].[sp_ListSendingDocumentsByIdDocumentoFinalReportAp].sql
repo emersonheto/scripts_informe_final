@@ -13,13 +13,12 @@ NRO 	FECHA		USUARIO		    			MODIFICACION
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
 
-	@CodigoDocumentoFinalReportAp varchar(20),
+	@CodigoDocumentoFinalReportAp varchar(60),
     @tipoConstancia INT,
     @numeroPagina INT = 1
 AS
-BEGIN
-	-- DECLARE @CodigoDocumentoFinalReportAp VARCHAR(20) = '25INFIFPMAAP024';
-
+BEGIN 
+	SET NOCOUNT ON;
 	WITH CursosConHoras AS (
 		-- Pre-calculo de cursos con sus horas para evitar subconsultas repetidas
 		SELECT 
@@ -34,7 +33,11 @@ BEGIN
 		FROM [dbo].tblInfFinalResultadoNotasParticipantes rn
 		INNER JOIN [dbo].tblInfFinalProgramacionDocente pd  
 			ON rn.iddocumentofinalreportap = pd.iddocumentofinalreportap 
-			AND rn.Curso LIKE '%' + pd.Asignaturas + '%'
+			AND CASE 
+                WHEN CHARINDEX(' - ', rn.Curso) > 0 
+                THEN SUBSTRING(rn.Curso, CHARINDEX(' - ', rn.Curso) + 3, LEN(rn.Curso))
+                ELSE rn.Curso
+            END = pd.Asignaturas
 			AND rn.seccion=pd.seccion
 		WHERE rn.iddocumentofinalreportap = @CodigoDocumentoFinalReportAp
 	)
@@ -90,7 +93,6 @@ BEGIN
 					RTRIM(c2.Curso) as 'nombre',
 					CAST(COALESCE(c2.Nota, '0') AS INT) as 'nota',
 					CAST(c2.horas_lectivas AS INT) as 'horas'
-					-- c2.Estado_Academico as 'estado'
 				FROM CursosConHoras c2
 				WHERE c2.Codigo = lista.Codigo 
 					AND c2.rn = 1  -- Solo el primer registro por curso

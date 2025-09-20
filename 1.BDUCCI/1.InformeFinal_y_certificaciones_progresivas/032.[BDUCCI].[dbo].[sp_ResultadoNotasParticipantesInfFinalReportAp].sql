@@ -17,7 +17,7 @@ ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesInfFinalReportAp]
 	@ProgramCode VARCHAR(3),
 	@TipoReporte INT,
 	@Area VARCHAR(20),
-	@IdDocumentoFinalReportAp VARCHAR(15)
+	@IdDocumentoFinalReportAp VARCHAR(50)
 )
 AS
 SET NOCOUNT ON

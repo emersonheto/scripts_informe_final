@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [dbo].[sp_ResultadoNotasParticipantesCertificacionAP]
+NOMBRE	: [dbo].[sp_ResultadoNotasParticipantesCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
 OBJETIVO: Muestra los resultados de notas de los participantes de la certificación
@@ -13,7 +13,7 @@ NRO		    FECHA		USUARIO					    MODIFICACIÓN
 
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCertificacionAP]
+ALTER PROCEDURE [dbo].[sp_ResultadoNotasParticipantesCertificacionAp]
 (
     @XmlStudents XML,
     @AreaCert VARCHAR(20)

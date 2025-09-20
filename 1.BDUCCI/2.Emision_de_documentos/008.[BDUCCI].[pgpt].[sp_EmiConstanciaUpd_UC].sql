@@ -1,3 +1,5 @@
+USE [BDUCCI]
+GO
 /* ========================================================================================================================
 NOMBRE		: [pgpt].[sp_EmiConstanciaUpd_UC]
 FECHA		: 29/01/2024
@@ -7,7 +9,8 @@ OBJETIVO	: Realiza el Update en la tabla pgpt.tblEmiConstancia_UC,GeneratedDocum
 MODIFICACIONES
 NRO		FECHA			USUARIO							MODIFICACION
 1		21/05/2024		Carlos Marín (NetConsultores) 	Ajuste en la descripción de puestos y modificación del query para traer los cursos
-2		17/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la actualización de informe final 
+2		14/04/2025	    Carlos Estrada(Softbrilliance) 	Ajuste en el nombre del archivo a actualizar en pgpt.tblGeneratedDocuments
+3		17/09/2025		Emerson Herrera (Waytech)		Se agrega el parámetro iddocumentofinalreportap para la actualización de informe final 
 ======================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaUpd_UC]
     @InternalId INT,
@@ -112,15 +115,14 @@ BEGIN
 	ELSE
 		SET @CodigoDocumento =CONCAT('EPUC.',SUBSTRING(@seccion, 1, 2),'.',SUBSTRING(@seccion, 3, 3),'.' ,dbo.f_ConversionNumARomano(SUBSTRING(@seccion, 9, 2)),@TipoCertificado,@dni)
 
-	
-	UPDATE pgpt.tblGeneratedDocuments
-		SET 
+
+    UPDATE pgpt.tblGeneratedDocuments
+    SET 
 		dni=COALESCE(@dni, dni),
 		seccion=COALESCE(@seccion, seccion),
-		archivo=@CodigoDocumento,
+		archivo=CONCAT('EPUC',@TipoCertificado,@seccion,'.',@codigoArea,'.',@dni) ,
 		tipoConstancia=COALESCE(@tipoConstancia, tipoConstancia),
-		-- version=COALESCE('', version),
-	  version = COALESCE(version, 0) + 1,
+		version = COALESCE(version, 0) + 1,
 		razonAnulacion=COALESCE('', ''),
 		codigoFormato = COALESCE(@NombreArchivo,codigoFormato),
 		estado = 1
@@ -147,9 +149,7 @@ SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
 		SET @Sql = @Sql + ' INNER JOIN SMRARUL G ON F.SSBSECT_SUBJ_CODE=SUBSTR(G.SMRARUL_KEY_RULE,1,4) AND F.SSBSECT_CRSE_NUMB=SUBSTR(G.SMRARUL_KEY_RULE,5,5) '
 		SET @Sql = @Sql + ' INNER JOIN SMRALIB H ON H.SMRALIB_AREA=G.SMRARUL_AREA '
 		SET @Sql = @Sql + ' INNER JOIN SZVMALLA I on I.PROGRAM = C.SORLCUR_PROGRAM AND I.RULE_SUBJ_CODE || I.RULE_CRSE_NUMB = F.SSBSECT_SUBJ_CODE || F.SSBSECT_CRSE_NUMB '
-		--SET @Sql = @Sql + ' AND I.TERM_CODE_EFF = B.SFRSTCR_TERM_CODE '
 		SET @Sql = @Sql + ' WHERE  B.sfrstcr_blck_code is not null AND C.sorlcur_cact_code  = ''''ACTIVE'''' '
-		--SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
 		-- Aplicar filtro de sección solo si @iddocumentofinalreportap es nulo || validando si proviene de Informe Final Certificaciones progresivas 
 		IF @iddocumentofinalreportap IS NULL
 		SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '

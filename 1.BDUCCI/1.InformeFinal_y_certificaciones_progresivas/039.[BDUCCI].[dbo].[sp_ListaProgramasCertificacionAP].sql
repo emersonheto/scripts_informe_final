@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: [dbo].[sp_ListaProgramasCertificacionAP]
+NOMBRE	: [dbo].[sp_ListaProgramasCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Muestra la programacion de horarios de los docentes de la certificación
@@ -12,7 +12,7 @@ NRO		    FECHA		USUARIO					    MODIFICACIÓN
 1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
-ALTER PROCEDURE [dbo].[sp_ListaProgramasCertificacionAP] 
+ALTER PROCEDURE [dbo].[sp_ListaProgramasCertificacionAp] 
 (
 	@studentCode VARCHAR(12),
     @programa VARCHAR(12)

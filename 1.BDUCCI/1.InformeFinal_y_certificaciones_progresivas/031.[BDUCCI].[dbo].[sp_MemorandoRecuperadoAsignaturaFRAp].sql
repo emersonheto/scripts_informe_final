@@ -2,14 +2,14 @@ USE [BDUCCI]
 GO
 
 /*====================================================================================================
-NOMBRE	: dbo.sp_MemorandoRecuperadoAsignaturaFRAp
+NOMBRE	: dbo.sp_MemorandoRecuperadoAsignaturaFrAp
 FECHA	: 17/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Lista todas las notas de las asignaturas que ha cursado el alumno durante todo el programa.
 MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/
-CREATE PROCEDURE [dbo].[sp_MemorandoRecuperadoAsignaturaFRAp]
+CREATE PROCEDURE [dbo].[sp_MemorandoRecuperadoAsignaturaFrAp]
 (
      @programCode VARCHAR(20),
      @DNI  VARCHAR(20)
