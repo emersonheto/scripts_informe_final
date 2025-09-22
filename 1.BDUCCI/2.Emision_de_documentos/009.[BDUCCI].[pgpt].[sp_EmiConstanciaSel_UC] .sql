@@ -1,10 +1,5 @@
 USE [BDUCCI]
 GO
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 /* ========================================================================================================================
 NOMBRE		: [pgpt].[sp_EmiConstanciaSel_UC]
 FECHA		: 29/01/2024

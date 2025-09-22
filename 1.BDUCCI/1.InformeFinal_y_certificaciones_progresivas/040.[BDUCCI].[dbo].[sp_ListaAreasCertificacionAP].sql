@@ -3,8 +3,8 @@ GO
 /*====================================================================================================
 NOMBRE	: dbo.sp_ListaAreasCertificacionAp
 FECHA	: 03/06/2025
-AUTOR	: Saul Muñoz (SOLMIT)
-OBJETIVO: Muestra la programacion de horarios de los docentes de la sección y certificación, para la aplicación Informe Final
+AUTOR	: Alvaro Laveriano (Waytech)
+OBJETIVO: lista las áreas
 
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACIÓN
