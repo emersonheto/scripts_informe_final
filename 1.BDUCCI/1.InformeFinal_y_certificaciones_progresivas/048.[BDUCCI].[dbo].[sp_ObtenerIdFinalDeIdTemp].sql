@@ -4,7 +4,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [dbo].[sp_ObtenerIdFinalDeIdTemp]
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Obtiene el id: IdDocumentoFinalReportAp a partir del IdDocumentoFinalReportApTMP
 ====================================================================================================*/

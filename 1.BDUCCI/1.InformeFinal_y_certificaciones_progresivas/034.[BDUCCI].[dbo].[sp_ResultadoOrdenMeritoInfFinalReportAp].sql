@@ -5,10 +5,10 @@ GO
 NOMBRE	: [dbo].[sp_ResultadoOrdenMeritoInfFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
-OBJETIVO: Muestra los resultados de orden de mérito de los participantes
+OBJETIVO: Muestra los resultados de orden de m�rito de los participantes
 
-NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		    FECHA		USUARIO					    MODIFICACI�N
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoOrdenMeritoInfFinalReportAp]
@@ -23,7 +23,7 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Obtener orden de mérito, numerado por curso, con reconteo desde el 1 por estudiante
+        -- Obtener orden de m�rito, numerado por curso, con reconteo desde el 1 por estudiante
         SELECT  
             CONVERT(VARCHAR(10), ROW_NUMBER() OVER (
                 PARTITION BY Codigo 

@@ -5,10 +5,10 @@ GO
 NOMBRE	: [BANNER].[sp_AddInfFinalSeccionCertificarAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
-OBJETIVO: Registro de la información de la sección a certificar
+OBJETIVO: Registro de la informaci�n de la secci�n a certificar
 
-NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		    FECHA		USUARIO					    MODIFICACI�N
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarAp] 
@@ -77,13 +77,13 @@ BEGIN
 			FROM #RESULTADO
 			
 			SELECT 0 AS 'NRO_RESPUESTA',
-		           'SE INSERTÓ CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
+		           'SE INSERT� CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
 		END
 		ELSE IF(@p_Accion=2)
 		BEGIN
 				DELETE FROM [dbo].[tblInfFinalSeccionCertificar] WHERE Seccion=@Seccion
 				SELECT 1 AS 'NRO_RESPUESTA',
-		              'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
+		              'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
 		END
    END TRY
    BEGIN CATCH

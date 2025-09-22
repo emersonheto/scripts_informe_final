@@ -5,9 +5,9 @@ GO
 NOMBRE	: [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp]
 FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
-OBJETIVO: Almacenar datos de alumnos matriculados para la aplicación Informe Final
+OBJETIVO: Almacenar datos de alumnos matriculados para la aplicaci�n Informe Final
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp]
@@ -25,16 +25,16 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY    
-        -- Validación de parámetros más robusta
+        -- Validaci�n de par�metros m�s robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -43,7 +43,7 @@ BEGIN
             StudentCode VARCHAR(9) PRIMARY KEY
         )
 
-        -- Insertar datos del XML con validación
+        -- Insertar datos del XML con validaci�n
         INSERT INTO @Students (StudentCode)
         SELECT DISTINCT
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
@@ -53,7 +53,7 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
         
@@ -148,7 +148,7 @@ BEGIN
 			    	A.DNI, A.NOMBRE, NVL(SPRTELE_PHONE_NUMBER, '' ''), A.DNI || ''@continental.edu.pe'',
 			    	E.GOREMAL_EMAIL_ADDRESS, A.PROGRAM_DESC, H.SMRALIB_DESCRIPTION'
 
-            -- Consultas dinámicas completas con INSERT
+            -- Consultas din�micas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Telefono, Correo_Continental, Correo_Personal, Seccion, Programa)
             SELECT DNI, NOMBRE, TELEFONO, correo_continental, correo_personal, SECCION, PROGRAMA 
@@ -191,7 +191,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
                 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG';
             END 
             ELSE IF(@p_Tipo_Reporte=5)
             BEGIN
@@ -224,7 +224,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
                 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG';
             END            
         END
         ELSE IF(@p_Accion=2)
@@ -233,7 +233,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                    'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
         END
     END TRY
     BEGIN CATCH

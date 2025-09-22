@@ -3,9 +3,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [BANNER].[sp_AddInfFinalSeccionCertificarApFinalReport]
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Brus Paucar Matos (Waytech)
-OBJETIVO: Registro de la información de la sección a certificar para los tipos 4 y 5
+OBJETIVO: Registro de la informaci�n de la secci�n a certificar para los tipos 4 y 5
 ====================================================================================================*/
 
 CREATE PROCEDURE [BANNER].[sp_AddInfFinalSeccionCertificarApFinalReport] 
@@ -22,16 +22,16 @@ AS
 SET NOCOUNT ON
 BEGIN
    BEGIN TRY
-        -- Validación de parámetros
+        -- Validaci�n de par�metros
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -50,7 +50,7 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
 
@@ -117,7 +117,7 @@ BEGIN
 			FROM #RESULTADO
 			
 			SELECT 0 AS 'NRO_RESPUESTA',
-				'SE INSERTÓ CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
+				'SE INSERT� CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
 			
 		END
 		ELSE IF(@p_Accion=2)
@@ -126,7 +126,7 @@ BEGIN
 				WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
 
 				SELECT 1 AS 'NRO_RESPUESTA',
-		              'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
+		              'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
 		END
    END 
 	 TRY

@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Guarda la programacion de horarios de los docentes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[SP_AddInfFinalProgramacionDocenteFinalReportAp]
@@ -23,16 +23,16 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Validación de parámetros
+        -- Validaci�n de par�metros
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -51,7 +51,7 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
 
@@ -59,7 +59,7 @@ BEGIN
         BEGIN
             DECLARE @BDOracle VARCHAR(10)='BANNER';
 
-            -- Crear tabla temporal sin índice
+            -- Crear tabla temporal sin �ndice
             CREATE TABLE #RESULTADO ( 
                 CICLO NVARCHAR(10),
                 ASIGNATURA VARCHAR(200),
@@ -84,15 +84,15 @@ BEGIN
             WITH datos_base AS (
                 SELECT 
                     CASE
-                        -- MAESTRÍAS
+                        -- MAESTR�AS
                         WHEN A.PROGRAM_CODE LIKE ''MG%''  THEN 
                             TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
-                        -- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+                        -- PROGRAMAS DE ESPECIALIZACI�N / DIPLOMADOS
                         WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
-                            ''ÚNICO''
+                            ''�NICO''
                         -- OTROS (CGR, cursos libres, etc.)
                         ELSE 
-                            ''ÚNICO''
+                            ''�NICO''
                     END AS CICLO,
                     A.NOMBRE_CURSO,
                     A.NOMBRE_DOCENTE,
@@ -150,15 +150,15 @@ BEGIN
                 FROM (
                     SELECT DISTINCT
                         CASE
-                            -- MAESTRÍAS
+                            -- MAESTR�AS
                             WHEN A.PROGRAM_CODE LIKE ''MG%'' THEN 
                                 TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
-                            -- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+                            -- PROGRAMAS DE ESPECIALIZACI�N / DIPLOMADOS
                             WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
-                                ''ÚNICO''
+                                ''�NICO''
                             -- OTROS (CGR, cursos libres, etc.)
                             ELSE 
-                                ''ÚNICO''
+                                ''�NICO''
                         END AS CICLO,                        
                         A.NOMBRE_CURSO,
                         A.NOMBRE_DOCENTE,
@@ -251,7 +251,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE LA PROGRAMACIÓN DOCENTE' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE LA PROGRAMACI�N DOCENTE' AS 'MSG';
             END
             ELSE IF(@p_Tipo_Reporte=5)
             BEGIN
@@ -302,7 +302,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE LA PROGRAMACIÓN DOCENTE' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE LA PROGRAMACI�N DOCENTE' AS 'MSG';
             END
         END
         ELSE IF(@p_Accion=2)
@@ -311,7 +311,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                'ELIMINAR PROGRAMACIÓN DOCENTE' AS 'MSG';
+                'ELIMINAR PROGRAMACI�N DOCENTE' AS 'MSG';
         END
     END TRY 
     BEGIN CATCH        

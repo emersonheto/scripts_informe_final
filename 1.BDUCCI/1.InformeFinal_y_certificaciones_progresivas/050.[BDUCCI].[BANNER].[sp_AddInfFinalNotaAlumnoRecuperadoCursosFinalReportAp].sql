@@ -3,9 +3,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [BANNER].[sp_AddInfFinalNotaAlumnoRecuperadoCursosFinalReportAp]
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Emerson Herrera (Waytech)
-OBJETIVO: Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+OBJETIVO: Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 CREATE PROCEDURE [BANNER].[sp_AddInfFinalNotaAlumnoRecuperadoCursosFinalReportAp]
@@ -23,13 +23,13 @@ BEGIN
     BEGIN TRY           
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
         
@@ -45,7 +45,7 @@ BEGIN
         
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
         
@@ -150,7 +150,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
             END
             ELSE IF(@p_Tipo_Reporte=5)
             BEGIN
@@ -177,7 +177,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
             END        
         END
         ELSE IF(@p_Accion=2)
@@ -186,7 +186,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                   'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                   'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
         END
     END TRY
     BEGIN CATCH

@@ -3,16 +3,16 @@ GO
 /* ===================================================================================================================
 NOMBRE		: [pgpt].[sp_generatedDocumentsCRUD]
 FECHA		: 18/11/2022
-AUTOR		: José Rios (Proveedor Empresa Zofteam)
-OBJETIVO	: Ejecución de operaciones CRUD para registrar y actualizar la generación de documentos
+AUTOR		: Jos� Rios (Proveedor Empresa Zofteam)
+OBJETIVO	: Ejecuci�n de operaciones CRUD para registrar y actualizar la generaci�n de documentos
 MODIFICACIONES
 NRO 	FECHA		USUARIO		    MODIFICACION
-01		23/01/2023	APOYODEV4	    Función de autoincremento para insertar en la tabla tblDocuments autocompleta para 6 cifras.
-02		20/02/2023	APOYODEV4	    Registro de razón de anulación de documento generado
-03		15/05/2023	PRAPPPROY04	    Registro de razón de anulación de documentos sólo para activos
-04		29/01/2024  Anthony Torres (NetConsultores) Se agregó la columna Token en el retorno del resultado
-05      03/06/2025  EmersonHerrera (waytech)   Se agrega documento 6 Certificaciones de Programas de Especialización AP.
-06		17/09/2025	Emerson Herrera Waytech	Se agrega filtro por iddocumentofinalreportap
+01		23/01/2023	APOYODEV4	    Funci�n de autoincremento para insertar en la tabla tblDocuments autocompleta para 6 cifras.
+02		20/02/2023	APOYODEV4	    Registro de raz�n de anulaci�n de documento generado
+03		15/05/2023	PRAPPPROY04	    Registro de raz�n de anulaci�n de documentos s�lo para activos
+04		29/01/2024  Anthony Torres (NetConsultores) Se agreg� la columna Token en el retorno del resultado
+05      03/06/2025  EmersonHerrera (waytech)   Se agrega documento 6 Certificaciones de Programas de Especializaci�n AP.
+06		22/09/2025	Emerson Herrera Waytech	Se agrega filtro por iddocumentofinalreportap
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_generatedDocumentsCRUD]
 	@id int,
@@ -110,7 +110,7 @@ BEGIN
 				WHERE id = @generatedDocumentId;
 
 
-			/* -------------- INSERCIÓN EN TABLA DE DOCUMENTOS DE CAU (BDINTBANNER) ----------------- */
+			/* -------------- INSERCI�N EN TABLA DE DOCUMENTOS DE CAU (BDINTBANNER) ----------------- */
 			DECLARE @currentYear VARCHAR(4) = YEAR(getdate());
 			DECLARE @incrementId INT = (SELECT top 1 CAST(SUBSTRING(CAST(requestId as VARCHAR(10)), 5,6) AS int) FROM [BDINTBANNER].[CAU].[TblRequest] order by requestId desc)+1;
 			DECLARE @codeRequest VARCHAR(10) = CONCAT(@currentYear,RIGHT('000000' + LTRIM(RTRIM(@incrementId)),6));
@@ -164,7 +164,7 @@ BEGIN
 						,null
 						,0)
 
-			/* -------------- FIN DE INSERCIÓN EN TABLA DE DOCUMENTOS DE CAU (BDINTBANNER) ----------------- */
+			/* -------------- FIN DE INSERCI�N EN TABLA DE DOCUMENTOS DE CAU (BDINTBANNER) ----------------- */
 
 			SELECT '0' AS IDError, @archivo AS Mensaje, null AS TokenDoc
 			UNION ALL
@@ -179,7 +179,7 @@ BEGIN
              AND (@iddocumentofinalreportap IS NULL OR [iddocumentofinalreportap] = @iddocumentofinalreportap)
 					AND [estado] = 1
 
-			SELECT '0' AS IDError, 'Se archivó correctamente la generación de documento.' AS Mensaje, null AS TokenDoc
+			SELECT '0' AS IDError, 'Se archiv� correctamente la generaci�n de documento.' AS Mensaje, null AS TokenDoc
 		END
 
 		IF (@crud='NTF')
@@ -189,7 +189,7 @@ BEGIN
 			 WHERE [dni] = @dni AND [seccion] = @seccion AND [tipoConstancia] = @tipoConstancia AND [estado] = 1
              AND (@iddocumentofinalreportap IS NULL OR [iddocumentofinalreportap] = @iddocumentofinalreportap)
 
-			SELECT '0' AS IDError, 'Se envió correctamente la notificación.' AS Mensaje, null AS TokenDoc
+			SELECT '0' AS IDError, 'Se envi� correctamente la notificaci�n.' AS Mensaje, null AS TokenDoc
 		END
 
 
@@ -203,7 +203,7 @@ BEGIN
 			 WHERE [dni] = @dni AND [seccion] = @seccion AND [tipoConstancia] = @tipoConstancia
              AND (@iddocumentofinalreportap IS NULL OR [iddocumentofinalreportap] = @iddocumentofinalreportap)
 
-			SELECT '0' AS IDError, 'Se registró correctamente la generación de documento.' AS Mensaje, null AS TokenDoc
+			SELECT '0' AS IDError, 'Se registr� correctamente la generaci�n de documento.' AS Mensaje, null AS TokenDoc
 		END
 
 		COMMIT TRANSACTION

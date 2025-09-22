@@ -8,7 +8,7 @@ AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: muestra la lista de alumnos que pertenecen a un programa
 MODIFICACIONES:
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_FinalReportAp]
     @studentCode VARCHAR(9),

@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra las notas de los alumnos recuperados por cursos
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoCursosFinalReportAp] 
@@ -22,7 +22,7 @@ BEGIN
         -- Validar XML de entrada
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
             RETURN
         END
         
@@ -47,7 +47,7 @@ BEGIN
         IF LEN(@StudentList) > 0
             SET @StudentList = LEFT(@StudentList, LEN(@StudentList) - 1)
 
-        -- Tabla temporal idéntica a la original
+        -- Tabla temporal id�ntica a la original
         CREATE TABLE #RESULTADO ( 
             Codigo VARCHAR(10),
             Apellidos_Nombres VARCHAR(200),
@@ -62,7 +62,7 @@ BEGIN
                 SELECT 
                         A.DNI,
                         A.NOMBRE,
-                        NVL( A.STUDYPATH_BLOQUE,A.BLOQUE_MATRICULA) AS STUDYPATH_BLOQUE,  -- BLOQUE_MATRICULA como sección antigua 
+                        NVL( A.STUDYPATH_BLOQUE,A.BLOQUE_MATRICULA) AS STUDYPATH_BLOQUE,  -- BLOQUE_MATRICULA como secci�n antigua 
                         NRC||'' - ''||NOMBRE_CURSO AS NOMBRE_CURSO,
                         NVL(A.GRDE_CODE,''0'') AS GRDE_CODE, 
                         ''RECUPERADO'' AS ESTADO_RECUPERACION,

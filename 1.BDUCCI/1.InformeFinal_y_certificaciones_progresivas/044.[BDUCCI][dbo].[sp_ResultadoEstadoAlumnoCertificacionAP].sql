@@ -5,11 +5,11 @@ GO
 NOMBRE	: [dbo].[sp_ResultadoEstadoAlumnoCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
-OBJETIVO: Muestra los resultados de los alumnos de la certificación
+OBJETIVO: Muestra los resultados de los alumnos de la certificaci�n
 
 MODIFICACIONES:
-NRO		FECHA		USUARIO					    MODIFICACIÓN
-1       17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		FECHA		USUARIO					    MODIFICACI�N
+1       22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ResultadoEstadoAlumnoCertificacionAp]
@@ -23,7 +23,7 @@ BEGIN
 	BEGIN TRY
 	   IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
        BEGIN
-           RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+           RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
            RETURN
        END
        

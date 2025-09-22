@@ -5,11 +5,11 @@ GO
 NOMBRE	: [dbo].[sp_ProgramacionEquipoDocenteCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
-OBJETIVO: Muestra la programacion de horarios de los docentes de la certificación
+OBJETIVO: Muestra la programacion de horarios de los docentes de la certificaci�n
 
 MODIFICACIONES:
-NRO		FECHA		USUARIO					    MODIFICACIÓN
-1       17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		FECHA		USUARIO					    MODIFICACI�N
+1       22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 
 ====================================================================================================*/
 
@@ -24,7 +24,7 @@ BEGIN
 	BEGIN TRY
 	   IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
        BEGIN
-           RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+           RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
            RETURN
        END
        
@@ -63,17 +63,17 @@ BEGIN
 				  FROM (
 					 SELECT DISTINCT
 						CASE
-								-- MAESTRÍAS
+								-- MAESTR�AS
 								WHEN A.PROGRAM_CODE LIKE ''''MG%''''  THEN 
 									TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''''(I{1,3}|IV|V|VI{1,3}|IX|X)''''))
 
-								-- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+								-- PROGRAMAS DE ESPECIALIZACI�N / DIPLOMADOS
 								WHEN A.PROGRAM_CODE LIKE ''''P%'''' OR A.PROGRAM_CODE LIKE ''''D%'''' THEN 
-										''''ÚNICO''''
+										''''�NICO''''
 								
 								-- OTROS (CGR, cursos libres, etc.)
 								ELSE 
-										''''ÚNICO''''
+										''''�NICO''''
 						END AS CICLO,
 					 
 					 A.SECCION,A.NOMBRE_CURSO,A.NOMBRE_DOCENTE,B.HT,C.SSRMEET_START_DATE AS FECHA_INICIO,C.SSRMEET_END_DATE AS FECHA_FIN

@@ -3,7 +3,7 @@ GO
 
 /*====================================================================================================
 NOMBRE	: [BANNER].[sp_AddInfFinalMemorandoRecuperadoFinalReportAp] 
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
 OBJETIVO: Registro de notas recuperadas para el documento Informe Final.
 ====================================================================================================*/
@@ -107,13 +107,13 @@ BEGIN
 
                     DROP TABLE #RESULTADO
                         SELECT 0 AS 'NRO_RESPUESTA',
-                            'SE INSERTÓ CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
+                            'SE INSERT� CORRECTAMENTE LOS PARTICIPANTES' AS 'MSG'
             END
         ELSE IF (@Accion=2)
             BEGIN
             DELETE FROM dbo.[tblInfFinalMemorandumFinalReportAp] WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             SELECT 0 AS 'NRO_RESPUESTA',
-                'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
+                'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG'
             END
             END TRY
             BEGIN CATCH

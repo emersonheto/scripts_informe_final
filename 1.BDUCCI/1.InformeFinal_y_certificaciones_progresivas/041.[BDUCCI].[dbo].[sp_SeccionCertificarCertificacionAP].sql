@@ -5,11 +5,11 @@ GO
 NOMBRE	: [dbo].[sp_SeccionCertificarCertificacionAp]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
-OBJETIVO: Obtiene información necesaria para el archivo de informe final
+OBJETIVO: Obtiene informaci�n necesaria para el archivo de informe final
 
 MODIFICACIONES:
-NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		    FECHA		USUARIO					    MODIFICACI�N
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 
 ====================================================================================================*/
 ALTER PROCEDURE [dbo].[sp_SeccionCertificarCertificacionAp]

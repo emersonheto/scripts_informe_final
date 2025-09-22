@@ -5,11 +5,11 @@ GO
 NOMBRE		: [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
 FECHA		: 03/06/2025
 AUTOR		: Emerson Herrera (Waytech)
-OBJETIVO	: Listar los programas de Certificaciones de Programas de Especialización AP 
-			  con filtro de código de informe final.
+OBJETIVO	: Listar los programas de Certificaciones de Programas de Especializaci�n AP 
+			  con filtro de c�digo de informe final.
 MODIFICACIONES
 NRO 	FECHA		USUARIO		    			MODIFICACION
-01		17/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
+01		22/09/2025  EmersonHerrera (waytech)   Se cambia negocio de secciones a codigo de informe final 
 =================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp]
 

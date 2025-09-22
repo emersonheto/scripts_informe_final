@@ -2,9 +2,9 @@ USE [BDUCCI]
 GO
 /*====================================================================================================
 NOMBRE	: dbo.tblInfFinalConsolidadoNotasEstudiantesRecuperadosCursos
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Emerson Herrera(Waytech)
-OBJETIVO: se crean tablas y se añaden columnas necesarias
+OBJETIVO: se crean tablas y se a?aden columnas necesarias
 
 ====================================================================================================*/
 --Tabla para guardar los datos del informe final de memorandum de recuperados
@@ -26,7 +26,7 @@ CREATE TABLE dbo.tblInfFinalMemorandumFinalReportAp(
     IdDocumentoFinalReportAp varchar(50) NULL
 )
 
---tabla para guardar los datos de configuración de cabecera para el documento MEMORANDUM
+--tabla para guardar los datos de configuraci?n de cabecera para el documento MEMORANDUM
 CREATE TABLE dbo.tblDatosMemoFinalReportAp (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     NombreEncargado VARCHAR(200) NOT NULL,
@@ -48,7 +48,7 @@ ALTER TABLE [dbo].[tblInfFinalSeccionCertificar] ADD
     [Programa_Codigo] VARCHAR(3),
     [IdDocumentoFinalReportAp] VARCHAR(50)
 GO
---va a permitir saber a partir de qué id temporal se creó el id definitivo
+--va a permitir saber a partir de qu? id temporal se cre? el id definitivo
 ALTER TABLE [dbo].[tblDocumentoFinalReportAp] ADD
     [IdDocumentoFinalReportApTMP] VARCHAR(50)
 GO
@@ -60,7 +60,7 @@ ALTER TABLE [dbo].[tblInfFinalResultadoNotasParticipantesCursos] ALTER COLUMN [S
 GO
 ALTER TABLE [dbo].[tblInfFinalCertificacionPrograma] ALTER COLUMN [Seccion] varchar(50)  NULL
 GO
---Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+--Se agrega funcionalidad para verificar el ?ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ALTER TABLE [dbo].[tblInfFinalResultadoOrdenMeritoParticipantes] ALTER COLUMN [Seccion] varchar(50) NULL
 
 

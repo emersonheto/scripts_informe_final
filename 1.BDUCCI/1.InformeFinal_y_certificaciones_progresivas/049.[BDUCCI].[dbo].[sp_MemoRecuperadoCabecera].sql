@@ -4,11 +4,11 @@ GO
 NOMBRE	: dbo.sp_MemoRecuperadoCabecera
 FECHA	: 25/01/2024
 AUTOR	: Marcelo Cipriano (SOLMIT)
-OBJETIVO: Lista los datos que se necesita para el reporte de memorandum de recuperados, en la aplicación Informe Final (CUS-020)
+OBJETIVO: Lista los datos que se necesita para el reporte de memorandum de recuperados, en la aplicaci�n Informe Final (CUS-020)
 MODIFICACIONES:
 NRO	   FECHA		 USUARIO					MODIFICACION
-001	   03/06/2025	 Brus Paucar (Waytech)	    se añade Tipo_Reporte=4 y se controla cuando EDICION = null
-002    17/09/2025   Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+001	   03/06/2025	 Brus Paucar (Waytech)	    se a�ade Tipo_Reporte=4 y se controla cuando EDICION = null
+002    22/09/2025   Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_MemoRecuperadoCabecera]

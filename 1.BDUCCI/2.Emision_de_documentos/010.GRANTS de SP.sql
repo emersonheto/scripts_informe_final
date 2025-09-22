@@ -2,7 +2,7 @@ USE [BDUCCI]
 GO
 /* ===================================================================================================================
 NOMBRE      : Grant BDINTBANNER SPs
-FECHA       : 17/09/2025
+FECHA       : 22/09/2025
 AUTOR       : Brus Paucar (WAYTECH)
 OBJETIVO    : Asignar los grants requeridos
 ================================================================================================================== */
@@ -53,7 +53,7 @@ BEGIN
             GRANT EXECUTE ON [BANNER].[sp_AddInfFinalDatosAlumnoFinalReportAp] TO [ssapplinux];
             GRANT EXECUTE ON [BANNER].[sp_AddInfFinalSeccionCertificarAp] TO [ssapplinux];
 
-            -- Procedimientos Emisión de documentos
+            -- Procedimientos Emisi�n de documentos
             GRANT EXECUTE ON [pgpt].[sp_ListSendingDocumentsByIdDocumentoFinalReportAp] TO [ssapplinux];
             GRANT EXECUTE ON [pgpt].[sp_SelInformeFinalByCodigo_UC] TO [ssapplinux];
             GRANT EXECUTE ON [pgpt].[sp_EmiConstanciaIns_UC] TO [ssapplinux];

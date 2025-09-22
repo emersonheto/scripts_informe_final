@@ -5,11 +5,11 @@ GO
 NOMBRE	: [dbo].[sp_CertificacionProgramaCertificacionAP]
 FECHA	: 03/06/2025
 AUTOR	: Emerson Herrera (Waytech)
-OBJETIVO: Lista los alumnos que lograron la certificación en la sección de CP
+OBJETIVO: Lista los alumnos que lograron la certificaci�n en la secci�n de CP
 
 MODIFICACIONES:
-NRO		    FECHA		USUARIO					    MODIFICACIÓN
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento y solo se tome en cuenta el id del codigo de reporte de informe final
+NRO		    FECHA		USUARIO					    MODIFICACI�N
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento y solo se tome en cuenta el id del codigo de reporte de informe final
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_CertificacionProgramaCertificacionAP]
@@ -23,7 +23,7 @@ BEGIN
 	BEGIN TRY
 	   IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
        BEGIN
-           RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+           RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
            RETURN
        END
        
@@ -55,7 +55,7 @@ BEGIN
        SELECT DNI,NOMBRE
 		   FROM OPENQUERY ('+@BDOracle+',''
 			WITH T_ULTIMO_INTENTO AS (
-			-- Paso 1: Aislamos el ÚLTIMO INTENTO de cada curso para cada alumno.
+			-- Paso 1: Aislamos el �LTIMO INTENTO de cada curso para cada alumno.
 			SELECT
 				A.DNI, A.NOMBRE, A.VERSION_PLAN, A.PROGRAM_CODE, A.DEPT_CODE,
 				A.ESTADO_ASIGNATURA, A.PORCENT_INASISTENCIA,
@@ -70,7 +70,7 @@ BEGIN
 				AND A.DNI IN (' + @StudentList + ')
 			),
 			T_RESUMEN_APROBADOS AS (
-			-- Paso 2: Contamos los cursos aprobados del alumno, basándonos solo en su último intento.
+			-- Paso 2: Contamos los cursos aprobados del alumno, bas�ndonos solo en su �ltimo intento.
 			SELECT
 				DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE,
 				SUM(CASE WHEN ESTADO_ASIGNATURA = ''''Aprobado'''' AND PORCENT_INASISTENCIA <= 20 THEN 1 ELSE 0 END) AS CursosAprobados

@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Adiciona o elimina archivos anexos
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_AddAnexosInfFinalAp]	
@@ -27,7 +27,7 @@ BEGIN
 					INSERT [dbo].[tblInfFinalAnexos]([Seccion],[Archivo],[Orden],[Fecha],[Tipo_Reporte],[Area], [IdDocumentoFinalReportAp]) 
 						VALUES ('',@p_NameFile,@p_Orden,@p_Fecha,@p_TipoReporte,@p_Area, @p_IdDocumentoFinalReportAp)
 
-					SELECT 0 AS 'NRO_RESPUESTA','SE INSERTO CORRECTAMENTE EL ANEXO A LA SECCIÓN' AS 'MSG'
+					SELECT 0 AS 'NRO_RESPUESTA','SE INSERTO CORRECTAMENTE EL ANEXO A LA SECCI�N' AS 'MSG'
 			END
 		 ELSE IF(@p_Accion=2)
 				BEGIN

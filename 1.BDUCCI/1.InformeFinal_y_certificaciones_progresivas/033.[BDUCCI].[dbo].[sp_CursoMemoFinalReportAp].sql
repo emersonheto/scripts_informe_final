@@ -3,9 +3,9 @@ GO
 
 /*====================================================================================================
 NOMBRE	: dbo.sp_CursoMemoFinalReportAp
-FECHA	: 17/09/2025
+FECHA	: 22/09/2025
 AUTOR	: Brus Paucar (WAYTECH)
-OBJETIVO: Muestra en el MEMORANDUM la nota del curso específico para el que se crea el documento.
+OBJETIVO: Muestra en el MEMORANDUM la nota del curso espec�fico para el que se crea el documento.
 MODIFICACIONES:
 NRO					FECHA					USUARIO					MODIFICACION
 ====================================================================================================*/

@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Muestra las notas de los alumnos que recuperaron
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_NotaAlumnoRecuperadoFinalReportAp] 
@@ -22,7 +22,7 @@ BEGIN
         -- Validar XML de entrada
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
             RETURN
         END
         
@@ -57,7 +57,7 @@ BEGIN
             Estado_Recuperacion VARCHAR(20)
         )
 
-        -- Consulta dinámica simplificada
+        -- Consulta din�mica simplificada
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
 				  WITH cursos_recuperados AS (
 						SELECT 

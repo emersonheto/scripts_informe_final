@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de las certificaciones
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalCertificacionProgramaFinalReportAp] 
@@ -25,16 +25,16 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY    
-        -- Validación de parámetros más robusta
+        -- Validaci�n de par�metros m�s robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -43,7 +43,7 @@ BEGIN
             StudentCode VARCHAR(9)
         )
 
-        -- Insertar datos del XML con validación
+        -- Insertar datos del XML con validaci�n
         INSERT INTO @Students (StudentCode)
         SELECT 
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
@@ -53,7 +53,7 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
         
@@ -106,7 +106,7 @@ BEGIN
             -- Consulta Oracle para Tipo_Reporte = 5
             DECLARE @OracleQuery5 NVARCHAR(MAX) = N'
                 WITH T_ULTIMO_INTENTO AS (
-                    -- Paso 1: Aislamos el ÚLTIMO INTENTO de cada curso para cada alumno.
+                    -- Paso 1: Aislamos el �LTIMO INTENTO de cada curso para cada alumno.
                     SELECT
                         A.DNI, A.NOMBRE, A.VERSION_PLAN, A.PROGRAM_CODE, A.DEPT_CODE,
                         A.ESTADO_ASIGNATURA, A.PORCENT_INASISTENCIA, B.PROGRAM_DESC,
@@ -121,7 +121,7 @@ BEGIN
                         AND A.DNI IN (' + @StudentList + ')
                 ),
                 T_RESUMEN_APROBADOS AS (
-                    -- Paso 2: Contamos los cursos aprobados del alumno, basándonos solo en su último intento.
+                    -- Paso 2: Contamos los cursos aprobados del alumno, bas�ndonos solo en su �ltimo intento.
                     SELECT
                         DNI, NOMBRE, VERSION_PLAN, PROGRAM_CODE, DEPT_CODE, PROGRAM_DESC,
                         SUM(CASE WHEN ESTADO_ASIGNATURA = ''Aprobado'' AND PORCENT_INASISTENCIA <= 20 THEN 1 ELSE 0 END) AS CursosAprobados
@@ -154,7 +154,7 @@ BEGIN
                 WHERE
                 A.CursosAprobados = B.CANTCURSOS'
 
-            -- Consultas dinámicas completas con INSERT
+            -- Consultas din�micas completas con INSERT
             DECLARE @QUERY4 NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Programa)
             SELECT DNI, NOMBRE, PROGRAMA 
@@ -228,7 +228,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';                    
+                'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';                    
         END
     END TRY
     BEGIN CATCH

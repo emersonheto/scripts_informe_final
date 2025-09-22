@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Guarda los resultados de notas de los participantes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalResultadoNotasParticipantesFinalReportAp]
@@ -23,16 +23,16 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY
-        -- Validación de parámetros más robusta
+        -- Validaci�n de par�metros m�s robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -41,7 +41,7 @@ BEGIN
             StudentCode VARCHAR(9)
         )
 
-        -- Insertar datos del XML con validación
+        -- Insertar datos del XML con validaci�n
         INSERT INTO @Students (StudentCode)
         SELECT 
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
@@ -51,11 +51,11 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
 
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        -- Construir lista de Students para Oracle (m�todo compatible con versiones anteriores)
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -240,7 +240,7 @@ BEGIN
                 T_ESTADO_FINAL AS (
                     SELECT 
                         A.PIDM,
-                        -- CORRECCIÓN: El promedio se divide entre el total de cursos de la malla (B.CANTCURSOS).
+                        -- CORRECCI�N: El promedio se divide entre el total de cursos de la malla (B.CANTCURSOS).
                         CASE 
                             WHEN B.CANTCURSOS > 0 THEN ROUND(A.SumaNotas / B.CANTCURSOS, 0)
                             ELSE 0 
@@ -292,7 +292,7 @@ BEGIN
                         AND PO.SMBPOGN_PROGRAM = G.PROGRAM_CODE
                         AND PO.SMBPOGN_PIDM = G.PIDM
                 ) = 0 THEN ''NO CAPP'' ELSE ''OK'' END AS ESTADO_CAPP,
-                NVL(C.SECCION, '''') AS SECCION,    -- Si la sección es NULL, se convierte a ''
+                NVL(C.SECCION, '''') AS SECCION,    -- Si la secci�n es NULL, se convierte a ''
                 NVL(C.PROGRAMA, '''') AS PROGRAMA  -- Si el programa es NULL, se convierte a ''
             FROM GRID_ALUMNO_CURSO G
             LEFT JOIN T_NOTAS C ON G.DNI = C.DNI AND G.ASIGNATURA = C.ASIGNATURA
@@ -344,7 +344,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
             END
             ELSE IF(@p_Tipo_Reporte=5)
             BEGIN
@@ -380,7 +380,7 @@ BEGIN
                 DROP TABLE #RESULTADO;
 
                 SELECT 0 AS 'NRO_RESPUESTA',
-                    'SE INSERTÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                    'SE INSERT� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
             END        
         END
         ELSE IF(@p_Accion=2)
@@ -389,7 +389,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                   'SE ELIMINÓ CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
+                   'SE ELIMIN� CORRECTAMENTE RESULTADO DE NOTAS DE LOS PARTICIPANTES' AS 'MSG';
         END
     END TRY
     BEGIN CATCH

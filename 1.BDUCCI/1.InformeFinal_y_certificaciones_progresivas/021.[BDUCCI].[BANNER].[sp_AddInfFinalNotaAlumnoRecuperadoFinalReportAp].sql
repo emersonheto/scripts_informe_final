@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Alvaro Laveriano (Waytech)
 OBJETIVO: Reporte de consolidado de notas estudiantes recuperados
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [BANNER].[sp_AddInfFinalNotaAlumnoRecuperadoFinalReportAp] 
@@ -24,16 +24,16 @@ AS
 SET NOCOUNT ON
 BEGIN
     BEGIN TRY    	
-        -- Validación de parámetros más robusta
+        -- Validaci�n de par�metros m�s robusta
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos con la estructura <Students><Student><StudentCode>valor</StudentCode></Student></Students>', 16, 1)
             RETURN
         END
         
         IF NULLIF(@ProgramCode, '') IS NULL
         BEGIN
-            RAISERROR('El parámetro @ProgramCode es requerido', 16, 1)
+            RAISERROR('El par�metro @ProgramCode es requerido', 16, 1)
             RETURN
         END
 
@@ -42,7 +42,7 @@ BEGIN
             StudentCode VARCHAR(9)
         )
 
-        -- Insertar datos del XML con validación
+        -- Insertar datos del XML con validaci�n
         INSERT INTO @Students (StudentCode)
         SELECT 
             Student.value('(StudentCode)[1]', 'VARCHAR(9)') AS StudentCode
@@ -52,11 +52,11 @@ BEGIN
         -- Verificar que se hayan procesado estudiantes
         IF NOT EXISTS (SELECT 1 FROM @Students)
         BEGIN
-            RAISERROR('No se encontraron códigos de estudiante válidos en el XML proporcionado', 16, 1)
+            RAISERROR('No se encontraron c�digos de estudiante v�lidos en el XML proporcionado', 16, 1)
             RETURN
         END
 
-        -- Construir lista de Students para Oracle (método compatible con versiones anteriores)
+        -- Construir lista de Students para Oracle (m�todo compatible con versiones anteriores)
         DECLARE @StudentList NVARCHAR(MAX) = ''
         SELECT @StudentList = @StudentList + '''' + REPLACE(StudentCode, '''', '''''') + ''',' 
         FROM @Students
@@ -112,7 +112,7 @@ BEGIN
             ORDER BY  FECHA_INICIO_NRC asc  				
             '
 
-            -- Consulta dinámica completa con INSERT
+            -- Consulta din�mica completa con INSERT
             DECLARE @QUERY NVARCHAR(MAX) = N'
             INSERT INTO #RESULTADO (Codigo, Apellidos_Nombres, Seccion_Antigua, Curso, Nota, Estado_Recuperacion, Seccion_Actual, Programa)
             SELECT DNI, NOMBRE, STUDYPATH_BLOQUE, NOMBRE_CURSO, GRDE_CODE, ESTADO_RECUPERACION, SECCION_ACTUAL, PROGRAMA 
@@ -147,7 +147,7 @@ BEGIN
             DROP TABLE #RESULTADO;
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                   'SE INSERTÓ CORRECTAMENTE LAS NOTAS DE ALUMNOS RECUPERADOS' AS 'MSG';
+                   'SE INSERT� CORRECTAMENTE LAS NOTAS DE ALUMNOS RECUPERADOS' AS 'MSG';
         END
         ELSE IF(@p_Accion=2)
         BEGIN
@@ -156,7 +156,7 @@ BEGIN
             WHERE IdDocumentoFinalReportAp=@p_IdDocumentoFinalReportAp;
             
             SELECT 0 AS 'NRO_RESPUESTA',
-                   'SE ELIMINÓ CORRECTAMENTE LAS NOTAS DE ALUMNOS RECUPERADOS' AS 'MSG';
+                   'SE ELIMIN� CORRECTAMENTE LAS NOTAS DE ALUMNOS RECUPERADOS' AS 'MSG';
         END
     END TRY
     BEGIN CATCH

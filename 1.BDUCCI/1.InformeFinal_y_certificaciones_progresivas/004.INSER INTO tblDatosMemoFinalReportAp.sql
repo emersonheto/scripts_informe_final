@@ -1,9 +1,9 @@
 USE [BDUCCI]
 GO
 /* ===================================================================================================================
-FECHA		: 17/09/2025
+FECHA		: 22/09/2025
 AUTOR		: Brus Paucar (WAYTECH)
-OBJETIVO	: guardar los datos de configuración de cabecera para el documento MEMORANDUM
+OBJETIVO	: guardar los datos de configuraci�n de cabecera para el documento MEMORANDUM
 =================================================================================================================== */
 BEGIN
 	SET FMTONLY OFF
@@ -19,8 +19,8 @@ BEGIN
                 NroEdicionB,
                 Monto
             ) VALUES (
-                'José Carlos Palomino Marmolejo',
-                'Jefe de Registros Académicos de la Escuela de Posgrado - Lima',
+                'Jos� Carlos Palomino Marmolejo',
+                'Jefe de Registros Acad�micos de la Escuela de Posgrado - Lima',
                 'Universidad Continental',
                 'Jesus Augusto martinez Campian',
                 'Huancayo',

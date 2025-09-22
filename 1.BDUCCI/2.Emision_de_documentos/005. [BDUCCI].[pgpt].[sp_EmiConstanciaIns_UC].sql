@@ -8,10 +8,10 @@ OBJETIVO	: Realiza el INSERT en la tabla pgpt.tblEmiConstancia_UC
 
 MODIFICACIONES
 NRO		FECHA		USUARIO							MODIFICACION
-1		21/05/2024	Carlos Marín (NetConsultores) 	Ajuste en la descripción de puestos y modificación del query para traer los cursos
+1		21/05/2024	Carlos Mar�n (NetConsultores) 	Ajuste en la descripci�n de puestos y modificaci�n del query para traer los cursos
 2		14/04/2025	Carlos Estrada(Softbrilliance) 	Ajuste en el nombre del archivo a insertar en pgpt.tblGeneratedDocuments
-3		03/06/2025	Emerson Herrera(Waytech)		Se agrega un nuevo tipo de constancia [9] para certificación progresiva de programas de maestrías.	
-4       17/09/2025  Emerson Herrera(Waytech)		Se agrega el parámetro iddocumentofinalreportap para la inserción.
+3		03/06/2025	Emerson Herrera(Waytech)		Se agrega un nuevo tipo de constancia [9] para certificaci�n progresiva de programas de maestr�as.	
+4       22/09/2025  Emerson Herrera(Waytech)		Se agrega el par�metro iddocumentofinalreportap para la inserci�n.
 ======================================================================================================================== */
 ALTER PROCEDURE [pgpt].[sp_EmiConstanciaIns_UC]
     @Nombres VARCHAR(50)= NULL,
@@ -138,7 +138,7 @@ SET @Sql = 'SELECT * FROM Openquery(BANNER,'''
 		SET @Sql = @Sql + ' INNER JOIN SMRALIB H ON H.SMRALIB_AREA=G.SMRARUL_AREA '
 		SET @Sql = @Sql + ' INNER JOIN SZVMALLA I on I.PROGRAM = C.SORLCUR_PROGRAM AND I.RULE_SUBJ_CODE || I.RULE_CRSE_NUMB = F.SSBSECT_SUBJ_CODE || F.SSBSECT_CRSE_NUMB '
 		SET @Sql = @Sql + ' WHERE  B.sfrstcr_blck_code is not null AND C.sorlcur_cact_code  = ''''ACTIVE'''' '		
-		-- Aplicar filtro de sección solo si @iddocumentofinalreportap es nulo || validando si proviene de Informe Final Certificaciones progresivas 
+		-- Aplicar filtro de secci�n solo si @iddocumentofinalreportap es nulo || validando si proviene de Informe Final Certificaciones progresivas 
 		IF @iddocumentofinalreportap IS NULL
 				SET @Sql = @Sql + ' AND B.sfrstcr_blck_code='''''+@seccion+''''' AND G.SMRARUL_AREA='''''+@CodigoArea+''''' AND A.SPRIDEN_ID='''''+@dni+''''' '
 		ELSE

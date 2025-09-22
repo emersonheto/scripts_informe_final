@@ -7,7 +7,7 @@ FECHA	: 03/06/2025
 AUTOR	: Brus Paucar (Waytech)
 OBJETIVO: Trae la lista de docentes
 NRO		    FECHA		USUARIO					    MODIFICACION
-1           17/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el último intento
+1           22/09/2025  Emerson Herrera(Waytech)	Se agrega funcionalidad para verificar el �ltimo intento
 ====================================================================================================*/
 
 ALTER PROCEDURE [dbo].[sp_ProgramacionEquipoDocenteFinalReportAp] 
@@ -22,7 +22,7 @@ BEGIN
         -- Validar XML de entrada
         IF @XmlStudents IS NULL OR @XmlStudents.exist('/Students[1]') = 0
         BEGIN
-            RAISERROR('El parámetro @XmlStudents debe contener datos XML válidos', 16, 1)
+            RAISERROR('El par�metro @XmlStudents debe contener datos XML v�lidos', 16, 1)
             RETURN
         END
         
@@ -58,22 +58,22 @@ BEGIN
             FECHA_FIN_ASIGNATURA DATE
         )
 
-        -- Consulta dinámica simplificada
+        -- Consulta din�mica simplificada
         DECLARE @OracleQuery NVARCHAR(MAX) = N'
         
             SELECT DISTINCT   
 						 CASE
-								-- MAESTRÍAS
+								-- MAESTR�AS
 								WHEN A.PROGRAM_CODE LIKE ''MG%''  THEN 
 									TRIM(REGEXP_SUBSTR(A.AREA_DESC, ''(I{1,3}|IV|V|VI{1,3}|IX|X)''))
 
-								-- PROGRAMAS DE ESPECIALIZACIÓN / DIPLOMADOS
+								-- PROGRAMAS DE ESPECIALIZACI�N / DIPLOMADOS
 								WHEN A.PROGRAM_CODE LIKE ''P%'' OR A.PROGRAM_CODE LIKE ''D%'' THEN 
-										''ÚNICO''
+										''�NICO''
 								
 								-- OTROS (CGR, cursos libres, etc.)
 								ELSE 
-										''ÚNICO''
+										''�NICO''
 						END AS CICLO,
 
 						 A.NOMBRE_CURSO, A.NOMBRE_DOCENTE, 
